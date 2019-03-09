@@ -15,7 +15,7 @@ function mod_page($title, $template, $args, $subtitle = false) {
 		'hide_dashboard_link' => $template == 'mod/dashboard.html',
 		'title' => $title,
 		'subtitle' => $subtitle,
-		'nojavascript' => true,
+		'nojavascript' => false,
 		'body' => Element($template,
 				array_merge(
 					array('config' => $config, 'mod' => $mod), 
@@ -26,8 +26,9 @@ function mod_page($title, $template, $args, $subtitle = false) {
 	);
 }
 
-function mod_login($redirect = false) {
-	global $config;
+function mod_login($redirect = false) 
+{
+	global $config, $mod;
 	
 	$args = array();
 	
@@ -35,17 +36,28 @@ function mod_login($redirect = false) {
 		// Check if inputs are set and not empty
 		if (!isset($_POST['username'], $_POST['password']) || $_POST['username'] == '' || $_POST['password'] == '') {
 			$args['error'] = $config['error']['invalid'];
+			
+			if(isset($_POST['json_response']))
+				json_response(array('error'=>  $config['error']['invalid_auth']));
+		
 		} elseif (!login($_POST['username'], $_POST['password'])) {
 			if ($config['syslog'])
 				_syslog(LOG_WARNING, 'Unauthorized login attempt!');
 			
 			$args['error'] = $config['error']['invalid'];
+					
+			if(isset($_POST['json_response']))
+				json_response(array('error'=>  $config['error']['invalid_auth']));
+				
 		} else {
 			modLog('Logged in');
 			
 			// Login successful
 			// Set cookies
 			setCookies();
+					
+			if(isset($_POST['json_response']))
+				json_response(array('success'=>true, 'login_success'=> true, 'auth'=>true, 'username'=> $mod['username'] ));
 			
 			if ($redirect)
 				header('Location: ?' . $redirect, true, $config['redirect_http']);
@@ -60,13 +72,17 @@ function mod_login($redirect = false) {
 	mod_page(_('Login'), 'mod/login.html', $args);
 }
 
+
 function mod_confirm($request) {
 	mod_page(_('Confirm action'), 'mod/confirm.html', array('request' => $request, 'token' => make_secure_link_token($request)));
 }
 
-function mod_logout() {
+function mod_logout($redirect = true) {
 	global $config;
 	destroyCookies();
+	
+	if(isset($_POST['json_response']))
+		json_response(array('success'=>true, 'logout'=> true));
 	
 	header('Location: ?/', true, $config['redirect_http']);
 }
@@ -114,6 +130,18 @@ function mod_dashboard() {
 	$args['global_reports'] = isset($row['global_reports']) ? $row['global_reports'] : false;
 	
 	$args['logout_token'] = make_secure_link_token('logout');
+
+        //Count ban appeals
+        $local = ($mod['type'] < GLOBALVOLUNTEER);
+        $query_ban_appeals = prepare("SELECT *, COUNT(*) AS `total_ban_appeals` FROM ``ban_appeals``
+                LEFT JOIN ``bans`` ON `ban_id` = ``bans``.`id`
+                LEFT JOIN ``mods`` ON ``bans``.`creator` = ``mods``.`id`
+                WHERE `denied` != 1 ".($local ? " AND ``bans``.`board` = :board " : " AND ``bans``.`board` IS NULL ")." ORDER BY `time`");
+        $query_ban_appeals->bindValue(':board', $mod['boards'][0]);
+
+        //$query_ban_appeals->execute() or error_log(db_error($query));
+        $row_ban_appeals = $query_ban_appeals->fetch();
+        $args['total_ban_appeals'] = $row_ban_appeals['total_ban_appeals'];
 
 	modLog('Looked at dashboard', false);
 	
@@ -275,9 +303,7 @@ function mod_search($type, $search_query_escaped, $page_no = 1) {
 	
 	if ($type == 'bans') {
 		foreach ($results as &$ban) {
-			$ban['mask'] = Bans::range_to_string(array($ban['ipstart'], $ban['ipend']));
-			if (filter_var($ban['mask'], FILTER_VALIDATE_IP) !== false)
-				$ban['single_addr'] = true;
+			$ban['single_addr'] = true;
 		}
 	}
 	
@@ -320,6 +346,7 @@ function mod_edit_board($boardName) {
 				cache::delete('board_' . $board['uri']);
 				cache::delete('all_boards');
 				cache::delete('all_boards_uri');
+				cache::delete('all_boards_indexed');
 			}
 			
 			modLog('Deleted board: ' . sprintf($config['board_abbreviation'], $board['uri']), false);
@@ -329,12 +356,12 @@ function mod_edit_board($boardName) {
 			
 			// Clear reports
 			$query = prepare('DELETE FROM ``reports`` WHERE `board` = :id');
-			$query->bindValue(':id', $board['uri'], PDO::PARAM_INT);
+			$query->bindValue(':id', $board['uri'], PDO::PARAM_STR);
 			$query->execute() or error(db_error($query));
 			
 			// Delete from table
 			$query = prepare('DELETE FROM ``boards`` WHERE `uri` = :uri');
-			$query->bindValue(':uri', $board['uri'], PDO::PARAM_INT);
+			$query->bindValue(':uri', $board['uri'], PDO::PARAM_STR);
 			$query->execute() or error(db_error($query));
 			
 			$query = prepare("SELECT `board`, `post` FROM ``cites`` WHERE `target_board` = :board ORDER BY `board`");
@@ -450,10 +477,13 @@ function mod_new_board() {
 					error(_("Cannot create board matching banned pattern $w"));
 			}
 		}
-		$query = prepare('INSERT INTO ``boards`` (``uri``, ``title``, ``subtitle``) VALUES (:uri, :title, :subtitle)');
+		$query = prepare('INSERT INTO `boards` (`uri`, `title`, `subtitle`) VALUES (:uri, :title, :subtitle)');
+
 		$query->bindValue(':uri', $_POST['uri']);
 		$query->bindValue(':title', $_POST['title']);
 		$query->bindValue(':subtitle', $_POST['subtitle']);
+
+		
 		$query->execute() or error(db_error($query));
 		
 		modLog('Created a new board: ' . sprintf($config['board_abbreviation'], $_POST['uri']));
@@ -468,8 +498,10 @@ function mod_new_board() {
 		
 		query($query) or error(db_error());
 		
-		if ($config['cache']['enabled'])
+		if ($config['cache']['enabled']){
 			cache::delete('all_boards');
+			cache::delete('all_boards_indexed');
+		}
 		
 		// Build the board
 		buildIndex();
@@ -865,14 +897,16 @@ function mod_page_ip_less($b, $id) {
 	if (!openBoard($b))
 		error('No board.');
 
-	$query = prepare(sprintf('SELECT `ip` FROM ``posts_%s`` WHERE `id` = :id', $b));
+	$query = prepare(sprintf('SELECT `ip`,`range_ip_hash` FROM ``posts_%s`` WHERE `id` = :id', $b));
 	$query->bindValue(':id', $id);
 	$query->execute() or error(db_error($query));
 	
 	$result = $query->fetch(PDO::FETCH_ASSOC);
 
+	$iprange = false;
 	if ($result) {
 		$ip = $result['ip'];
+		$iprange = $result['range_ip_hash'];
 	} else {
 		error(_('Could not find that post.'));
 	}
@@ -937,7 +971,7 @@ function mod_page_ip_less($b, $id) {
 	$args['token'] = make_secure_link_token('ban');
 	
 	if (hasPermission($config['mod']['view_ban'])) {
-		$args['bans'] = Bans::find($ip, false, true);
+		$args['bans'] = Bans::find($ip, false, true, false, $iprange);
 	}
 	
 	if (hasPermission($config['mod']['view_notes'])) {
@@ -1017,11 +1051,12 @@ function mod_bans() {
 	));
 }
 
-function mod_bans_json() {
-        global $config, $mod;
+function mod_bans_json() 
+{
+    global $config, $mod;
 
-        if (!hasPermission($config['mod']['ban']))
-                error($config['error']['noaccess']);
+    if (!hasPermission($config['mod']['ban']))
+        error($config['error']['noaccess']);
 
 	// Compress the json for faster loads
 	if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) ob_start("ob_gzhandler");
@@ -1029,62 +1064,61 @@ function mod_bans_json() {
 	Bans::stream_json(false, !hasPermission($config['mod']['show_ip']), !hasPermission($config['mod']['view_banstaff']), $mod['boards']);
 }
 
-function mod_ban_appeals() {
+
+function mod_ban_appeals(){
+
 	global $config, $board, $mod;
 	
 	if (!hasPermission($config['mod']['view_ban_appeals']))
 		error($config['error']['noaccess']);
 	
-	// Remove stale ban appeals
-	query("DELETE FROM ``ban_appeals`` WHERE NOT EXISTS (SELECT 1 FROM ``bans`` WHERE `ban_id` = ``bans``.`id`)")
-		or error(db_error());
-	
+	// Remove stale ban appeals		
+	query("DELETE FROM `nbans` WHERE `expires`!=0 AND `expires`<" . time()) or error(db_error());
+
+	// Get All Apeals
+	$query = prepare("SELECT * FROM `nbans` WHERE `appeal_state`=1");
+	$query->execute() or error(db_error());
+	$bans = $query->fetchAll(PDO::FETCH_ASSOC);
+	$acessed_bans = array();
+	$action_ban = null;
+
+	foreach($bans as $ban){
+		if($mod['boards'][0]=='*' || in_array($ban['board'], $mod['boards'])){
+			array_push($acessed_bans, $ban);
+
+			if(isset($_POST['appeal_id']) && $_POST['appeal_id'] == $ban['id'])
+				$action_ban = $ban;
+		}
+	}
+
+	// Allow or Deny appeal action
 	if (isset($_POST['appeal_id']) && (isset($_POST['unban']) || isset($_POST['deny']))) {
 		if (!hasPermission($config['mod']['ban_appeals']))
 			error($config['error']['noaccess']);
-		
-		$query = query("SELECT *, ``ban_appeals``.`id` AS `id` FROM ``ban_appeals``
-			LEFT JOIN ``bans`` ON `ban_id` = ``bans``.`id`
-			WHERE ``ban_appeals``.`id` = " . (int)$_POST['appeal_id']) or error(db_error());
-		if (!$ban = $query->fetch(PDO::FETCH_ASSOC)) {
-			error(_('Ban appeal not found!'));
-		}
 
-		if (!in_array($ban['board'], $mod['boards']) && $mod['boards'][0] != '*')
-			error($config['error']['noaccess']);
-		
-		$ban['mask'] = Bans::range_to_string(array($ban['ipstart'], $ban['ipend']));
-		
+		if($action_ban == NULL)
+			error(_('Ban appeal not found!'));
+
 		if (isset($_POST['unban'])) {
-			modLog('Accepted ban appeal #' . $ban['id'] . ' for ' . $ban['mask']);
-			Bans::delete($ban['ban_id'], true);
-			query("DELETE FROM ``ban_appeals`` WHERE `id` = " . $ban['id']) or error(db_error());
-		} else {
-			modLog('Denied ban appeal #' . $ban['id'] . ' for ' . $ban['mask']);
-			query("UPDATE ``ban_appeals`` SET `denied` = 1 WHERE `id` = " . $ban['id']) or error(db_error());
+			modLog('Accepted ban appeal #' . $action_ban['id'] . ' for ' . $action_ban['ident']);
+			nban::delete($action_ban['id']);
+		} else { 
+			query("UPDATE `nbans` SET `appeal_state` = 2 WHERE `id` = " . $action_ban['id']) or error(db_error());
+			modLog('Denied ban appeal #' . $action_ban['id'] . ' for ' . $action_ban['ident']);
 		}
 		
 		header('Location: ?/ban-appeals', true, $config['redirect_http']);
 		return;
 	}
 
-	$local = ($mod['type'] < GLOBALVOLUNTEER);
-	
-	$query = prepare("SELECT *, ``ban_appeals``.`id` AS `id` FROM ``ban_appeals``
-		LEFT JOIN ``bans`` ON `ban_id` = ``bans``.`id`
-		LEFT JOIN ``mods`` ON ``bans``.`creator` = ``mods``.`id`
-		WHERE `denied` != 1 ".($local ? " AND ``bans``.`board` = :board " : "")." ORDER BY `time`");
-	if ($local) {
-		$query->bindValue(':board', $mod['boards'][0]);
-	}
-	$query->execute() or error(db_error());
 
-	$ban_appeals = $query->fetchAll(PDO::FETCH_ASSOC);
-	foreach ($ban_appeals as &$ban) {
-		if ($ban['post'])
-			$ban['post'] = json_decode($ban['post'], true);
-		$ban['mask'] = Bans::range_to_string(array($ban['ipstart'], $ban['ipend']));
-		
+
+	// SHOW APPEALS
+	foreach ($acessed_bans as &$ban) {
+		if ($ban['post']){
+			$ban['post'] = json_decode($ban['post'], true);		
+		}
+			
 		if ($ban['post'] && isset($ban['post']['board'], $ban['post']['id'])) {
 			openBoard($ban['post']['board']);
 
@@ -1099,10 +1133,12 @@ function mod_ban_appeals() {
 	}
 
 	mod_page(_('Ban appeals'), 'mod/ban_appeals.html', array(
-		'ban_appeals' => $ban_appeals,
+		'ban_appeals' => $acessed_bans,
 		'token' => make_secure_link_token('ban-appeals')
 	));
+
 }
+
 
 function mod_lock($board, $unlock, $post) {
 	global $config;
@@ -1174,7 +1210,7 @@ function mod_cycle($board, $uncycle, $post) {
 	$query->bindValue(':cycle', $uncycle ? 0 : 1);
 	$query->execute() or error(db_error($query));
 	if ($query->rowCount()) {
-		modLog(($uncycle ? 'Made not cyclical' : 'Made cyclical') . " thread #{$post}");
+		modLog(($uncycle ? 'Uncycled' : 'Cycled') . " thread #{$post}");
 		buildThread($post);
 		buildIndex();
 	}
@@ -1506,29 +1542,46 @@ function mod_move($originBoard, $postID) {
 	mod_page(_('Move thread'), 'mod/move.html', array('post' => $postID, 'board' => $originBoard, 'boards' => $boards, 'token' => $security_token));
 }
 
-function mod_ban_post($board, $delete, $post, $token = false) {
+function mod_ban_post($board, $delete, $post, $token = false, $mod_trip = null) {
 	global $config, $mod;
+	$rangeban = false;
 	
 	if (!openBoard($board))
 		error($config['error']['noboard']);
 	
-	if (!hasPermission($config['mod']['delete'], $board))
-		error($config['error']['noaccess']);
+	if($mod_trip == null)
+		if (!hasPermission($config['mod']['delete'], $board))
+			error($config['error']['noaccess']);
 
-	$security_token = make_secure_link_token($board . '/ban/' . $post);
-	
-	$query = prepare(sprintf('SELECT ' . ($config['ban_show_post'] ? '*' : '`ip`, `thread`') .
-		' FROM ``posts_%s`` WHERE `id` = :id', $board));
+	if($delete=='range')
+	{
+		$delete = "";
+		$rangeban = true;
+		$security_token = make_secure_link_token($board . '/banrange/' . $post);
+		$query = prepare(sprintf('SELECT ' . ($config['ban_show_post'] ? '*' : '`range_ip_hash`, `thread`') .
+		  ' FROM ``posts_%s`` WHERE `id` = :id', $board));
+	}else{
+		$security_token = make_secure_link_token($board . '/ban/' . $post);
+		$query = prepare(sprintf('SELECT ' . ($config['ban_show_post'] ? '*' : '`ip`, `thread`') .
+		  ' FROM ``posts_%s`` WHERE `id` = :id', $board));
+	}
+
 	$query->bindValue(':id', $post);
 	$query->execute() or error(db_error($query));
 	if (!$_post = $query->fetch(PDO::FETCH_ASSOC))
 		error($config['error']['404']);
 	
 	$thread = $_post['thread'];
-	$ip = $_post['ip'];
+
+	if($rangeban && $_post['range_ip_hash']=="")
+		error(_("No IP Range"));
+
+	$ip = ($rangeban) ? $_post['range_ip_hash'] : $_post['ip'];
 	$tor = checkDNSBL($ip);
 
+
 	if (isset($_POST['new_ban'], $_POST['reason'], $_POST['length'], $_POST['board'])) {
+
 		require_once 'inc/mod/ban.php';
 		
 		if (isset($_POST['ip']))
@@ -1536,24 +1589,33 @@ function mod_ban_post($board, $delete, $post, $token = false) {
 
 		if (isset($_POST['range']))
 			$ip = $ip . $_POST['range'];
-		
-		Bans::new_ban($ip, $_POST['reason'], $_POST['length'], $_POST['board'] == '*' ? false : $_POST['board'],
-			false, $config['ban_show_post'] ? $_post : false);
-		
+
+		$board_name =  $mod_trip != null ? $mod_trip :  ($_POST['board'] == '*' ? false : $_POST['board']);
+
+		$ban_id = Bans::new_ban($ip, $_POST['reason'], $_POST['length'], $board_name, false, $config['ban_show_post'] ? $_post : false, false, $mod_trip);
+
+
+
 		if (isset($_POST['public_message'], $_POST['message'])) {
 			// public ban message
 			$length_english = Bans::parse_time($_POST['length']) ? 'for ' . until(Bans::parse_time($_POST['length'])) : 'permanently';
 			$_POST['message'] = preg_replace('/[\r\n]/', '', $_POST['message']);
 			$_POST['message'] = str_replace('%length%', $length_english, $_POST['message']);
 			$_POST['message'] = str_replace('%LENGTH%', strtoupper($length_english), $_POST['message']);
+
+			$ban_modif = $config['private_markup_ban'] ;
+			$timestr = empty($_POST['length']) ? 'Навсегда' : secondsToTime(Bans::parse_time($_POST['length']) - time());
+			$info =   "\n[$ban_modif]Бан: #$ban_id / Время: $timestr\nВыдал: {$mod['username']}\n\nПричина: ". utf8tohtml($_POST['reason']) . "[/$ban_modif]";
+
 			$query = prepare(sprintf('UPDATE ``posts_%s`` SET `body_nomarkup` = CONCAT(`body_nomarkup`, :body_nomarkup) WHERE `id` = :id', $board));
+
+			$query->bindValue(':body_nomarkup', $info );
 			$query->bindValue(':id', $post);
-			$query->bindValue(':body_nomarkup', sprintf("\n<tinyboard ban message>%s</tinyboard>", utf8tohtml($_POST['message'])));
+ 
+
 			$query->execute() or error(db_error($query));
 			rebuildPost($post);
-			
-			modLog("Attached a public ban message to post #{$post}: " . utf8tohtml($_POST['message']));
-			buildThread($thread ? $thread : $post);
+			modLog("Attached a public ban message to post #{$post}: " . utf8tohtml($_POST['reason']), null, $mod_trip);
 			buildIndex();
 		} elseif (isset($_POST['delete']) && (int) $_POST['delete']) {
 			// Delete post
@@ -1564,6 +1626,10 @@ function mod_ban_post($board, $delete, $post, $token = false) {
 			// Rebuild themes
 			rebuildThemes('post-delete', $board);
 		}
+
+		if (isset($_POST['json_response'])) {
+			json_response(array('success'=> 1 , 'ban_success'=> 1));
+		};	
 		
 		header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
 	}
@@ -1575,13 +1641,132 @@ function mod_ban_post($board, $delete, $post, $token = false) {
 		'board' => $board,
 		'tor' => $tor,
 		'delete' => (bool)$delete,
+		'rangeban' => (bool)$rangeban,
 		'boards' => listBoards(),
 		'token' => $security_token
 	);
 	
-	mod_page(_('New ban'), 'mod/ban_form.html', $args);
+	mod_page(_(($rangeban) ? 'New range ban' : 'New ban'), 'mod/ban_form.html', $args);
 }
 
+function mod_ban_postbyip($board, $delete, $post, $global = false, $token = false) {
+  global $config, $mod;
+  $global = (bool)$global;
+
+  if (!openBoard($board))
+    error($config['error']['noboard']);
+
+  if (!$global && !hasPermission($config['mod']['bandeletebyip'], $board))
+    error($config['error']['noaccess']);
+
+  if ($global && !hasPermission($config['mod']['bandeletebyip'], $board))
+    error($config['error']['noaccess']);
+
+
+  if($global)
+    $security_token = make_secure_link_token($board . '/ban&deletebyip/' . $post . '/global');
+  else
+    $security_token = make_secure_link_token($board . '/ban&deletebyip/' . $post);
+
+   $query = prepare(sprintf('SELECT ' . ($config['ban_show_post'] ? '*' : '`ip`, `thread`') .
+     ' FROM ``posts_%s`` WHERE `id` = :id', $board));
+
+  $query->bindValue(':id', $post);
+  $query->execute() or error(db_error($query));
+  if (!$_post = $query->fetch(PDO::FETCH_ASSOC))
+    error($config['error']['404']);
+  $thread = $_post['thread'];
+  $ip = $_post['ip'];
+  $tor = checkDNSBL($ip);
+
+  if (isset($_POST['new_ban'], $_POST['reason'], $_POST['length'], $_POST['board'])) {
+    require_once 'inc/mod/ban.php';
+
+    if (isset($_POST['ip']))
+      $ip = $_POST['ip'];
+
+    if (isset($_POST['range']))
+      $ip = $ip . $_POST['range'];
+
+    if($global){
+      $query_byip = prepare(sprintf('SELECT * FROM ``posts_%s`` WHERE `ip` = :ip', $board));
+      $query_byip->bindValue(':ip', $_post['ip']);
+    }else{
+
+        // Find thread
+        $query_thread = prepare(sprintf('SELECT `thread` FROM ``posts_%s`` WHERE `id` = :id', $board));
+        $query_thread->bindValue(':id', $post);
+        $query_thread->execute() or error(db_error($query));
+        if($thread_db = $query_thread->fetchColumn()){
+          /*reply(prepare to delete post)*/
+          $posts_field = '`ip` = :ip AND (`thread` = :thread OR `id` = :id)';
+        }else{
+          /*OP and reply(prepare to delete post)*/
+          $posts_field = '`id` = :id OR `thread` = :thread';
+        }
+
+        $query_byip = prepare(sprintf('SELECT * FROM ``posts_%s`` WHERE '.$posts_field, $board));
+        $query_byip->bindValue(':thread', $_post['thread']);
+        $query_byip->bindValue(':id', $post);
+
+        if(isset($thread_db)){
+          $query_byip->bindValue(':thread', $thread_db);
+          $query_byip->bindValue(':ip', $ip);
+          $query_byip->bindValue(':id', $thread_db);
+        }else{
+          $query_byip->bindValue(':id', $post);
+          $query_byip->bindValue(':thread', $post);
+        }
+
+    }
+
+    $query_byip->execute() or error(db_error($query_byip));
+
+    $deleted = 0;
+    while ($_postbyip = $query_byip->fetch(PDO::FETCH_ASSOC)) {
+
+      if($post == $_postbyip['id']){
+        Bans::new_ban($ip, $_POST['reason'], $_POST['length'], $_POST['board'] == '*' ? false : $_POST['board'],
+          false, $config['ban_show_post'] ? $_postbyip : false, true);
+      }
+
+      if (isset($_POST['delete']) && (int) $_POST['delete']) {
+        deletePost($_postbyip['id'],false);
+	$deleted = 1;
+      }
+
+    }////end while
+	  
+    if ($deleted === 1){
+      // Rebuild board
+      buildIndex();
+      // Rebuild themes
+      rebuildThemes('post-delete', $board);
+    }
+	  
+    if($global){
+      modLog("Deleted all posts by IP address: <a href=\"?/IP/$ip\">$ip</a>");
+    }else{
+      modLog("Deleted all posts by IP address in a thread: <a href=\"?/IP/$ip\">$ip</a>");
+    }
+    header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
+  }
+
+  $args = array(
+    'ip' => $ip,
+    'hide_ip' => !hasPermission($config['mod']['show_ip'], $board),
+    'post' => $post,
+    'board' => $board,
+    'tor' => $tor,
+    'bandeletetype' => ($global)?1:0,
+    'delete' => (bool)$delete,
+    'boards' => listBoards(),
+    'token' => $security_token
+  );
+
+  mod_page(_(($global)?"New ban: delete all posts by this IP on this board":'New ban: delete all posts by this IP in this thread'), 'mod/ban_form.html', $args);
+}
+	    
 function mod_edit_post($board, $edit_raw_html, $postID) {
 	global $config, $mod;
 
@@ -1705,25 +1890,37 @@ function mod_edit_post($board, $edit_raw_html, $postID) {
 	}
 }
 
-function mod_delete($board, $post) {
+function mod_delete($board, $post, $trip = null) 
+{
 	global $config, $mod;
 	
 	if (!openBoard($board))
 		error($config['error']['noboard']);
-	
-	if (!hasPermission($config['mod']['delete'], $board))
-		error($config['error']['noaccess']);
+
+	if($trip == null)
+		if (!hasPermission($config['mod']['delete'], $board))
+			error($config['error']['noaccess']);
 	
 	// Delete post
 	deletePost($post);
 	// Record the action
-	modLog("Deleted post #{$post}");
+	modLog("Deleted post #{$post}", null, $trip);
 	// Rebuild board
 	buildIndex();
 	// Rebuild themes
 	rebuildThemes('post-delete', $board);
 	// Redirect
-	header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
+
+	if (isset($_POST['json_response'])) {
+		json_response(array('success'=> 1 , 'post_delete_success'=> 1));
+	};
+
+
+	if (isset($_SERVER["HTTP_REFERER"])) {
+		header('Location: ?/reports');
+	} else {
+		header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
+	}	
 }
 
 function mod_deletefile($board, $post, $file) {
@@ -1747,6 +1944,156 @@ function mod_deletefile($board, $post, $file) {
 	
 	// Redirect
 	header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
+}
+
+function mod_deletefilebyip($board, $post, $file) {
+        global $config, $mod;
+
+        if (!openBoard($board))
+                error($config['error']['noboard']);
+
+        if (!hasPermission($config['mod']['deletefilebyip'], $board))
+                error($config['error']['noaccess']);
+
+
+        // Find IP address
+        $query = prepare(sprintf('SELECT `ip` FROM ``posts_%s`` WHERE `id` = :id', $board));
+        $query->bindValue(':id', $post);
+        $query->execute() or error(db_error($query));
+        if (!$ip = $query->fetchColumn())
+                error($config['error']['invalidpost']);
+
+        $boards = array(array('uri' => $board));
+
+        $query = '';
+        foreach ($boards as $_board) {
+                $query .= sprintf("SELECT `num_files`, `files`, `thread`, `id`, '%s' AS `board` FROM ``posts_%s`` WHERE `ip` = :ip UNION ALL ", $_board['uri'], $_board['uri']);
+        }
+        $query = preg_replace('/UNION ALL $/', '', $query);
+
+        $query = prepare($query);
+        $query->bindValue(':ip', $ip);
+        $query->execute() or error(db_error($query));
+
+        if ($query->rowCount() < 1)
+                error($config['error']['invalidpost']);
+
+        @set_time_limit($config['mod']['rebuild_timelimit']);
+        while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
+                $files = json_decode($post['files']);
+                if($post["files"]!=NULL){
+                        for($file_ctr=0;$file_ctr<$post['num_files'];$file_ctr++){
+                                if(isset($files[$file]->file) && $files[$file]->file != "deleted"){
+                                        // Record the action
+                                        #modLog("Deleted file from post #{$post["id"]}");
+                                        // Delete file
+                                        deleteFile($post["id"], TRUE, $file_ctr);
+
+                                        // Rebuild board
+                                        buildIndex();
+                                        // Rebuild themes
+                                        rebuildThemes('post-delete', $board);
+                                }
+                        }
+                        $file_ctr=0;
+                }
+        }
+
+        modLog("Deleted all files by IP address: <a href=\"?/IP/$ip\">$ip</a>");
+
+        // Redirect
+        /*redirect back to report queue after deleting, or else redirect to index*/
+        if (isset($_SERVER["HTTP_REFERER"])) {
+                $ref = explode("?",$_SERVER["HTTP_REFERER"]);
+                $redirect_from = "?".$ref[count($ref)-1];
+                header('Location: '.$redirect_from);
+        } else {
+                header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
+        }
+}
+
+function mod_deletefilebyip_thread($board, $post, $file) {
+        global $config, $mod;
+
+        if (!openBoard($board))
+                error($config['error']['noboard']);
+
+        if (!hasPermission($config['mod']['deletefilebyip_thread'], $board))
+                error($config['error']['noaccess']);
+
+        // Find IP address
+        $query = prepare(sprintf('SELECT `ip` FROM ``posts_%s`` WHERE `id` = :id', $board));
+        $query->bindValue(':id', $post);
+        $query->execute() or error(db_error($query));
+        if (!$ip = $query->fetchColumn())
+                error($config['error']['invalidpost']);
+
+        $boards = array(array('uri' => $board));
+
+        // Find thread
+        $query_thread = prepare(sprintf('SELECT `thread` FROM ``posts_%s`` WHERE `id` = :id', $board));
+        $query_thread->bindValue(':id', $post);
+        $query_thread->execute() or error(db_error($query));
+        if($thread_db = $query_thread->fetchColumn()){
+                /*reply(prepare to delete post)*/
+                $posts_field = '`ip` = :ip AND (`thread` = :thread OR `id` = :id)';
+        }
+        else{
+                /*OP and reply(prepare to delete post)*/
+                $posts_field = '`id` = :id OR `thread` = :thread';
+        }
+
+        $query = '';
+        foreach ($boards as $_board) {
+                $query .= sprintf("SELECT `num_files`, `ip`, `files`, `thread`, `id`, '%s' AS `board` FROM ``posts_%s`` WHERE $posts_field UNION ALL ", $_board['uri'], $_board['uri']);
+        }
+        $query = preg_replace('/UNION ALL $/', '', $query);
+        $query = prepare($query);
+        if($thread_db){
+                $query->bindValue(':thread', $thread_db);
+                $query->bindValue(':ip', $ip);
+                $query->bindValue(':id', $thread_db);
+        }else{
+                $query->bindValue(':id', $post);
+                $query->bindValue(':thread', $post);
+        }
+        $query->execute() or error(db_error($query));
+
+        if ($query->rowCount() < 1)
+                error($config['error']['invalidpost']);
+
+        @set_time_limit($config['mod']['rebuild_timelimit']);
+        while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
+                $files = json_decode($post['files']);
+                if($post["files"]!=NULL && $ip==$post['ip']){
+                        for($file_ctr=0;$file_ctr<$post['num_files'];$file_ctr++){
+                                if(isset($files[$file]->file) && $files[$file]->file != "deleted"){
+                                        // Record the action
+                                        //modLog("Deleted file from post #{$post['id']}");
+                                        // Delete file
+                                        deleteFile($post['id'], TRUE, $file_ctr);
+
+                                        // Rebuild board
+                                        buildIndex();
+                                        // Rebuild themes
+                                        rebuildThemes('post-delete', $board);
+                                }
+                        }
+                        $file_ctr=0;
+                }
+        }
+
+        modLog("Deleted all files by IP address in a thread: <a href=\"?/IP/$ip\">$ip</a>");
+
+        // Redirect
+        /*redirect back to report queue after deleting, or else redirect to index*/
+        if (isset($_SERVER["HTTP_REFERER"])) {
+                $ref = explode("?",$_SERVER["HTTP_REFERER"]);
+                $redirect_from = "?".$ref[count($ref)-1];
+                header('Location: '.$redirect_from);
+        } else {
+                header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
+        }
 }
 
 function mod_spoiler_image($board, $post, $file) {
@@ -1838,7 +2185,8 @@ function mod_spoiler_images($board, $post) {
 	header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
 }
 
-function mod_deletebyip($boardName, $post, $global = false) {
+function mod_deletebyip($boardName, $post, $global = false) 
+{
 	global $config, $mod, $board;
 	
 	$global = (bool)$global;
@@ -2116,7 +2464,7 @@ function mod_user_new() {
 		}
 		
 		$type = (int)$_POST['type'];
-		if (!isset($config['mod']['groups'][$type]) || $type == DISABLED)
+		if (!isset($config['mod']['groups'][$type]) )
 			error(sprintf($config['error']['invalidfield'], 'type'));
 		
 		$salt = generate_salt();
@@ -2200,7 +2548,7 @@ function mod_user_promote($uid, $action) {
 		}
 	}
 	
-	if ($new_group === false || $new_group == DISABLED)
+	if ($new_group === false )
 		error(_('Impossible to promote/demote user.'));
 	
 	$query = prepare("UPDATE ``mods`` SET `type` = :group_value WHERE `id` = :id");
@@ -2374,6 +2722,10 @@ function mod_rebuild() {
 	
 	if (!hasPermission($config['mod']['rebuild']))
 		error($config['error']['noaccess']);
+
+	if(ini_get("max_execution_time") < 120)
+		ini_set('max_execution_time', 120);
+
 	
 	if (isset($_POST['rebuild'])) {
 		@set_time_limit($config['mod']['rebuild_timelimit']);
@@ -2641,6 +2993,8 @@ function mod_reports() {
 					'content'               => (array) $content,
 					
 					'clean'                 => $clean,
+					
+					'go_to_thread'          => "?/{$report_item['board_id']}/res/" . ( $content['thread'] ?: $content['id'] ) . ".html",
 					
 					'uri_content_demote'    => "?/{$uri_content_base}{$report_item['board_id']}/{$content['id']}/demote",
 					'uri_content_promote'   => "?/{$uri_content_base}{$report_item['board_id']}/{$content['id']}/promote",
@@ -3190,6 +3544,905 @@ function mod_report_clean( $global_reports, $board, $unclean, $post, $global, $l
 	}
 }
 
+
+
+// BOARD SETTINGS
+function mod_settings($b) {
+	
+	global $config, $mod;
+
+	//if ($b === 'infinity' && $mod['type'] !== ADMIN)
+	//	error('Settings temporarily disabled for this board.');
+
+	if (!in_array($b, $mod['boards']) and $mod['boards'][0] != '*')
+		error($config['error']['noaccess']);
+
+	if (!hasPermission($config['mod']['edit_settings'], $b))
+		error($config['error']['noaccess']);
+
+	if (!openBoard($b))
+		error("Could not open board!");
+
+
+	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+		
+		//$board_type = $_POST['board_type'];
+		$board_type ='imgboard';
+		$imgboard = $board_type == 'imgboard';
+		$txtboard = $board_type == 'txtboard';
+		$fileboard = $board_type == 'fileboard';
+
+
+		$country_flags = isset($_POST['country_flags']) ? 'true' : 'false';
+		$field_disable_name = isset($_POST['field_disable_name']) ? 'true' : 'false';
+		$force_anon_thread = isset($_POST['force_anon_thread']) ? 'true' : 'false';
+		$force_image_op = $imgboard && isset($_POST['force_image_op']) ? 'true' : 'false';
+		$disable_images = $txtboard ? 'true' : 'false';
+		$poster_ids = isset($_POST['poster_ids']) ? 'true' : 'false';
+		$show_sages = isset($_POST['show_sages']) ? 'true' : 'false';
+		$auto_unicode = isset($_POST['auto_unicode']) ? 'true' : 'false';
+		$strip_combining_chars = isset($_POST['strip_combining_chars']) ? 'true' : 'false';
+		$allow_roll = isset($_POST['allow_roll']) ? 'true' : 'false';
+		$image_reject_repost = isset($_POST['image_reject_repost']) ? 'true' : 'false';
+		$image_reject_repost_in_thread = isset($_POST['image_reject_repost_in_thread']) ? 'true' : 'false';
+		$early_404 = isset($_POST['early_404']) ? 'true' : 'false';
+		$allow_delete = isset($_POST['allow_delete']) ? 'true' : 'false';
+		$code_tags = isset($_POST['code_tags']) ? '$config[\'additional_javascript\'][] = \'js/code_tags/run_prettify.js\';$config[\'markup\'][] = array("/\[code\](.+?)\[\/code\]/ms", "<code><pre class=\'prettyprint\' style=\'display:inline-block\'>\$1</pre></code>");' : '';
+		$katex = isset($_POST['katex']) ? '$config[\'katex\'] = true;$config[\'additional_javascript\'][] = \'js/katex/katex.min.js\'; $config[\'markup\'][] = array("/\[tex\](.+?)\[\/tex\]/ms", "<span class=\'tex\'>\$1</span>"); $config[\'additional_javascript\'][] = \'js/katex-enable.js\';' : '';
+		$user_flags = isset($_POST['user_flags']) ? "if (file_exists('$b/flags.php')) { include 'flags.php'; }\n" : '';
+		$captcha_for_post = isset($_POST['captcha_for_post']) ? 'true' : 'false';
+		$captcha_for_thread = isset($_POST['captcha_for_thread']) ? 'true' : 'false';
+		
+		$force_subject_op = isset($_POST['force_subject_op']) ? 'true' : 'false';
+		$force_flag = isset($_POST['force_flag']) ? 'true' : 'false';
+		$tor_posting = isset($_POST['tor_posting']) ? 'true' : 'false';
+		$tor_image_posting = isset($_POST['tor_image_posting']) ? 'true' : 'false';
+		$oekaki = ($imgboard || $fileboard) && isset($_POST['oekaki']) ? 'true' : 'false';
+		$view_bumplock = isset($_POST['view_bumplock']) ? '-1' : 'MOD';
+		$enable_emoji = isset($_POST['enable_emoji']) ? 'true' : 'false';
+
+		if (($tor_image_posting === 'true') && isset($_POST['meta_noindex'])) {
+			error('Please index your board to enable this.');
+		}
+		
+
+		if (isset($_POST['max_images']) && (int)$_POST['max_images'] && (int)$_POST['max_images'] <= 5) {
+			$_POST['max_images'] = (int)$_POST['max_images'];
+			$multiimage = "\$config['max_images'] = {$_POST['max_images']};
+					 \$config['additional_javascript'][] = 'js/multi-image.js';";
+		} else {
+			$multiimage = '';
+		} 
+
+											if (isset($_POST['enable_emoji'])) {
+															$emoji_config = "
+																			\$config['emoji_enable'] = true;
+																			\$config['additional_javascript']['emoji'] = 'js/twemoji/twemoji.js';";
+											} else {
+															$emoji_config = "";
+											}			
+		
+		if (isset($_POST['custom_assets'])) {
+			$assets = "\$config['custom_assets'] = true;
+								 \$config['spoiler_image'] = 'static/assets/$b/spoiler.png';
+								 \$config['image_deleted'] = 'static/assets/$b/deleted.png';
+								 \$config['no_file_image'] = 'static/assets/$b/no-file.png';
+			";
+		} else {
+			$assets = '';
+		}
+
+		$file_board = '';
+		if ($fileboard) {
+			$force_image_op = true;
+
+			$file_board = "\$config['threads_per_page'] = 30;
+							 \$config['file_board'] = true;
+							 \$config['threads_preview'] = 0;
+										 \$config['threads_preview_sticky'] = 0;
+							 \$config['allowed_ext_files'] = array();\n";
+
+
+			if (isset ($_POST['allowed_type'])) {
+				foreach ($_POST['allowed_type'] as $val) {
+					if (in_array ($val, $config['fileboard_allowed_types'])) {
+						$file_board .= "\$config['allowed_ext_files'][] = '$val';\n";
+					}
+				}
+			}
+
+			if (isset ($_POST['allowed_ext_op'])) {
+				$file_board .= "\$config['allowed_ext_op'] = \$config['allowed_ext_files'];\n";
+
+				if (isset ($_POST['allowed_ext_op_video'])) {
+					$file_board .= "\$config['allowed_ext_op'][] = 'webm';
+							\$config['allowed_ext_op'][] = 'mp4';\n";
+				}
+			}
+
+			if (isset ($_POST['tag_id'])) {
+				$file_board .= "\$config['allowed_tags'] = array();\n";
+				foreach ($_POST['tag_id'] as $id => $v) {
+					$file_board .= "\$config['allowed_tags'][";
+						$file_board .= 'base64_decode("';
+							$file_board .= base64_encode($_POST['tag_id'][$id]);
+						$file_board .= '")';
+					$file_board .= "] = ";
+						$file_board .= 'base64_decode("';
+							$file_board .= base64_encode($_POST['tag_desc'][$id]);
+						$file_board .= '")';
+					$file_board .= ";\n";
+				}
+			}
+		}
+
+		$anal_filenames = ($fileboard) && isset($_POST['anal_filenames']) ? "\$config['filename_func'] = 'filename_func';\n" : '';
+
+		$anonymous = base64_encode($_POST['anonymous']);
+		$add_to_config = @file_get_contents($b.'/extra_config.php');
+		$replace = '';
+
+		if (isset($_POST['replace'])) {
+			if (sizeof($_POST['replace']) > 200 || sizeof($_POST['with']) > 200) {
+				error(_('Sorry, max 200 wordfilters allowed.'));
+			}
+			if (count($_POST['replace']) == count($_POST['with'])) {
+				foreach ($_POST['replace'] as $i => $r ) {
+					if ($r !== '') {
+						$w = $_POST['with'][$i];
+						
+						if (strlen($w) > 255) {
+							error(sprintf(_('Sorry, %s is too long. Max replacement is 255 characters'), utf8tohtml($w)));
+						}
+
+						$replace .= '$config[\'wordfilters\'][] = array(base64_decode(\'' . base64_encode($r) . '\'), base64_decode(\'' . base64_encode($w) . '\'));';
+					}
+				}
+			}
+			if (is_billion_laughs($_POST['replace'], $_POST['with'])) {
+				error(_('Wordfilters may not wordfilter previous wordfilters. For example, if a filters to bb and b filters to cc, that is not allowed.'));
+			}
+		}
+
+		if (isset($_POST['hour_max_threads']) && (int)$_POST['hour_max_threads'] > 0 && (int)$_POST['hour_max_threads'] < 101 ) {
+			$hour_max_threads = (int)$_POST['hour_max_threads'];	
+		} else {
+			$hour_max_threads = 'false';
+		}
+
+		if (isset($_POST['max_pages'])) {
+			$mp = (int)$_POST['max_pages'];
+			if ($mp > 25 || $mp < 1) {
+				$max_pages = 15;
+			} else {
+				$max_pages = $mp;
+			}
+		} else {
+			$max_pages = 15;
+		}			
+
+		if (isset($_POST['reply_limit'])) {
+			$rl = (int)$_POST['reply_limit'];
+			if ($rl > 750 || $rl < 250 || $rl % 25) {
+				$reply_limit = 250;
+			} else {
+				$reply_limit = $rl;
+			}
+		} else {
+			$reply_limit = 250;
+		}
+
+		if (isset($_POST['max_newlines'])) {
+			$mn = (int)$_POST['max_newlines'];
+			if ($mn < 20 || $mn > 300) {
+				$max_newlines = 0;
+			} else {
+				$max_newlines = $mn;
+			}
+		} else {
+			$max_newlines = 0;
+		}
+
+		if (isset($_POST['min_body'])) {
+			$mb = (int)$_POST['min_body'];
+			if ($mb < 0 || $mb > 1024) {
+				$min_body = 0;
+			} else {
+				$min_body = $mb;
+			}
+		} else {
+			$min_body = 0;
+		}
+
+		if (isset($_POST['title']) && strlen($_POST['title']) < 40)
+			error('Invalid title');
+		if (isset($_POST['subtitle']) && strlen($_POST['subtitle']) < 200)
+			error('Invalid subtitle');
+
+		$query = prepare('UPDATE ``boards`` SET ' 
+			.(isset($_POST['title']) ? ' `title` = :title,':'') 
+			.(isset($_POST['subtitle']) ? '`subtitle` = :subtitle, ' : '' )
+			.'`indexed` = :indexed, `public_bans` = :public_bans, `public_logs` = :public_logs WHERE `uri` = :uri');
+
+
+		if(isset($_POST['title']))
+			$query->bindValue(':title', $title);
+		if(isset($_POST['subtitle']))
+			$query->bindValue(':subtitle', $subtitle);
+		$query->bindValue(':uri', $b);
+		$query->bindValue(':indexed', !isset($_POST['meta_noindex']), PDO::PARAM_BOOL);
+		$query->bindValue(':public_bans', isset($_POST['public_bans']));
+		$query->bindValue(':public_logs', (int)$_POST['public_logs']);
+
+
+		//$query->execute() or error(db_error($query));
+		if(!$query->execute()){
+			print_r($query->errorInfo());
+			exit;
+		}
+
+		$config_file = <<<EOT
+<?php
+\$config['country_flags'] = $country_flags;
+\$config['field_disable_name'] = $field_disable_name;
+\$config['force_anon_thread'] = $force_anon_thread;
+\$config['force_image_op'] = $force_image_op;
+\$config['disable_images'] = $disable_images;
+\$config['poster_ids'] = $poster_ids;
+\$config['show_sages'] = $show_sages;
+\$config['auto_unicode'] = $auto_unicode;
+\$config['strip_combining_chars'] = $strip_combining_chars;
+\$config['allow_roll'] = $allow_roll;
+\$config['image_reject_repost'] = $image_reject_repost;
+\$config['image_reject_repost_in_thread'] = $image_reject_repost_in_thread;
+\$config['early_404'] = $early_404;
+\$config['allow_delete'] = $allow_delete;
+\$config['anonymous'] = base64_decode('$anonymous');
+\$config['captcha']['enabled_for_post'] = $captcha_for_post;
+\$config['captcha']['enabled_for_thread'] = $captcha_for_thread;
+\$config['force_subject_op'] = $force_subject_op;
+\$config['force_flag'] = $force_flag;
+\$config['tor_posting'] = $tor_posting;
+\$config['tor_image_posting'] = $tor_image_posting;
+\$config['hour_max_threads'] = $hour_max_threads;
+\$config['reply_limit'] = $reply_limit;
+\$config['max_pages'] = $max_pages;
+\$config['max_newlines'] = $max_newlines;
+\$config['oekaki'] = $oekaki;
+\$config['min_body'] = $min_body;
+\$config['mod']['view_bumplock'] = $view_bumplock;
+\$config['enable_emoji'] = $enable_emoji;
+$code_tags $katex $replace $multiimage $emoji_config $user_flags 
+$assets
+$anal_filenames
+$file_board
+
+if (\$config['disable_images'])
+\$config['max_pages'] = 10000;
+
+$add_to_config
+EOT;
+
+
+$blotter = "";
+
+if(isset($_POST['blotter']) && !empty($_POST['blotter'])){
+	$blotter =	base64_encode(purify_html(html_entity_decode($_POST['blotter'])));
+	$config_file .= "\n\$config['blotter'] = base64_decode('$blotter');";
+}
+
+ 
+/*
+\$config['stylesheets']['Custom'] = 'board/$b.css';
+\$config['default_stylesheet'] = array('Custom', \$config['stylesheets']['Custom']);
+*/
+
+
+		// DISABLE CUSTOM CSS
+		// Clean up our CSS...no more expression() or off-site URLs.
+		/*$clean_css = !isset($_POST['css']) ? '' : preg_replace('/expression\s*\(/', '', $_POST['css']);
+
+		$matched = array();
+
+		preg_match_all("#{$config['link_regex']}#im", $clean_css, $matched);
+		
+		if (isset($matched[0])) {
+			foreach ($matched[0] as $match) {
+				$match_okay = false;
+				foreach ($config['allowed_offsite_urls'] as $allowed_url) {
+					if (strpos($match, $allowed_url) === 0) {
+						$match_okay = true;
+					}
+				}
+				if ($match_okay !== true) {
+					error(sprintf(_("Off-site link \"%s\" is not allowed in the board stylesheet"), $match));
+				}
+			}
+		}
+		
+		//Filter out imports from sites with potentially unsafe content
+		$match_imports = '@import[^;]*';
+		$matched = array();
+		preg_match_all("#$match_imports#im", $clean_css, $matched);
+		
+		$unsafe_import_urls = array('https://a.pomf.se/');
+		
+		if (isset($matched[0])) {
+			foreach ($matched[0] as $match) {
+				$match_okay = true;
+				foreach ($unsafe_import_urls as $unsafe_import_url) {
+					if (strpos($match, $unsafe_import_url) !== false && strpos($match, '#') === false) {
+						$match_okay = false;
+					}
+				}
+				if ($match_okay !== true) {
+					error(sprintf(_("Potentially unsafe import \"%s\" is not allowed in the board stylesheet"), $match));
+				}
+			}
+		}
+
+		 
+		file_put_contents('stylesheets/board/'.$b.'.css', $clean_css);*/
+ 
+
+		file_put_contents($b.'/config.php', $config_file);
+ 
+
+		$_config = $config;
+
+
+		unset($config['wordfilters']);
+ 
+
+		file_put_contents($b . '/config.php', str_replace('flags.php', "$b/flags.php", preg_replace('/^\<\?php$/m', '', $config_file)));
+
+		eval(str_replace('flags.php', "$b/flags.php", preg_replace('/^\<\?php/m', '', $config_file)));
+
+
+
+		// be smarter about rebuilds...only some changes really require us to rebuild all threads
+		if ($_config['captcha']['enabled_for_post'] != $config['captcha']['enabled_for_post']
+		 || $_config['captcha']['enabled_for_thread'] != $config['captcha']['enabled_for_thread']
+		 || $_config['captcha']['extra'] != $config['captcha']['extra']
+		 || $_config['blotter'] != $config['blotter']
+		 || $_config['field_disable_name'] != $config['field_disable_name']
+		 || $_config['force_anon_thread'] != $config['force_anon_thread']
+		 || $_config['show_sages'] != (isset($config['show_sages']) && $config['show_sages'])) {
+			buildIndex();
+			$query = query(sprintf("SELECT `id` FROM ``posts_%s`` WHERE `thread` IS NULL", $b)) or error(db_error());
+			while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
+				buildThread($post['id']);
+			}
+		}
+	
+		modLog('Edited board settings', $b);
+	}
+
+	$query = prepare('SELECT * FROM boards WHERE uri = :board');
+	$query->bindValue(':board', $b);
+	$query->execute() or error(db_error($query));
+	$board = $query->fetchAll()[0];
+
+	// Clean the cache
+	if ($config['cache']['enabled']) {
+		cache::delete('board_' . $board['uri']);
+		cache::delete('all_boards');
+		cache::delete('all_boards_indexed');
+
+		cache::delete('config_' . $board['uri']);
+		cache::delete('events_' . $board['uri']);
+		unlink('tmp/cache/locale_' . $board['uri']);
+	}
+
+	$css = @file_get_contents('stylesheets/board/' . $board['uri'] . '.css');
+
+	mod_page(_('Board configuration'), 'mod/settings/settings.html', array('board'=>$board, 'css'=>prettify_textarea($css),'allowed_urls'=>$config['allowed_offsite_urls']));
+}
+
+
+function mod_tags ($b) {
+	global $board, $config;
+
+	if (!openBoard($b))
+		error("Could not open board!");
+
+	if (!hasPermission($config['mod']['edit_tags'], $b))
+		error($config['error']['noaccess']);
+
+	if (isset($_POST['tags'])) {
+		if (sizeof($_POST['tags']) > 5)
+			error(_('Too many tags.'));
+
+		$delete = prepare('DELETE FROM ``board_tags`` WHERE uri = :uri');
+		$delete->bindValue(':uri', $b);
+		$delete->execute();
+
+		foreach ($_POST['tags'] as $i => $tag) {
+			if ($tag) {
+				if (strlen($tag) > 255)
+					continue;
+
+				$insert = prepare('INSERT INTO ``board_tags``(uri, tag) VALUES (:uri, :tag)');
+				$insert->bindValue(':uri', $b);
+				$insert->bindValue(':tag', utf8tohtml($tag));
+				$insert->execute();
+			}
+		}
+
+		$update = prepare('UPDATE ``boards`` SET sfw = :sfw WHERE uri = :uri');
+		$update->bindValue(':uri', $b);
+		$update->bindValue(':sfw', isset($_POST['sfw']));
+		$update->execute();
+	}
+	$query = prepare('SELECT * FROM ``board_tags`` WHERE uri = :uri');
+	$query->bindValue(':uri', $b);
+	$query->execute();
+
+	$tags = $query->fetchAll();
+
+	$query = prepare('SELECT `sfw` FROM ``boards`` WHERE uri = :uri');
+	$query->bindValue(':uri', $b);
+	$query->execute();
+
+	$sfw = $query->fetchColumn();
+
+	mod_page(_('Edit tags'), 'mod/settings/tags.html', array('board'=>$board,'token'=>make_secure_link_token('tags/'.$board['uri']), 'tags'=>$tags, 'sfw'=>$sfw));
+}
+
+
+function mod_assets($b) {
+	global $config, $mod, $board;
+	require_once 'inc/image.php';
+
+	if (!hasPermission($config['mod']['edit_assets'], $b))
+		error($config['error']['noaccess']);
+
+	if (!openBoard($b))
+		error("Could not open board!");
+
+	$dir = 'static/assets/'.$b;
+
+	if (!is_dir($dir)){
+		mkdir($dir, 0777, true);
+
+		symlink(getcwd() . '/' . $config['image_deleted'], "$dir/deleted.png");
+		symlink(getcwd() . '/' . $config['spoiler_image'], "$dir/spoiler.png");
+		symlink(getcwd() . '/' . $config['no_file_image'], "$dir/no-file.png");
+	}
+	
+	// "File deleted"
+	if (isset($_FILES['deleted_file']) && !empty($_FILES['deleted_file']['tmp_name'])){
+		$upload = $_FILES['deleted_file']['tmp_name'];
+		$extension = strtolower(mb_substr($_FILES['deleted_file']['name'], mb_strrpos($_FILES['deleted_file']['name'], '.') + 1));
+
+		if (!is_readable($upload)) {
+			error($config['error']['nomove']);
+		}
+
+		if (filesize($upload) > 512000){
+			error('File too large!');
+		}
+
+		if (!in_array($extension, array('png', 'gif'))) {
+			error('File must be PNG or GIF format.');
+		}
+
+		if (!$size = @getimagesize($upload)) {
+			error($config['error']['invalidimg']);
+		}
+
+		if ($size[0] != 140 or $size[1] != 50){
+			error('Image wrong size!');
+		}
+
+		unlink("$dir/deleted.png");
+		copy($upload, "$dir/deleted.png");
+		purge("$dir/deleted.png", true);
+	}
+
+	// Spoiler file
+	if (isset($_FILES['spoiler_file']) && !empty($_FILES['spoiler_file']['tmp_name'])){
+		$upload = $_FILES['spoiler_file']['tmp_name'];
+		$extension = strtolower(mb_substr($_FILES['spoiler_file']['name'], mb_strrpos($_FILES['spoiler_file']['name'], '.') + 1));
+
+		if (!is_readable($upload)) {
+			error($config['error']['nomove']);
+		}
+
+		if (filesize($upload) > 512000){
+			error('File too large!');
+		}
+
+
+		if (!in_array($extension, array('png', 'gif'))) {
+			error('File must be PNG or GIF format.');
+		}
+
+		if (!$size = @getimagesize($upload)) {
+			error($config['error']['invalidimg']);
+		}
+
+		if ($size[0] != 128 or $size[1] != 128){
+			error('Image wrong size!');
+		}
+
+		unlink("$dir/spoiler.png");
+		copy($upload, "$dir/spoiler.png");
+		purge("$dir/spoiler.png", true);
+	}
+
+	// No file
+	if (isset($_FILES['nofile_file']) && !empty($_FILES['nofile_file']['tmp_name'])){
+		$upload = $_FILES['nofile_file']['tmp_name'];
+		$extension = strtolower(mb_substr($_FILES['nofile_file']['name'], mb_strrpos($_FILES['nofile_file']['name'], '.') + 1));
+
+		if (!is_readable($upload)) {
+			error($config['error']['nomove']);
+		}
+
+		if (filesize($upload) > 512000){
+			error('File too large!');
+		}
+
+		if (!in_array($extension, array('png', 'gif'))) {
+			error('File must be PNG or GIF format.');
+		}
+
+		if (!$size = @getimagesize($upload)) {
+			error($config['error']['invalidimg']);
+		}
+
+		if ($size[0] != 500 or $size[1] != 500){
+			error('Image wrong size!');
+		}
+
+		unlink("$dir/no-file.png");
+		copy($upload, "$dir/no-file.png");
+		purge("$dir/no-file.png", true);
+	}
+
+	mod_page(_('Edit board assets'), 'mod/settings/assets.html', array('board'=>$board,'token'=>make_secure_link_token('assets/'.$board['uri'])));
+}
+
+function mod_reassign($b) {
+	global $board, $config;
+
+	if (!openBoard($b))
+		error("Could not open board!");
+
+	if (!hasPermission($config['mod']['reassign_board'], $b))
+		error($config['error']['noaccess']);
+
+	$query = query("SELECT id, username FROM mods WHERE boards = '$b' AND type = 20");
+	$mods = $query->fetchAll();
+
+	if (!$mods) {
+		error('No mods?');
+	}
+
+	$password = base64_encode(openssl_random_pseudo_bytes(9));
+	$salt = generate_salt();
+	$hashed = hash('sha256', $salt . sha1($password));
+
+	$query = prepare('UPDATE ``mods`` SET `password` = :hashed, `salt` = :salt, `email` = NULL WHERE BINARY username = :mod');
+	$query->bindValue(':hashed', $hashed);
+	$query->bindValue(':salt', $salt);
+	$query->bindValue(':mod', $mods[0]['username']);
+	$query->execute();
+
+	$body = "Thank you for your interest in this board. According to https://8ch.net/claim.html [INSERT ARCHIVE HERE], the board is claimable and hereby reassigned to you because the Board Owner failed to sign in for more than two weeks. Kindly find the username and password below. You can login at https://8ch.net/mod.php.<br>Username: {$mods[0]['username']}<br>Password: {$password}<br>Thank you for using 8chan, anon!";
+	
+	modLog("Reassigned board /$b/");
+	
+	mod_page(_('Edit reassign'), 'blank.html', array('board'=>$board,'token'=>make_secure_link_token('reassign/'.$board['uri']),'body'=>$body));
+}
+
+
+
+function mod_banners($b) {
+	global $config, $mod, $board;
+
+	error('Banner editing is currently disabled. Please check back later!');
+
+	require_once 'inc/image.php';
+
+	if (!hasPermission($config['mod']['edit_banners'], $b))
+		error($config['error']['noaccess']);
+
+	if (!openBoard($b))
+		error("Could not open board!");
+
+	$dir = 'static/banners/'.$b;
+
+	if (!is_dir($dir)){
+		mkdir($dir, 0777, true);
+	}
+
+
+	if (isset($_FILES['file'])){
+		$upload = $_FILES['file']['tmp_name'];
+		$banners = array_diff(scandir($dir), array('..', '.'));
+
+		if (!is_readable($upload))
+			error($config['error']['nomove']);
+
+		$id = time() . substr(microtime(), 2, 3);
+		$extension = strtolower(mb_substr($_FILES['file']['name'], mb_strrpos($_FILES['file']['name'], '.') + 1));
+
+		if (!in_array($extension, array('jpg','jpeg','png','gif'))){
+			error('Not an image extension.');
+		}
+
+		if (filesize($upload) > 512000){
+			error('File too large!');
+		}
+
+		if (!$size = @getimagesize($upload)) {
+			error($config['error']['invalidimg']);
+		}
+
+		if ($size[0] != 300 or $size[1] != 100){
+			error('Image wrong size!');
+		}
+		if (sizeof($banners) >= 50) {
+			error('Too many banners.');
+		}
+
+		copy($upload, "$dir/$id.$extension");
+	}
+
+	if (isset($_POST['delete'])){
+		foreach ($_POST['delete'] as $i => $d){
+			if (!preg_match('/^[0-9]+\.(png|jpeg|jpg|gif)$/', $d)){
+				error('Nice try.');
+			}
+			unlink("$dir/$d");
+		}
+	}
+
+	$banners = array_diff(scandir($dir), array('..', '.'));
+	mod_page(_('Edit banners'), 'mod/settings/banners.html', array('board'=>$board,'banners'=>$banners,'token'=>make_secure_link_token('banners/'.$board['uri'])));
+
+}
+
+
+
+function mod_volunteers($b) {
+	global $board, $config, $pdo;
+	if (!hasPermission($config['mod']['edit_volunteers'], $b))
+		error($config['error']['noaccess']);
+
+	if (!openBoard($b))
+		error("Could not open board!");
+
+	if (isset($_POST['username'], $_POST['password'])) {
+		$query = prepare('SELECT * FROM ``mods`` WHERE type = 19 AND boards = :board');
+		$query->bindValue(':board', $b);
+		$query->execute() or error(db_error($query));
+		$count = $query->rowCount();
+		$query = prepare('SELECT `username` FROM ``mods``');
+		$query->execute() or error(db_error($query));
+		$volunteers = $query->fetchAll(PDO::FETCH_ASSOC);
+
+		if ($_POST['username'] == '')
+			error(sprintf($config['error']['required'], 'username'));
+		if ($_POST['password'] == '')
+			error(sprintf($config['error']['required'], 'password'));
+		if (!preg_match('/^[a-zA-Z0-9._]{1,30}$/', $_POST['username']))
+			error(_('Invalid username'));
+
+		if ($count > 20) {
+			error(_('Too many board volunteers!'));
+		}
+
+		foreach ($volunteers as $i => $v) {
+			if (strtolower($_POST['username']) == strtolower($v['username'])) {
+				error(_('Refusing to create a volunteer with the same username as an existing one.'));
+			}
+		}
+
+		$salt = generate_salt();
+		$password = hash('sha256', $salt . sha1($_POST['password']));
+		
+		$query = prepare('INSERT INTO ``mods`` VALUES (NULL, :username, :password, :salt, 19, :board, "")');
+		$query->bindValue(':username', $_POST['username']);
+		$query->bindValue(':password', $password);
+		$query->bindValue(':salt', $salt);
+		$query->bindValue(':board', $b);
+		$query->execute() or error(db_error($query));
+		
+		$userID = $pdo->lastInsertId();
+
+
+		modLog('Created a new volunteer: ' . utf8tohtml($_POST['username']) . ' <small>(#' . $userID . ')</small>');
+	}
+
+	if (isset($_POST['delete'])){
+		foreach ($_POST['delete'] as $i => $d){
+			$query = prepare('SELECT * FROM ``mods`` WHERE id = :id');
+			$query->bindValue(':id', $d);
+			$query->execute() or error(db_error($query));
+			
+			$result = $query->fetch(PDO::FETCH_ASSOC);
+
+			if (!$result) {
+				error(_('Volunteer does not exist!'));
+			}
+
+			if ($result['boards'] != $b || $result['type'] != BOARDVOLUNTEER) {
+				error($config['error']['noaccess']);
+			}
+
+			$query = prepare('DELETE FROM ``mods`` WHERE id = :id');
+			$query->bindValue(':id', $d);
+			$query->execute() or error(db_error($query));
+		}
+	}
+
+	$query = prepare('SELECT * FROM ``mods`` WHERE type = 19 AND boards = :board');
+	$query->bindValue(':board', $b);
+	$query->execute() or error(db_error($query));
+	$volunteers = $query->fetchAll(PDO::FETCH_ASSOC);
+		
+	mod_page(_('Edit volunteers'), 'mod/settings/volunteers.html', array('board'=>$board,'token'=>make_secure_link_token('volunteers/'.$board['uri']),'volunteers'=>$volunteers));
+
+}
+
+
+
+
+function mod_flags($b) {
+	global $config, $mod, $board;
+	require_once 'inc/image.php';
+	if (!hasPermission($config['mod']['edit_flags'], $b))
+		error($config['error']['noaccess']);
+
+	if (!openBoard($b))
+		error("Could not open board!");
+
+	if (file_exists("$b/flags.ser"))
+		$config['user_flags'] = unserialize(file_get_contents("$b/flags.ser"));
+
+	$dir = 'static/custom-flags/'.$b;
+	
+	if (!is_dir($dir)){
+		mkdir($dir, 0777, true);
+	}
+
+	function handle_file($id = false, $description, $b, $dir) {
+		global $config;
+
+		if (!isset($description) and $description)
+			error(_('You must enter a flag description!'));
+
+		if (strlen($description) > 255)
+			error(_('Flag description too long!'));
+
+		if ($id) {
+			$f = 'flag-'.$id;
+		} else { 
+			$f = 'file';
+			$id = time() . substr(microtime(), 2, 3);
+		}
+
+		$upload = $_FILES[$f]['tmp_name'];
+		$banners = array_diff(scandir($dir), array('..', '.'));
+
+		if (!is_readable($upload))
+			error($config['error']['nomove']);
+
+		$extension = strtolower(mb_substr($_FILES[$f]['name'], mb_strrpos($_FILES[$f]['name'], '.') + 1));
+
+		if ($extension != 'png') {
+			error(_('Flags must be in PNG format.'));
+		}
+
+		if (filesize($upload) > 48000){
+			error(_('File too large!'));
+		}
+
+		if (!$size = @getimagesize($upload)) {
+			error($config['error']['invalidimg']);
+		}
+
+		if ($size[0] > 20 or $size[0] < 11 or $size[1] > 16 or $size[1] < 11){
+			error(_('Image wrong size!'));
+		}
+		if (sizeof($banners) > 1500) {
+			error(_('Too many flags.'));
+		}
+
+		copy($upload, "$dir/$id.$extension");
+		purge("$dir/$id.$extension", true);
+		$config['user_flags'][$id] = utf8tohtml($description);
+		file_put_contents($b.'/flags.ser', serialize($config['user_flags']));
+	}
+
+	// Handle a new flag, if any.
+	if (isset($_FILES['file'])){
+		handle_file(false, $_POST['description'], $b, $dir);
+	}
+
+	// Handle edits to existing flags.
+	foreach ($_FILES as $k => $a) {
+		if (empty($_FILES[$k]['tmp_name'])) continue;
+
+		if (preg_match('/^flag-(\d+)$/', $k, $matches)) {
+			$id = (int)$matches[1];
+			if (!isset($_POST['description-'.$id])) continue;
+
+			if (isset($config['user_flags'][$id])) {
+				handle_file($id, $_POST['description-'.$id], $b, $dir);
+			}
+		}
+	}
+
+	// Description just changed, flag not edited.
+	foreach ($_POST as $k => $v) {
+		if (!preg_match('/^description-(\d+)$/', $k, $matches)) continue;
+		$id = (int)$matches[1];
+		if (!isset($_POST['description-'.$id])) continue;
+
+		$description = $_POST['description-'.$id];
+
+		if (strlen($description) > 255)
+			error(_('Flag description too long!'));
+		$config['user_flags'][$id] = utf8tohtml($description);
+		file_put_contents($b.'/flags.ser', serialize($config['user_flags']));
+	}
+
+	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+		$flags = <<<FLAGS
+<?php
+\$config['country_flags'] = false;
+\$config['country_flags_condensed'] = false;
+\$config['user_flag'] = true;
+\$config['uri_flags'] = '/static/custom-flags/$b/%s.png';
+\$config['flag_style'] = '';
+\$config['user_flags'] = unserialize(file_get_contents('$b/flags.ser'));
+FLAGS;
+
+								if ($config['cache']['enabled']) {
+												cache::delete('config_' . $b);
+												cache::delete('events_' . $b);
+		}
+
+		file_write($b.'/flags.php', $flags);
+	}
+
+
+	if (isset($_POST['delete'])){
+		foreach ($_POST['delete'] as $i => $d){
+			if (!preg_match('/^[0-9]+$/', $d)){
+				error('Nice try.');
+			}
+			unlink("$dir/$d.png");
+			$id = explode('.', $d)[0];
+			unset($config['user_flags'][$id]);
+			file_put_contents($b.'/flags.ser', serialize($config['user_flags']));
+		}
+	}
+
+	if (isset($_POST['alphabetize'])) {
+		asort($config['user_flags'], SORT_NATURAL | SORT_FLAG_CASE);
+		file_put_contents($b.'/flags.ser', serialize($config['user_flags']));
+	}
+
+	$banners = array_diff(scandir($dir), array('..', '.'));
+	mod_page(_('Edit flags'), 'mod/settings/flags.html', array('board'=>$board,'banners'=>$banners,'token'=>make_secure_link_token('banners/'.$board['uri'])));
+}
+
+
+
+
+
+// 
+
+
+
+
+
 function mod_config($board_config = false) {
 	global $config, $mod, $board;
 	
@@ -3505,7 +4758,7 @@ function delete_page_base($page = '', $board = false) {
 		@file_unlink(($board ? ($board . '/') : '') . $page . '.html');
 	}
 
-	header('Location: ?/edit_pages' . ($board ? ('/' . $board) : ''), true, $config['redirect_http']);
+	header('Location: ?/settings/edit_pages' . ($board ? ('/' . $board) : ''), true, $config['redirect_http']);
 }
 
 function mod_delete_page($page = '') {
@@ -3587,7 +4840,7 @@ function mod_edit_page($id) {
 		$content = $query->fetchColumn();
 	}
 	
-	mod_page(sprintf(_('Editing static page: %s'), $page['name']), 'mod/edit_page.html', array('page' => $page, 'token' => make_secure_link_token("edit_page/$id"), 'content' => prettify_textarea($content), 'board' => $board));
+	mod_page(sprintf(_('Editing static page: %s'), $page['name']), 'mod/settings/edit_page.html', array('page' => $page, 'token' => make_secure_link_token("settings/edit_page/$id"), 'content' => prettify_textarea($content), 'board' => $board));
 }
 
 function mod_pages($board = false) {
@@ -3641,8 +4894,22 @@ function mod_pages($board = false) {
 	}
 
 	foreach ($pages as $i => &$p) {
-		$p['delete_token'] = make_secure_link_token('edit_pages/delete/' . $p['name'] . ($board ? ('/' . $board) : ''));
+		$p['delete_token'] = make_secure_link_token('settings/edit_pages/delete/' . $p['name'] . ($board ? ('/' . $board) : ''));
 	}
 
-	mod_page(_('Pages'), 'mod/pages.html', array('pages' => $pages, 'token' => make_secure_link_token('edit_pages' . ($board ? ('/' . $board) : '')), 'board' => $board));
+	mod_page(_('Pages'), 'mod/settings/pages.html', array('pages' => $pages, 'token' => make_secure_link_token('settings/edit_pages' . ($board ? ('/' . $board) : '')), 'board' => $board));
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

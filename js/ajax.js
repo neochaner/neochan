@@ -11,136 +11,234 @@
  *   $config['additional_javascript'][] = 'js/ajax.js';
  *
  */
+var PREVENT_CLOSE_REPLY = false;
 
-+function() {
-	var settings = new script_settings('ajax');
-	var do_not_ajax = false;
+$(window).bind('load', function()
+{
+	$('#replybox_form').attr('action', 'javascript:void(null);');
+	$('#replybox_form').attr('onsubmit', 'replybox_submit(this)');
+
+
+});
+
+function strip_tags(html)
+{
+	var div = document.createElement("div");
+	div.innerHTML = html;
+	return div.innerText;
+}
+
+function replybox_submit(form) {
+
+	// save trip
+	if (form.elements['neoname']) {
+		localStorage.name = form.elements['neoname'].value.replace(/( |^)## .+$/, '');
+	}
 	
-	var setup_form = function($form) {
-		$form.submit(function() {
-			if (do_not_ajax)
-				return true;
-			var form = $(this).find('form')[0];
-			var submit_txt = $(this).find('input[type="submit"]').val();
-			if (window.FormData === undefined)
-				return true;
-			
-			var formData = new FormData(form);
-			formData.append('json_response', '1');
-			formData.append('post', submit_txt);
+	$(form).find('.reply-send-button').attr('disabled','disabled');
 
-			$(document).trigger("ajax_before_post", formData);
+	var submit_txt = $(form).find('.reply-send-button').val();
+	var formData = new FormData(form);
+	var dontResetForm = false;
 
-			var updateProgress = function(e) {
-				var percentage;
-				if (e.position === undefined) { // Firefox
-					percentage = Math.round(e.loaded * 100 / e.total);
-				}
-				else { // Chrome?
-					percentage = Math.round(e.position * 100 / e.total);
-				}
-				$(form).find('input[type="submit"]').val(_('Posting... (#%)').replace('#', percentage));
-			};
+	var btn_text = (typeof(NTUBE_STATE) !== 'undefined' && NTUBE_STATE >= 1) ? '..' : _T('Ждём') ;
 
-			$.ajax({
-				url: configRoot+'post.php',
-				type: 'POST',
-				xhr: function() {
-					var xhr = $.ajaxSettings.xhr();
-					if(xhr.upload) {
-						xhr.upload.addEventListener('progress', updateProgress, false);
-					}
-					return xhr;
-				},
-				success: function(post_response, textStatus, xhr) {
-					if (post_response.error) {
-						if (post_response.banned) {
-							// You are banned. Must post the form normally so the user can see the ban message.
-							do_not_ajax = true;
-							$(form).find('input[type="submit"]').each(function() {
-								var $replacement = $('<input type="hidden">');
-								$replacement.attr('name', $(this).attr('name'));
-								$replacement.val(submit_txt);
-								$(this)
-									.after($replacement)
-									.replaceWith($('<input type="button">').val(submit_txt));
-							});
-							$(form).submit();
-						} else {
-							alert(post_response.error);
-							$(form).find('input[type="submit"]').val(submit_txt);
-							$(form).find('input[type="submit"]').removeAttr('disabled');
+ 
 
-							if (post_response.error == 'Sorry. Tor users can\'t upload files.') {
-								$(form).find('input[name="file_url"],input[type="file"]').val('').change();
-							}
-						}
-					} else if (post_response.redirect && post_response.id) {
-						if (!$(form).find('input[name="thread"]').length
-							|| (!settings.get('always_noko_replies', true) && !post_response.noko)) {
-							document.location = post_response.redirect;
-						} else {
-							$.ajax({
-								url: document.location,
-								success: function(data) {
-									$(data).find('div.post.reply').each(function() {
-										var id = $(this).attr('id');
-										if($('#' + id).length == 0) {
-											$(this).insertAfter($('div.post:last').next()).after('<br class="clear">');
-											$(document).trigger('new_post', this);
-											// watch.js & auto-reload.js retrigger
-											setTimeout(function() { $(window).trigger("scroll"); }, 100);
-										}
-									});
-									
-									highlightReply(post_response.id);
-									window.location.hash = post_response.id;
-									$(window).scrollTop($('div.post#reply_' + post_response.id).offset().top);
-									
-									$(form).find('input[type="submit"]').val(submit_txt);
-									$(form).find('input[type="submit"]').removeAttr('disabled');
-									$(form).find('input[name="subject"],input[name="file_url"],\
-										textarea[name="body"],input[type="file"],input[name="embed"]').val('').change();
-								},
-								cache: false,
-								contentType: false,
-								processData: false
-							}, 'html');
-						}
-						$(form).find('input[type="submit"]').val(_('Posted...'));
-						$(document).trigger("ajax_after_post", post_response);
-					} else {
-						console.log(xhr);
-						alert(_('An unknown error occured when posting!'));
-						$(form).find('input[type="submit"]').val(submit_txt);
-						$(form).find('input[type="submit"]').removeAttr('disabled');
-					}
-				},
-				error: function(xhr, status, er) {
-					console.log(xhr);
-					alert(_('The server took too long to submit your post. Your post was probably still submitted. If it wasn\'t, 8chan might be experiencing issues right now -- please try your post again later. Error information: ') + "<div><textarea>" + JSON.stringify(xhr) + "</textarea></div>");
-					$(form).find('input[type="submit"]').val(submit_txt);
-					$(form).find('input[type="submit"]').removeAttr('disabled');
-				},
-				data: formData,
-				cache: false,
-				contentType: false,
-				processData: false
-			}, 'json');
-			
-			$(form).find('input[type="submit"]').val(_('Posting...'));
-			$(form).find('input[type="submit"]').attr('disabled', true);
-			
-			return false;
-		});
+	formData.append('json_response', '1');
+	formData.append('ticks', getServerTime());
+	formData.append('post', submit_txt);
+
+	$(document).trigger("ajax_before_post", formData);
+
+	var updateProgress = function(e) {
+		var percentage;
+
+		if (e.position === undefined) { // Firefox
+			percentage = Math.round(e.loaded * 100 / e.total);
+		} else { // Chrome?
+			percentage = Math.round(e.position * 100 / e.total);
+		}
+ 
+		$(form).find('.reply-send-button').val((_T(btn_text)+'... (#%)').replace('#', percentage));
+
 	};
-	$(window).on('quick-reply', function() {
-		$('div#quick-reply form').off('submit');
-		setup_form($('div#quick-reply'));
+
+	$.ajax({
+		url: configRoot + 'post.php?neo23',
+		type: 'POST',
+		xhr: function() {
+			var xhr = $.ajaxSettings.xhr();
+
+			if(xhr.upload)
+				xhr.upload.addEventListener('progress', updateProgress, false);
+
+			return xhr;
+		},
+		data: formData,
+		cache: false,
+		contentType: false,
+		processData: false,
+		dataType: 'json'
+	}).done(function(response) {
+	  
+		$(document).trigger('ajax_after_post', response);
+	 
+		if(response.l_captcha_mistype) 
+		{  
+			resetCaptcha();
+			lalert('l_captcha_mistype'); 
+			dontResetForm=true;
+		}
+		else if(response.need_antispam_check)
+			alert(response.need_antispam_check);
+		else if(response.error) 
+		{
+			dontResetForm=true;
+			response.banned ? alert(response) : alert(response.error);
+
+		} // bAnned
+		else if(response.replace_main){
+			document.getElementsByTagName('main')[0].innerHTML=response.replace_main;
+
+			$('.l_banexpires').each(function(){
+				let sec =  parseInt(this.dataset.bansec);
+				let expires = new Date();
+				expires.setSeconds(expires.getSeconds()+sec);
+
+				this.innerHTML = expires.toLocaleString();
+			});
+		}
+		else if(response.banned) {
+
+			console.log(response);
+			showBans(response.bans, response.currentTime);
+		} 
+		else if(response.redirect && response.id) 
+		{
+			if(active_page == 'index'){
+				document.location = response.redirect;
+			}
+			else if(response.template && response.creation_time)
+			{
+				autoLoadSecCurrent=0; 
+				updatePost(response, true);
+								
+			}
+			else { 
+				autoLoad(true);
+			}
+
+			resetCaptcha(false);
+			 
+		} else {
+			alert('Произошла ошибка во время отправки поста');
+		}
+ 
+
+	}).fail(function(jqXHR, textStatus, errorStatus) {
+
+		infoAlert(textStatus + " : " + errorStatus);
+
+		if(jqXHR.status == 503) // may be Cloudflare under attack mode on
+		{
+			setTimeout(window.location.reload.bind(window.location), 3000);
+		}
+
+	}).always(function() {
+ 
+
+		if(!dontResetForm)
+		{	
+			$(document).trigger('clear_post_files');
+			$(form).find('.files-container').empty();
+			$('#replybox_text').val('');
+
+			if(!PREVENT_CLOSE_REPLY)
+				$('#replybox').fadeOut(500); 
+		}
+		 
+		$(form).find('.reply-send-button').val(_T('Отправить'));
+		$(form).find('.reply-send-button').removeAttr('disabled');
+ 
+		
 	});
-	onready(function(){
-		// Enable submit button if disabled (cache problem)
-		$('input[type="submit"]').removeAttr('disabled');
-		setup_form($('div#post-form-outer'));
-	});
-}();
+
+
+}
+
+
+
+function showBans(bans, currentTime){
+	
+	let info = '<b>'+_T('Бан') +'</b>';
+
+	for(var i=0; i<bans.length; i++){
+		
+		let sec = bans[i].expires - currentTime;
+		let expires = new Date();
+		expires.setSeconds(expires.getSeconds()+sec);
+		let timestr = bans[i].expires == 0 ? _T('Бессрочно') : expires.toLocaleString();
+	
+		info = info + '<br><br>ID : ' + bans[i].id + '<br>' +
+		'Time: ' + timestr + '<br>' +
+		'Reason: ' + bans[i].reason + '<br>' ;
+		
+		
+		
+		
+		
+	}
+	
+	console.log(info);
+	alert(info);
+	
+	
+	/*
+		var expires = new Date(parseInt(response.time) * 1000);
+		var timestr = response.time == null ? _T('Бессрочно') : expires.toLocaleString();
+		var text = "<b>"+_T('Бан')+": #" + response.id + "</b><br>"+_T('Причина')+": " + strip_tags(response.reason) + "<br>"+_T('Дата окончания')+": " + timestr + "<br>";
+
+			$("#replybox").fadeOut(500);
+			alert(text);*/
+}
+
+function resetCaptcha(reset_image = true){
+
+	var text = $('.captcha_text');
+
+	if(text.length > 0){
+
+		text[0].value = '';
+		
+		if(reset_image){
+			var iframe = document.getElementById('captcha-iframe');
+			iframe.src = iframe.src;
+		}
+	}
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

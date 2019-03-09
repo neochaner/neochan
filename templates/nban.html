@@ -1,0 +1,45 @@
+
+<div class="ban">
+	
+	<h1 class='l_youarebanned'></h1>
+	
+	{% if ban.board %}
+		<h2 class='l_youarebanned_on'>/{{ ban.board }}</h2>
+	{% else %}
+		<h2 class='l_youarebanned_allboard'></h2>
+	{% endif %}
+	
+	
+	<p>
+	{% if ban.expires == 0  %}
+		<p class='l_permanent_ban'></p>
+	{% else %}
+		<p class='l_banexpires' data-bansec="{{ ban.expires - time() }}">{{ expires_data }}</p>
+	{% endif %}
+	</p>
+	
+	
+	{% if ban.reason %}
+		<p class="l_reason reason">{{ ban.reason }}</p>
+	{% endif %}
+
+	{% if config.ban_appeals==true and ban.appeal_state == 0 %}
+	<br> 
+	<form class="ban-appeal" method="post" action="/post.php">
+		<input type="hidden" name="ban_id" value="{{ ban.id }}">
+		<input type="hidden" name="board" value="{{ board.uri }}">
+		<textarea name="appeal" rows="4" cols="40"></textarea>
+		<br>
+		<input class='button' type="submit" value="Submit">
+	</form>
+	{% elseif ban.appeal_state == 1 %}
+	<p class='l_ban_appiried'></p>
+	{% elseif ban.appeal_state == 2 %}
+	<p class='l_ban_apperdenied'></p>
+	{% endif %}
+
+</div>
+
+	
+	
+	

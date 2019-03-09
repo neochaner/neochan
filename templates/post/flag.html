@@ -1,18 +1,16 @@
 {% if config.display_flags and post.modifiers.flag %}
-	<img
-		{% if config.country_flags_condensed %}
-			 class="flag flag-{{ post.modifiers.flag }}" src="{{ config.image_blank }}"
-		{% else %}
-			 class="flag" src="{% if config.root != '/' %}{{ config.root }}{% endif %}{{ config.uri_flags|sprintf(post.modifiers.flag) }}"
-		{% endif %}
-		 style="{% if post.modifiers['flag style'] %}
-				{{ post.modifiers['flag style'] }}
-			{% else %}
-				{{ config.flag_style }}
-			{% endif %}"
 
-		{% if post.modifiers['flag alt'] %} alt="{{ post.modifiers['flag alt'] | e('html_attr') }}"
-			 title="{{ post.modifiers['flag alt'] | e('html_attr') }}"
-		{% endif %}
-	>
+	{% set flag_title = post.modifiers['flag alt'] ? post.modifiers['flag alt'] | e('html_attr') : "" %}
+
+	{% if config.country_flags_condensed %}
+		<i class="flag flag-{{ post.modifiers.flag }}" title="{{ flag_title }}"
+	{% else %}
+		<img class="flag" src="{% if config.root != '/' %}{{ config.root }}{% endif %}{{ config.uri_flags|sprintf(post.modifiers.flag) }}" title="{{ flag_title }}" alt="{{ flag_title }}"
+	{% endif %}
+
+	{% if post.modifiers['flag style'] %} style="{{ post.modifiers['flag style'] }}"
+	{% elseif config.flag_style %} style="{{ config.flag_style }}"
+	{% endif %}
+
+	{% if config.country_flags_condensed %}></i>{% else %}/>{% endif %}
 {% endif %}

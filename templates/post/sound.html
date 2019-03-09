@@ -1,0 +1,17 @@
+{% if file.replace %}
+    {% set audio_full_path = file.replace %}
+{% else %}
+    {% set audio_full_path = config.uri_img ~ post.file %}
+{% endif %}
+<div class="audio-url{% if post.thumb == 'file' %} default-cover{% endif %}" data-url="{{ audio_full_path }}" data-hash="{{ post.hash }}"
+{% if post.metaArtist is defined %} data-artist="{{ post.metaArtist }}"{% endif %}
+{% if post.metaAlbum is defined %} data-album="{{ post.metaAlbum }}"{% endif %}
+{% if post.metaTitle is defined %} data-title="{{ post.metaTitle }}"{% endif %}
+{% if post.thumb != 'file' %} style="background-image: url({{ config.uri_thumb }}{{ post.thumb }})" {% endif %}
+>
+    <i class="fa fa-music" aria-hidden="true"></i>
+    <i class="fa fa-pause" aria-hidden="true"></i>
+    <i class="fa fa-play" aria-hidden="true"></i>
+</div>
+        
+

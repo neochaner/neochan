@@ -1,0 +1,63 @@
+{% set max_pages = 4 %}
+{% set cur_page = 1 %}
+
+{% for page in pages %}
+{% if page.selected == true %}
+{% set cur_page = loop.index %}
+{% endif %}
+{% endfor %}
+
+
+
+{% set start_page = cur_page - max_pages %}
+{% set end_page = cur_page + max_pages %}
+
+
+{% if start_page < 1 %}
+    {% set start_page = 1 %}
+    {% set end_page = start_page + max_pages * 2 %}
+{% endif %}
+
+{% if end_page > pages|length %}
+    {% set end_page = pages|length %}
+    {% set start_page = end_page - max_pages * 2 %}
+{% endif %}
+
+
+ 
+
+{% set page_count = pages|length %}
+
+ 
+
+<div class="board-pagination cur_page{{ cur_page }} start_page{{ start_page }} end_page{{ end_page }} prev_page{{ prev_page }} next_page{{ next_page }} page_count{{ page_count }} ">
+ 
+
+{% if start_page == 2  %}
+<a class="button board-pagination-page" href="/{{ board.uri }}/index.html"> << </a>
+{% elseif start_page > 2  %}
+<a class="button board-pagination-page" href="/{{ board.uri }}/{{ start_page - 1 }}.html"> << </a>
+{% endif %}
+
+
+{% for page in pages %}
+
+    {% if loop.index >= start_page and loop.index <= end_page %}
+
+        {% if not page.selected %}
+        <a class="button board-pagination-page" href="{{ page.link }}">{{ page.num }}</a>
+        {% else %}
+        <span class="board-pagination-page board-pagination-page_current">{{ page.num }}</span>
+        {% endif %}
+
+    {% endif %}
+
+{% endfor %}
+
+
+{% if end_page < pages|length %}
+<a class="button board-pagination-page" href="/{{ board.uri }}/{{ end_page + 1 }}.html"> >> </a>
+{% endif %}
+
+
+</div>

@@ -1,18 +1,19 @@
 <div style="text-align:center">
+	{% if lang_message %}
+	<h2 class="{{ message }}" style="margin:20px 0"></h2>
+	{% else %}
 	<h2 style="margin:20px 0">{{ message }}</h2>
-	{% if board %}
-		<p>
-			<a href="{{ config.root }}{% if mod %}{{ config.file_mod }}?/{% endif %}{{ board.dir }}{{ config.file_index }}">
-				{% trans 'Go back' %}
-			</a>
-		</p>
 	{% endif %}
+
+
+	{% if back_page_link %}
+	<p><a class="l_back_page" href="{{ back_page_link }}"></a></p>
+	{% else %}
+		{% if board %}
+			<p><a href="{{ config.root }}{% if mod %}{{ config.file_mod }}?/{% endif %}{{ board.dir }}{{ config.file_index }}">
+			{% trans 'Go back' %}
+			</a></p>
+		{% endif %}
+	{% endif %}
+
 </div>
-{% if debug and config.debug %}
-	<hr>
-	<h3>{% trans 'Error information' %}</h3>
-	<pre style="white-space:pre-wrap;font-size: 10px;">
-		{{ debug }}
-	</pre>
-	<hr>
-{%  endif %}

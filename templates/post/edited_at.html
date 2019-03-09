@@ -1,11 +1,3 @@
-<div class="post_modified">
-	{% if post.edited_at %}
-		<div class="content-status edited">{% trans 'Post last edited at' %} <em class="edited-time"><time datetime="{{ post.edited_at|date('%Y-%m-%dT%H:%M:%S') }}{{ timezone() }}">{{ post.edited_at|date(config.post_date) }}</time></em></div>
-	{% endif %}
-	{% if post.clean.clean_local == '1' %}
-		<div class="content-status clean-local">{% trans 'Board rules permit this content' %}</div>
-	{% endif %}
-	{% if post.clean.clean_global == '1' %}
-		<div class="content-status clean-global">{% trans 'Global rules permit this content' %}</div>
-	{% endif %}
-</div>
+{% if post.trip != 'VideoBot' and post.edited_at and post.edited_at != post.time %}
+<span class="l_edited" style="font-style: italic;font-size: 10px"></span>
+{% endif %}

@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+{% include 'head.html' %}
+<title>neochan</title>
+<link rel="stylesheet" href="/stylesheets/index.css?2">
+</head>
+<body>
+{% include 'header.html' %}
+<div class='site-main'>
+	<div class="site-logo">
+	  <neon class='neon'><a href="/b">
+		NEO CHAN
+	  </a></neon>
+	</div>
+
+
+	<div class='post post-large'>
+		<p>
+		Neochan - свободно модерируемое сообщество, где роль модератора выполняет создатель треда. 
+		Однако это не освобождает вас от соблюдения глобальных правил и законов той страны где вы находитесь.
+		</p>
+	</div>
+
+
+
+	<div class='statistics'>
+		<h1>Статистика</h1>
+			<div class="tbl-header">
+				<table cellpadding="0" cellspacing="0" border="0">
+					<thead>
+					<tr>
+						<th>Раздел</th>
+						<th>Описание</th>
+						<th title='Количество постов в сутки'>Скорость</th>
+						<th title='Количество уникальных постеров в сутки'>Постеров</th>
+						<th title='Количество сообщений за всё время'>Всего постов</th>
+					</tr>
+					</thead>
+				</table>
+			</div>
+
+			<div class="tbl-content">
+				<table cellpadding="0" cellspacing="0" border="0">
+					<tbody>
+						{% for board in boards %}
+						<tr data-href="{{ board.uri }}/">
+								<td><a class='table-link' href="/{{ board.uri }}">/{{ board.uri }}</a></td>
+								<td>{{ board.title }}</td>
+								<td>{{ board.post_count }}</td>
+								<td>{{ board.unical_count }}</td>
+								<td>{{ board.post_total }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+	</div>
+
+
+
+
+</div>
+	
+	
+	
+	
+	</div>
+
+
+</div>
+</body>
+
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script>
+	$('tr[data-href]').on("click", function() {
+		document.location = document.location.href + $(this).data('href');
+	});
+</script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

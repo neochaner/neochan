@@ -14,15 +14,16 @@
 	} else {
 		$boards = listBoards(TRUE, TRUE);
 	}
-	
-	$body = Element('search_form.html', Array('boards' => $boards, 'b' => isset($_GET['board']) ? $_GET['board'] : false, 'search' => isset($_GET['search']) ? str_replace('"', '&quot;', utf8tohtml($_GET['search'])) : false));
-	
+
+	$results_count = 0;
+
 	if(isset($_GET['search']) && !empty($_GET['search']) && isset($_GET['board']) && in_array($_GET['board'], $boards)) {		
 		$phrase = $_GET['search'];
 		$_body = '';
+		$identity = session::GetIdentity();
 		
 		$query = prepare("SELECT COUNT(*) FROM ``search_queries`` WHERE `ip` = :ip AND `time` > :time");
-		$query->bindValue(':ip', $_SERVER['REMOTE_ADDR']);
+		$query->bindValue(':ip', $identity);
 		$query->bindValue(':time', time() - ($queries_per_minutes[1] * 60));
 		$query->execute() or error(db_error($query));
 		if($query->fetchColumn() > $queries_per_minutes[0])
@@ -36,7 +37,7 @@
 			
 		
 		$query = prepare("INSERT INTO ``search_queries`` VALUES (:ip, :time, :query)");
-		$query->bindValue(':ip', $_SERVER['REMOTE_ADDR']);
+		$query->bindValue(':ip', $identity);
 		$query->bindValue(':time', time());
 		$query->bindValue(':query', $phrase);
 		$query->execute() or error(db_error($query));
@@ -137,27 +138,27 @@
 			} else {
 				$po = new Post($post);
 			}
-			$temp .= $po->build(true) . '<hr/>';
+			$temp .= $po->build(true);// . '<hr/>';
 		}
-		
-		if(!empty($temp))
-			$_body .= '<fieldset><legend>' .
-					sprintf(ngettext('%d result in', '%d results in', $query->rowCount()), 
-					$query->rowCount()) . ' <a href="/' .
-					sprintf($config['board_path'], $board['uri']) . $config['file_index'] .
-			'">' .
-			sprintf($config['board_abbreviation'], $board['uri']) . ' - ' . $board['title'] .
-			'</a></legend>' . $temp . '</fieldset>';
-		
-		$body .= '<hr/>';
-		if(!empty($_body))
-			$body .= $_body;
+
+		if($query->rowCount() > 0 &&!empty($temp)){
+			$body .= $temp;
+			$results_count = $query->rowCount();
+		}
 		else
 			$body .= '<p style="text-align:center" class="unimportant">('._('No results.').')</p>';
+
+		
 	}
 		
-	echo Element('page.html', Array(
+	echo Element('search_page.html', Array(
 		'config'=>$config,
-		'title'=>_('Search'),
-		'body'=>'' . $body
+		'boards' => $boards, 
+		'b' => isset($_GET['board']) ? $_GET['board'] : false, 
+		'search' => isset($_GET['search']) ? str_replace('"', '&quot;', utf8tohtml($_GET['search'])) : false,
+		'body'=> $body,
+		'results_count' => $results_count,
+		'board' => $board,
+
+
 	));

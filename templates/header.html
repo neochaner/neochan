@@ -1,62 +1,161 @@
-		<link rel="stylesheet" media="screen" href="{{ config.url_stylesheet }}">
-		{% if config.url_favicon %}<link rel="shortcut icon" href="{{ config.root }}{{ config.url_favicon }}">{% endif %}
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
-		{% if config.meta_keywords %}<meta name="keywords" content="{{ config.meta_keywords }}">{% endif %}
-		{% if config.meta_description %}<meta name="description" content="{{ config.meta_description }}">{% endif %}
-		{% if board and not board.indexed %}<meta name="robots" content="noindex" />{% endif %}
-		{% if config.default_stylesheet.1 != '' and not mod %}<link rel="stylesheet" type="text/css" id="stylesheet" href="{{ config.uri_stylesheets }}{{ config.default_stylesheet.1 }}">{% endif %}
-		{% if config.font_awesome %}<link rel="stylesheet" media="screen" href="{{ config.root }}{{ config.font_awesome_css }}">{% endif %}
-		{% if config.country_flags_condensed %}<link rel="stylesheet" href="{{ config.root }}{{ config.country_flags_condensed_css }}">{% endif %}
-		<script type="text/javascript">
-			var configRoot="{{ config.root }}";
-			var inMod = {% if mod %}true{% else %}false{% endif %};
-			var modRoot="{{ config.root }}"+(inMod ? "mod.php?/" : "");
-			var max_images={{ config.max_images }};
-			{% raw %}
-			var styles = {
-				{% endraw %}
-				{% for name, uri in config.stylesheets %}{% raw %}'{% endraw %}{{ name|addslashes }}{% raw %}' : '{% endraw %}/stylesheets/{{ uri|addslashes }}{% raw %}',
-				{% endraw %}{% endfor %}{% raw %}
-			};
-			{% endraw %}
-		</script>
-		{% if config.locale != "en" %}
-			<script type="text/javascript" src="{{ config.root }}inc/locale/{{ config.locale|split('.')[0] }}/LC_MESSAGES/javascript.js"></script>
-		{% endif %}
-		{% if not nojavascript %}
-			<script type="text/javascript" src="{{ config.url_javascript }}"></script>
-			{% if not config.additional_javascript_compile %}
-			{% for javascript in config.additional_javascript %}<script type="text/javascript" src="{{ config.additional_javascript_url }}{{ javascript }}"></script>{% endfor %}
+
+
+	
+{% if config.custom_header is defined and config.custom_header|length > 3 %}
+{% include config.custom_header %}
+{% else %}
+<header class="header">
+<a class="header-item header-logo" href="/" title="Главная"><i class="logo"></i></a>
+
+
+{% for name, uri in config.menu_pages %}
+	{% if name|slice(0, 2) == 'l_' %}
+		<a class="view-pc  header-item header-board {{ name }}" href="{{ uri }}"></a>
+	{% else %}
+		<a class="view-pc  header-item header-board" href="{{ uri }}">{{ name }}</a>
+	{% endif %}
+{% endfor %}
+
+<!-- MOBILE HEADER  -->
+<div class="view-mobile mobile-menu">
+	<select onchange="location = this.value;">
+			<option></option>
+		{% for name, uri in config.menu_pages %}
+			{% if name|slice(0, 2) == 'l_' %}
+			<option value="{{ uri }}" class="{{name}} localize"></option>
+			{% else %}
+			<option value="{{ uri }}" >{{name}}/</option>
 			{% endif %}
-		{% endif %}
-		{% if config.recaptcha %}<style type="text/css">{% raw %}
-			#recaptcha_area {
-				float: none !important;
-				padding: 0 !important;
-			}
-			#recaptcha_logo, #recaptcha_privacy {
-				display: none;
-			}
-			#recaptcha_table {
-				border: none !important;
-			}
-			#recaptcha_table tr:first-child {
-				height: auto;
-			}
-			.recaptchatable img {
-				float: none !important;
-			}
-			#recaptcha_response_field {
-				font-size: 10pt !important;
-				border: 1px solid #a9a9a9 !important;
-				padding: 1px !important;
-			}
-			td.recaptcha_image_cell {
-				background: transparent !important;
-			}
-			.recaptchatable, #recaptcha_area tr, #recaptcha_area td, #recaptcha_area th {
-				padding: 0 !important;
-			}
-		{% endraw %}</style>{% endif %}
-		{% if config.katex %}<script type="text/javascript" src="/js/mathjax/MathJax.js?config=8chanTeX"></script>{% endif %}
+		{% endfor %}
+	</select>
+</div>
+
+
+
+<div class="header-spacer"></div>
+
+<a class="header-item header-icon" id="btn-neotube" title="Кинотеатр" onclick="searchTubes()" style='display: none'><i class="fa fa-film"></i></a>
+<a class="header-item header-icon header-options-icon" title="Вход" id="btn-login"><i class="fa fa-user"></i></a>
+<a class="header-item header-icon" title="Справка" href='/faq.html'><i class="fa fa-question"></i></a>  
+<a class="header-item header-icon header-options-icon" title="Настройки" id="btn-options"><i class="fa fa-gear"></i></a>
+
+</header>
+{% endif %}
+
+
+
+<aside class="modal-container">
+
+<div id="options" class="modal" style="display: none;">
+<span class='l_option' style='font-weight: bold;'></span>
+<span  style="position: absolute;right: 20px; cursor: pointer;font-size: 13px;">
+	<a class="l_optionSave" style="padding: 0 5px;" onclick='loadSettings()'></a>
+	<a class="l_optionLoad" style="padding: 0 5px;" onclick='saveSettings()''></a>
+</span>
+<hr>
+
+
+<div class='options-tab'>
+
+<div class='options-item'>
+	<select name="language" id="language" class="option-select" style='width:95px'>
+		{% for word, name in config.sup_languages %}
+		<option value="{{ word }}">{{ name }}</option>
+		{% endfor %}
+	</select> 
+	<label class="option-label ml5 l_language" for="language" ></label>
+</div>
+
+<div class='options-item'>
+	<select name="theme" id="theme" class="option-select" style='width:95px'>
+	{% for name, uri in config.stylesheets %}
+	<option value="{{ uri|split('.')[0] }}">{{ name }}</option>
+	{% endfor %}
+	</select> 
+	<label class="option-label ml5 l_sitetheme" for="theme" ></label>
+</div>
+<br>
+
+
+</div>
+</div>
+
+
+<div id="login" class="modal" style="display: none;min-width: 218px;">
+		<span class='l_board_control'></span>
+		<hr style="margin:10px 0!important">
+		<br>
+
+		<form action="api.php" method="POST">
+			<aside style='padding-left: 28px;'>
+
+				<label for="email" class='l_login_label' style='margin: 5px;font-size: 12px;'></label>
+				<br>
+				<input class='theme-textbox' style='margin: 5px; width: 150px;' type="email" id="luser">
+				<p></p>
+		
+				<label for="password" class='l_passwd_label' style='margin: 5px;font-size: 12px;'></label>
+				<br>
+				<input class='theme-textbox' style='margin: 5px;width: 150px;' type="password" id="lpass">
+		
+			</aside>
+
+			<br>
+			<div id='login_captcha'></div>
+			<div style='text-align: center;'>
+				<div class="l_login_enter button send-button" style="text-align: center" onclick='login()'></div>
+			</div>
+			<br>
+
+			<!--
+			<br>
+			<div id='login_captcha'></div>
+			<br>
+
+			<div style='padding:20px 2px 5px;text-align: center;'>
+					<div class="l_login_enter button send-button" style="margin-right:14px" onclick='login()'></div>
+					<div class="l_login_reg button send-button" onclick='register()'></div>
+			</div>
+
+			!-->
+		</form>
+	
+</div>
+
+
+
+<div id="profile" class="modal" style="display: none; ">
+	<span id="profileName" style="font-family: system-ui;font-size: 16px;"></span>
+	<hr>
+	<br>
+
+
+	<div class="account-tabs">
+		<a href="/mod.php?/"> Панель управления</a>
+		<a href="#"> Репорты <span class="pull-right alert-numb account-reports">0</span></a>
+		<a href="/mod.php?/inbox"> Сообщения <span class="pull-right alert-numb account-messages">0</span></a>
+	</div>
+
+
+	<br>
+	<div style='padding:20px 10px 5px;'>
+			<div class="l_login_out button send-button" onclick='logOut()'></div>
+	</div>
+</div>
+
+
+</aside>
+
+
+
+
+<aside class="alerts-container">
+<div class="alerts-container-inner">
+<div id="alert" class="modal" style="display: none;"></div>
+</div>
+</aside>
+	
+<nav class="page-nav">
+	<a class="page-nav-item page-nav-top page-nav-item_active" href="#top"><i class="fa fa-chevron-up"></i></a>
+	<a class="page-nav-item page-nav-bottom page-nav-item_active" href="#footer"><i class="fa fa-chevron-down"></i></a>
+</nav>

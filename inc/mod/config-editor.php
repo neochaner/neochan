@@ -9,8 +9,8 @@ defined('TINYBOARD') or exit;
 function permission_to_edit_config_var($varname) {
 	global $config, $mod;
 
-	if (isset($config['mod']['config'][DISABLED])) {
-		foreach ($config['mod']['config'][DISABLED] as $disabled_var_name) {
+	if (isset($config['mod']['config']['DISABLED'])) {
+		foreach ($config['mod']['config']['DISABLED'] as $disabled_var_name) {
 			$disabled_var_name = explode('>', $disabled_var_name);
 			if (count($disabled_var_name) == 1)
 				$disabled_var_name = $disabled_var_name[0];

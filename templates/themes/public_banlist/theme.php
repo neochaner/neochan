@@ -1,5 +1,5 @@
 <?php
-	require 'info.php';
+include_once $config['dir']['themes'] . '/public_banlist/info.php';
 	
 	function pbanlist_build($action, $settings, $board) {
 		// Possible values for $action:

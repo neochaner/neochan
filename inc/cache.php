@@ -30,10 +30,9 @@ class Cache {
 		}
 	}
 	public static function get($key) {
-		global $config, $debug;
-		
-		$key = $config['cache']['prefix'] . $key;
-		
+		global $config;
+
+
 		$data = false;
 		switch ($config['cache']['enabled']) {
 			case 'memcached':
@@ -67,17 +66,13 @@ class Cache {
 				$data = json_decode(self::$cache->get($key), true);
 				break;
 		}
-		
-		if ($config['debug'])
-			$debug['cached'][] = $key . ($data === false ? ' (miss)' : ' (hit)');
-		
+				
 		return $data;
 	}
 	public static function set($key, $value, $expires = false) {
-		global $config, $debug;
-		
-		$key = $config['cache']['prefix'] . $key;
-		
+		global $config;
+
+
 		if (!$expires)
 			$expires = $config['cache']['timeout'];
 		
@@ -106,16 +101,11 @@ class Cache {
 			case 'php':
 				self::$cache[$key] = $value;
 				break;
-		}
-		
-		if ($config['debug'])
-			$debug['cached'][] = $key . ' (set)';
+		}	
 	}
 	public static function delete($key) {
-		global $config, $debug;
-		
-		$key = $config['cache']['prefix'] . $key;
-		
+		global $config;
+
 		switch ($config['cache']['enabled']) {
 			case 'memcached':
 			case 'redis':
@@ -124,7 +114,9 @@ class Cache {
 				self::$cache->delete($key);
 				break;
 			case 'apc':
+
 				apc_delete($key);
+
 				break;
 			case 'xcache':
 				xcache_unset($key);
@@ -137,10 +129,7 @@ class Cache {
 			case 'php':
 				unset(self::$cache[$key]);
 				break;
-		}
-		
-		if ($config['debug'])
-			$debug['cached'][] = $key . ' (deleted)';
+		}		
 	}
 	public static function flush() {
 		global $config;
@@ -169,5 +158,36 @@ class Cache {
 		
 		return false;
 	}
+
+	public static function flush_posts($boardname, $thread_id)
+	{
+		self::delete("div_megaposts_{$boardname}_{$thread_id}");
+		self::delete("div_posts_{$boardname}_{$thread_id}");
+	
+		self::delete("thread_index_{$boardname}_{$thread_id}");
+		self::delete("thread_{$boardname}_{$thread_id}");
+	
+		self::delete("last_post_id_{$boardname}");
+		self::delete("div_thread_active_{$boardname}");
+	}
+
+
+	public static function flush_board($boardname)
+	{
+		self::delete('_cachev2_' . $boardname );
+	}
+
+	public static function flush_thread($boardname, $thread_id)
+	{
+		self::delete('_cachev2_' . $boardname );
+		self::delete('_cachev2_' . $boardname . '_' . $thread_id);
+	}
+
+
+
+
+
+
+
 }
 

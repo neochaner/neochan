@@ -1,17 +1,78 @@
+
+
+
+
+
+.board-settings {
+    width: 60%;
+    min-width: 600px;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+@media (max-width: 992px) and (min-width: 320px) {
+    .board-settings{
+        min-width: auto;
+        width: 100%;
+    }
+}
+
+.s-key{
+	width:56px;
+	text-align: center;
+	padding: 4px;
+}
+
+
+.s-key select{
+	width:44px;
+}
+
+.s-key .checktainer_xs{
+	padding-right: 0px!important;
+}
+
+.s-value{
+	
+}
+
+tr:nth-child(even) {
+    background: rgba(110, 110, 110, 0.03);
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .mod-reports {
 	display: block;
 	list-style: none;
 	margin: 0;
 	padding: 0;
 }
-	.mod-report {
+.mod-report {
 		border: none;
 		border-bottom: 1px solid #B7C5D9;
 		clear: left;
 		
 		padding: 0.5em;
 	}
-	.mod-report:last-child {
+.mod-report:last-child {
 		border-bottom: none;
 	}
 
@@ -25,12 +86,12 @@
 	margin: 0;
 	padding: 0;
 }
-	.report-item {
+.report-item {
 		display: inline-block;
 		margin: 0;
 		padding: 0;
-	}
-		.report-item .report {
+}
+.report-item .report {
 			background: #D6DAF0;
 			margin: 0.2em 4px 0.2em 0;
 			padding: 0.3em 0.3em 0.5em 0.6em;

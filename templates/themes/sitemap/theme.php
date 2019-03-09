@@ -1,6 +1,6 @@
 <?php
-	require 'info.php';
-	
+include_once $config['dir']['themes'] . '/sitemap/info.php';
+
 	function sitemap_build($action, $settings, $board) {
 		global $config;
 		
@@ -22,11 +22,7 @@
 				}
 			}
 		}
-
-		if ($config['smart_build']) {
-			file_unlink($settings['path']);
-		}
-		else {		
+	
 			$boards = explode(' ', $settings['boards']);
 		
 			$threads = array();
@@ -42,5 +38,5 @@
 				'threads' => $threads,
 				'boards' => $boards,
 			)));
-		}
+		
 	}

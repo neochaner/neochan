@@ -1,101 +1,346 @@
-{% filter remove_whitespace %}
 <!doctype html>
 <html>
 <head>
-	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-	<script type='text/javascript'>
-		active_page = "catalog";
-		board_name = "{{ board }}";
-	</script>
-	{% include 'header.html' %}
-	<title>{{ board }} - Catalog</title>
+{% include 'head.html' %}
+<title>/{{ board }}/ - Catalog</title>
+<script type="text/javascript">
+var active_page = "catalog";
+var board_name="{{ board }}";
+{% if config.neotube.enable %}
+	var tube_name="{% if config.neotube.redirect %}{{ config.neotube.redirect }}{% else %}{{ board.uri }}{% endif %}";
+{% endif %}
+</script>
 </head>
-<body class="theme-catalog active-catalog">
-	{{ boardlist.top }}
-	<header>
-		<h1>{{ settings.title }} (<a href="{{link}}">/{{ board }}/</a>)</h1>
-		<div class="subtitle">{{ settings.subtitle }}</div>
-	</header>
-	{% if board.uri not in config.banned_ad_boards %}
-		{% include 'ad_top.html' %}
-	{% endif %}
 
-        <span>{% trans 'Sort by' %}: </span>
-        <select id="sort_by" style="display: inline-block">
-                <option selected value="bump:desc">{% trans 'Bump order' %}</option>
-                <option value="time:desc">{% trans 'Creation date' %}</option>
-                <option value="reply:desc">{% trans 'Reply count' %}</option>
-                <option value="random:desc">{% trans 'Random' %}</option>
-        </select>
+{% include 'header.html' %}
+<script type="text/javascript" src="/js/jquery.mixitup.min.js"></script>
  
-        <span>{% trans 'Image size' %}: </span>
-        <select id="image_size" style="display: inline-block">
-                <option value="vsmall">{% trans 'Very small' %}</option>
-                <option selected value="small">{% trans 'Small' %}</option>
-                <option value="medium">{% trans 'Medium' %}</option>
-                <option value="large">{% trans 'Large' %}</option>
-        </select>
-        <div class="threads">
-                <div id="Grid">
-                {% for post in recent_posts %}
-                        <div class="mix"
-				data-reply="{{ post.reply_count }}"
-				 data-bump="{{ post.bump }}"
-				 data-time="{{ post.time }}"
-				 data-id="{{ post.id }}"
-				 data-sticky="{% if post.sticky %}true{% else %}false{% endif %}"
-				 data-locked="{% if post.locked %}true{% else %}false{% endif %}"
-				 data-cycle="{% if post.cycle %}true{% else %}false{% endif %}"
-			>
-                                <div class="thread grid-li grid-size-small">  
-                                        <a href="{{post.link}}">  
-						{% if post.youtube %}
-							<img src="https://img.youtube.com/vi/{{ post.youtube }}/0.jpg" 
-						{% else %}
+
+<main class="main">
+<section class="board" id="threads">
+<h1 class="page-title"><a href="{{ board.url }}" style="text-decoration: none;"><span class='l_catalog'></span>:  /{{ board }}</a></h1>
+
+
+<div class="board-search" style="display:none;">
+<input class="board-search-input board-search-input_catalog" type="text" placeholder=""></input>
+<button class="board-search-button l_search"></button>
+</div>
+</nav>
+ 
+
+<div style="display: inline-block">
+<span class='l_sortby'></span>
+<select id="sort_by" style="display: inline-block">
+	<option selected value="bump:desc">Bump order</option>
+	<option value="time:desc">Creation date</option>
+	<option value="reply:desc">Reply count</option>
+	<option value="random:desc">Random</option>
+</select>
+	 
+<span class='l_sortbysize' style='padding-left: 30px;'></span>
+<select id="image_size" style="display: inline-block">
+	<option value="vsmall">"Very small"</option>
+	<option selected value="small">Small</option>
+	<option value="medium">Medium"</option>
+	<option value="large" >Large</option>
+</select>
+</div>	
+<hr>
+
+
+<body class="theme-catalog active-catalog">
+	<div class="threads">
+		<div id="Grid">
+			{% for post in recent_posts %}
+				<div class="mix"
+					data-reply="{{ post.reply_count }}"
+					data-bump="{{ post.bump }}"
+					data-time="{{ post.time }}"
+					data-id="{{ post.id }}"
+					data-sticky="{% if post.sticky %}true{% else %}false{% endif %}"
+					data-locked="{% if post.locked %}true{% else %}false{% endif %}"
+					data-cycle="{% if post.cycle %}true{% else %}false{% endif %}"
+				>
+
+					<div class="thread grid-li grid-size-small">  
+						<a href="{{post.link}}">  
 							<img src="{{post.file}}" data-fullimage="{{post.fullimage}}"
-						{% endif %}
-                                                 id="img-{{ post.id }}" data-subject="{% if post.subject %}{{ post.subject|e }}{% endif %}" data-name="{{ post.name|e }}" data-muhdifference="{{ post.muhdifference }}" class="{{post.board}} thread-image" title="{{post.bump|date('%b %d %H:%M')}}">
-                                        </a>
-                                                <div class="replies">
-                                                        <strong>R: {{ post.reply_count }} / I: {{ post.image_count }} / P: {{ (loop.index // config.threads_per_page) + 1 }} {% include 'post/mod_attributes.html' %} </strong>
-                                                        {% if post.subject %}
+							 id="img-{{ post.id }}" data-subject="{% if post.subject %}{{ post.subject|e }}{% endif %}" data-name="{{ post.name|e }}" data-muhdifference="{{ post.muhdifference }}" class="{{post.board}} thread-image" title="{{post.bump|date('%b %d %H:%M')}}">
+						</a>
+						<div class="replies">
+							<strong>R: {{ post.reply_count }} / I: {{ post.image_count }} / P: {{ (loop.index // config.threads_per_page) + 1 }} {% include 'post/mod_attributes.html' %} </strong>
+							{% if post.subject %}
 								<p class="intro">
-									<span class="subject">
-										{{ post.subject|e }}
-									</span>
+								<span class="subject">
+								{{ post.subject|e }}
+								</span>
 								</p>
 							{% else %}
 								<br />
 							{% endif %}
+						{{ post.body }}
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+			</div>
+		</div>
+		
+		<hr/>
 
-								{{ post.body }}
-                                                </div>
-                                </div>
-                        </div>
-                {% endfor %}
-                </div>
-        </div>
+		
+		<script type="text/javascript">{% raw %}
+			var styles = {
+				{% endraw %}
+				{% for name, uri in config.stylesheets %}{% raw %}'{% endraw %}{{ name|addslashes }}{% raw %}' : '{% endraw %}/stylesheets/{{ uri|addslashes }}{% raw %}',
+				{% endraw %}{% endfor %}{% raw %}
+			}; onready(init);
+		{% endraw %}</script>
 	
-	<hr/>
-	<footer>
-		<p class="unimportant" style="margin-top:20px;text-align:center;">- <a href="http://tinyboard.org/">Tinyboard</a> + 
-			<a href='https://int.vichan.net/devel/'>vichan</a> {{ config.version }} -
-		<br><a href="http://tinyboard.org/">Tinyboard</a> Copyright &copy; 2010-2014 Tinyboard Development Group    
-		<br><a href="https://int.vichan.net/devel/">vichan</a> Copyright &copy; 2012-2014 vichan-devel
-		<br><a href="https://8ch.net/8code/">infinity</a> Copyright &copy; 2013-2015 Fredrick Brennan &amp; Infinity Development Group</p>
-		{% for footer in config.footer %}<p class="unimportant" style="text-align:center;">{{ footer }}</p>{% endfor %}
-	</footer>
-	<script type="text/javascript">{% raw %}
-		var styles = {
-			{% endraw %}
-			{% for name, uri in config.stylesheets %}{% raw %}'{% endraw %}{{ name|addslashes }}{% raw %}' : '{% endraw %}/stylesheets/{{ uri|addslashes }}{% raw %}',
-			{% endraw %}{% endfor %}{% raw %}
-		}; onready(init);
-	{% endraw %}</script>
+		<script type="text/javascript">{% raw %}
+			ready();
+		{% endraw %}</script>
 
-	<script type="text/javascript">{% raw %}
-		ready();
-	{% endraw %}</script>
+{% include 'body_footer.html' %}
 </body>
+ 
+
+
+
+
+
+{% include 'footer.html' %}
+</section>
+ 
+
+<script>
+$(document).ready(function(){
+
+	var sup_languages = ['ru','en',];
+	var set_language = true;
+	var selected_language = localStorage.getItem('language');
+	var browser_language = (navigator.language || navigator.userLanguage).substr(0, 2);
+	if(browser_language == 'ua' || browser_language == 'be' ||browser_language == 'kz')
+	{browser_language='ru';}
+	
+	if(selected_language == null){selected_language = browser_language;}
+	
+	for(var i=0; i<sup_languages.length; i++){if(sup_languages[i] == selected_language)
+		{set_language = false;}}
+		
+	if(set_language){selected_language = 'en';}
+
+	var sortOptions = document.getElementById("sort_by");
+
+	if(selected_language == 'ru'){
+		sortOptions[0].text = 'Последние ответы';
+		sortOptions[1].text= 'Дата создания';
+		sortOptions[2].text= 'Кол-во ответов';
+		sortOptions[3].text= 'Случайно';
+	} else if(selected_language == 'en'){
+
+		sortOptions[0].text= 'Bump order';
+		sortOptions[1].text= 'Creation date';
+		sortOptions[2].text= 'Reply count';
+		sortOptions[3].text= 'Random';
+	}
+
+
+
+
+	var sizeOptions = document.getElementById("image_size");
+
+	if(selected_language == 'ru'){
+		sizeOptions[0].text = 'Маленький';
+		sizeOptions[1].text= 'Средний';
+		sizeOptions[2].text= 'Большой';
+		sizeOptions[3].text= 'Огромный';
+	} else if(selected_language == 'en'){
+
+		sizeOptions[0].text= 'Very small';
+		sizeOptions[1].text= 'Small';
+		sizeOptions[2].text= 'Medium';
+		sizeOptions[3].text= 'Large';
+	}
+
+
+});
+
+
+
+ $(function(){
+			if (localStorage.catalog !== undefined) {
+				var catalog = JSON.parse(localStorage.catalog);
+			} else {
+				var catalog = {};
+				localStorage.catalog = JSON.stringify(catalog);
+			}
+		
+			$("#sort_by").change(function(){
+				var value = this.value;
+				$('#Grid').mixItUp('sort', (value == "random" ? value : "sticky:desc " + value));
+				catalog.sort_by = value;
+				localStorage.catalog = JSON.stringify(catalog);
+			});
+		
+			$("#image_size").change(function(){
+				var value = this.value, old;
+				$(".grid-li").removeClass("grid-size-vsmall");
+				$(".grid-li").removeClass("grid-size-small");
+				$(".grid-li").removeClass("grid-size-medium");
+				$(".grid-li").removeClass("grid-size-large");
+				$(".grid-li").addClass("grid-size-"+value);
+				catalog.image_size = value;
+				localStorage.catalog = JSON.stringify(catalog);
+			});
+		
+			$('#Grid').mixItUp({
+				animation: {
+					enable: false
+				}
+			});
+		
+			if (catalog.sort_by !== undefined) {
+				$('#sort_by').val(catalog.sort_by).trigger('change');
+			}
+			if (catalog.image_size !== undefined) {
+				$('#image_size').val(catalog.image_size).trigger('change');
+			}
+		
+			$('div.thread').on('click', function(e) {
+				if ($(this).css('overflow-y') === 'hidden') {
+					$(this).css('overflow-y', 'auto');
+					$(this).css('width', '100%');
+				} else {
+					$(this).css('overflow-y', 'hidden');
+					$(this).css('width', 'auto');
+				}
+			});
+		});
+		
+
+</script>
+
+
+<style>
+
+	div.mix {
+	display: inline-block;
+	padding: 3px;
+} 
+
+	.theme-catalog div.thread img {
+  float: none!important;
+  margin: auto;
+  max-height: 150px;
+  max-width: 200px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.55);
+  border: 2px solid rgba(153,153,153,0);
+}
+
+.theme-catalog div.thread {
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+  font-weight: normal;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding: 2px;
+  height: 300px;
+  width: 205px;
+  overflow: hidden;
+  position: relative;
+  font-size: 11px;
+  max-height: 300px;
+  background: rgba(182, 182, 182, 0.12);
+  border: 2px solid rgba(111, 111, 111, 0.34);
+  max-height:300px;
+}
+
+.theme-catalog div.thread strong {
+  display: block;
+}
+
+.theme-catalog div.threads {
+  text-align: center;
+  margin-left: -20px;
+}
+
+.theme-catalog div.thread:hover {
+  background: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-catalog div.grid-size-vsmall img {
+  max-height: 33%;
+  max-width: 95%
+}
+
+.theme-catalog div.grid-size-vsmall {
+  min-width:90px; max-width: 90px;
+  max-height: 148px;
+}
+
+.theme-catalog div.grid-size-small img {
+  max-height: 33%;
+  max-width: 95%
+}
+
+.theme-catalog div.grid-size-small {
+  min-width:140px; max-width: 140px;
+  max-height: 192px;
+}
+
+.theme-catalog div.grid-size-medium img {
+  max-height: 33%;
+  max-width: 95%
+}
+
+.theme-catalog div.grid-size-medium {
+  min-width:200px; max-width: 200px;
+  max-height: 274px;
+}
+
+.theme-catalog div.grid-size-large img {
+  max-height: 40%;
+  max-width: 95%
+}
+
+.theme-catalog div.grid-size-large {
+  min-width: 256px; max-width: 256px;
+  max-height: 384px;
+}
+
+.theme-catalog img.thread-image {
+  height: auto;
+  max-width: 100%;
+}
+
+@media (max-width: 420px) {
+  .theme-catalog ul#Grid {
+    padding-left: 18px;
+  }
+
+  .theme-catalog div.thread {
+    width: auto;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .theme-catalog div.threads {
+    overflow: hidden;
+  }
+  div.post .body {
+    clear: both;
+  }
+}
+
+</style>
+</main>
 </html>
-{% endfilter %}
+
+
+
+
+
+

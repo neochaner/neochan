@@ -1,6 +1,6 @@
 <?php
-	require 'info.php';
-	
+	include_once $config['dir']['themes'] . '/ukko/info.php';
+
 	function ukko_build($action, $settings) {
 		global $config;
 
@@ -11,12 +11,9 @@
 			return;
 		}
 
-		if ($config['smart_build']) {
-			file_unlink($settings['uri'] . '/index.html');
-		}
-		else {
-			file_write($settings['uri'] . '/index.html', $ukko->build());
-		}
+		
+		file_write($settings['uri'] . '/index.html', $ukko->build());
+
 	}
 	
 	class ukko {
@@ -24,22 +21,24 @@
 		public function build($mod = false) {
 			global $config, $board;
 			$boards = listBoards();
-			
+
 			$body = '';
 			$overflow = array();
 			$board = array(
-				'url' => $this->settings['uri'],
+				'url' => '/' . $this->settings['uri'],
 				'name' => $this->settings['title'],
 				'title' => sprintf($this->settings['subtitle'], $this->settings['thread_limit'])
 			);
 
 			$query = '';
+			
 			foreach($boards as &$_board) {
 				if(in_array($_board['uri'], explode(' ', $this->settings['exclude'])))
 					continue;
-				$query .= sprintf("SELECT *, '%s' AS `board` FROM ``posts_%s`` WHERE `thread` IS NULL UNION ALL ", $_board['uri'], $_board['uri']);
+				$query .= sprintf("SELECT *, '%s' AS `board` FROM ``posts_%s`` WHERE `thread` IS NULL AND `deleted`=0 AND `hide`=0 UNION ALL ", $_board['uri'], $_board['uri']);
 			}
 			$query = preg_replace('/UNION ALL $/', 'ORDER BY `bump` DESC', $query);
+
 			$query = query($query) or error(db_error());
 
 			$count = 0;
@@ -56,9 +55,10 @@
 					$config['uri_thumb'] = '/'.$post['board'].'/thumb/';
 					$config['uri_img'] = '/'.$post['board'].'/src/';
 					$board['dir'] = $post['board'].'/';
+					$board['uri'] =  $post['board'];
 					$thread = new Thread($post, $mod ? '?/' : $config['root'], $mod);
 
-					$posts = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `thread` = :id ORDER BY `id` DESC LIMIT :limit", $post['board']));
+					$posts = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `thread` = :id AND `deleted`=0 AND `hide`=0 ORDER BY `id` DESC LIMIT :limit", $post['board']));
 					$posts->bindValue(':id', $post['id']);
 					$posts->bindValue(':limit', ($post['sticky'] ? $config['threads_preview_sticky'] : $config['threads_preview']), PDO::PARAM_INT);
 					$posts->execute() or error(db_error($posts));
@@ -88,8 +88,8 @@
 
 
 					$thread->posts = array_reverse($thread->posts);
-					$body .= '<h2><a href="' . $config['root'] . $post['board'] . '">/' . $post['board'] . '/</a></h2>';
-					$body .= $thread->build(true);
+					//$body .= '<h2><a href="' . $config['root'] . $post['board'] . '">/' . $post['board'] . '/</a></h2>';
+					$body .= $thread->build(true, false, true);
 				} else {
 					$page = 'index';
 					if(floor($threads[$post['board']] / $config['threads_per_page']) > 0) {
@@ -100,12 +100,12 @@
 
 				$count += 1;
 			}
-
+/*
 			$body .= '<script> var overflow = ' . json_encode($overflow) . '</script>';
 			$body .= '<script type="text/javascript" src="/'.$this->settings['uri'].'/ukko.js"></script>';
-
+*/
 			$config['default_stylesheet'] = array('Yotsuba B', $config['stylesheets']['Yotsuba B']);
-
+ 
 			return Element('index.html', array(
 				'config' => $config,
 				'board' => $board,

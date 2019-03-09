@@ -1,0 +1,40 @@
+
+@charset "utf-8";
+
+
+
+.l_option::before{
+    content:'Настройка' 
+}.l_sitetheme::before{
+    content:'Тема' 
+}.l_language::before{
+    content:'Язык' 
+}.l_relative::before{
+    content:'Относительное время' 
+}.l_nsfm::before{
+    content:'Скрывать картинки' 
+}.l_test_mode::before{
+    content:'Тестовый режим' 
+}.l_video_vol::before{
+    content:'Громкость плеера' 
+}.l_tripmask::before {
+    content: 'Маскировать трипкод';
+}.l_delHiddenPosts::before {
+    content: 'Delete hidden posts';
+}.l_notify::before {
+    content: 'Enable notifications';
+}
+
+ 
+ 
+.l_new_theread::before{
+    content:'Создать тред'
+}.l_search{
+    content:'Поиск'
+}.l_back::before{
+    content:'Назад'
+}.l_catalog::before{
+    content:'Каталог'
+}.l_reply::before{
+    content:'Ответ'
+}

@@ -1,10 +1,149 @@
 {% raw %}
+
+
+
+
+var is_test_mode = localStorage.testKey == 'true';
+var is_mobile = navigator.userAgent.match(/iPhone|iPod|iPad|Android|Opera Mini|Blackberry|PlayBook|Windows Phone|Tablet PC|Windows CE|IEMobile/i) ? true : false;
+var is_firefox = /Firefox/i.test(navigator.userAgent);
+var localTime = new Date().getTime() / 1000;
+
+	
+function getServerTime()
+{
+	return serverTime + ((new Date().getTime() / 1000) - localTime);
+}
+
+function saveSettings(){
+
+	var settings = {};
+
+	for (var key in localStorage) 
+	{
+		if(!key.startsWith('_cache') && key != 'auth' && key != 'cacheMedia' && key != 'optionNotice')
+			settings[key] = localStorage[key];
+  	}
+
+
+
+	var text = JSON.stringify(settings),
+    blob = new Blob([text], { type: 'text/plain' }),
+    anchor = document.createElement('a');
+
+	anchor.download = "settings.txt";
+	anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
+	anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
+	anchor.click();
+}
+
+function loadSettings(){
+
+
+	var str = prompt("Paste your storage data");
+
+	var obj = JSON.parse(str);
+		if (!obj) return false;
+	
+	localStorage.clear();
+		
+	for (var i in obj) {
+		  localStorage[i] = obj[i];
+	}
+	
+	document.location.reload();
+
+}
+
+function getHTMLOfSelection () 
+{
+    var range;
+    if (document.selection && document.selection.createRange) {
+      range = document.selection.createRange();
+      return range.htmlText;
+    }
+    else if (window.getSelection) {
+      var selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        range = selection.getRangeAt(0);
+        var clonedSelection = range.cloneContents();
+        var div = document.createElement('div');
+        div.appendChild(clonedSelection);
+        return div.innerHTML;
+      }
+      else {
+        return '';
+      }
+    }
+    else {
+      return '';
+    }
+}
+
+function getSelectedText(citate = false)
+{
+
+	var sel = getHTMLOfSelection();
+
+	if(sel.length > 30 && (sel.startsWith('<article') || sel.startsWith('<section')))
+	{
+		var div = $(sel);
+
+		if(div.length > 0)
+		{
+			var text = div.find('.post-message').html();
+			
+			if(text)
+				sel=text;
+		}
+	}
+
+	sel = sel.replace(new RegExp("<p>", 'g'), "");
+	sel = sel.replace(new RegExp("</p>", 'g'), "\n");
+	sel = sel.replace(new RegExp("<br>", 'g'), "");
+	sel = sel.replace(new RegExp("^", 'gm'), ">");
+	sel = sel.replace(new RegExp("<love>", 'g'), "[love]");
+	sel = sel.replace(new RegExp("</love>", 'g'), "[/love]");
+	sel = sel.replace(new RegExp("<del>", 'g'), "[spoiler]");
+	sel = sel.replace(new RegExp("</del>", 'g'), "[/spoiler]");
+
+	 
+	sel = sel.replace(new RegExp("<i class=\"s42 s42-([^\"| ]+)[^>]+><\/i>", 'g'), '::$1::');
+	sel = sel.replace(new RegExp("<a[^>]+>([^<]+)<\/a>", 'gm'), '$1');
+	sel = sel.replace(/&gt;/g, '>');
+
+ 
+	sel =sel.replace(new RegExp("<blockquote>>", 'g'), "");
+	sel =sel.replace(new RegExp("</blockquote>", 'g'), "");
+	sel =sel.replace(new RegExp("</blockquote", 'g'), "");
+	sel =sel.replace(new RegExp("<blockquote>", 'g'), "");
+
+	if(citate)
+	{
+		sel =sel.replace(new RegExp("^> \n", 'gm'), "");
+		sel =sel.replace(new RegExp("^>$", 'gm'), "");
+
+		if(sel.length > 0 && sel[sel.length-1] != '\n')
+			sel+='\n';
+	}
+
+	return sel;
+} 
+
+
+
+
+
+
+
+
 /* 
  * main.js - This file is compiled and contains code from the following scripts, concatenated together in order:
  * {% endraw %}{{ config.additional_javascript|join(', ') }}{% raw %}
  * Please see those files for licensing and authorship information.
  * Compiled on {% endraw %}{{ time()|date("%c") }}{% raw %}
  */
+
+
 
 /* gettext-compatible _ function, example of usage:
  *
@@ -76,6 +215,56 @@ var datelocale =
 		};
 
 
+
+		
+function lalert(lang, do_confirm, confirm_ok_action, confirm_cancel_action) {
+
+	var a = 'empty';
+
+	if(lang.error)
+		a = lang.error;
+	if(lang.info)
+		a = lang.info;
+	if(typeof lang === 'string')
+		a = lang;
+
+	
+	var handler, div, bg, closebtn, okbtn;
+	var close = function() {
+		handler.fadeOut(400, function() { handler.remove(); });
+		return false;
+	};
+		
+	handler = $("<div id='alert_handler'></div>").hide().appendTo('body');
+		
+	bg = $("<div id='alert_background'></div>").appendTo(handler);
+		
+	div = $("<div id='alert_div'></div>").appendTo(handler);
+	closebtn = $("<a id='alert_close' href='javascript:void(0)'><i class='fa fa-times'></i></div>")
+		.appendTo(div);
+		
+	$("<div class='"+a+"' id='alert_message'></div>").html('').appendTo(div);
+		
+	okbtn = $("<button class='button alert_button'>"+_("OK")+"</button>").appendTo(div);
+		
+	if (do_confirm) {
+		confirm_ok_action = (typeof confirm_ok_action !== "function") ? function(){} : confirm_ok_action;
+		confirm_cancel_action = (typeof confirm_cancel_action !== "function") ? function(){} : confirm_cancel_action;
+		okbtn.click(confirm_ok_action);
+		$("<button class='button alert_button' style='margin-left: 10px;'>"+_T("Отмена")+"</button>").click(confirm_cancel_action).click(close).appendTo(div);
+		bg.click(confirm_cancel_action);
+		okbtn.click(confirm_cancel_action);
+		closebtn.click(confirm_cancel_action);
+	} 
+			
+	bg.click(close);
+	okbtn.click(close);
+	closebtn.click(close);
+		
+	handler.fadeIn(400);
+}
+
+
 function alert(a, do_confirm, confirm_ok_action, confirm_cancel_action) {
 	var handler, div, bg, closebtn, okbtn;
 	var close = function() {
@@ -99,7 +288,7 @@ function alert(a, do_confirm, confirm_ok_action, confirm_cancel_action) {
 		confirm_ok_action = (typeof confirm_ok_action !== "function") ? function(){} : confirm_ok_action;
 		confirm_cancel_action = (typeof confirm_cancel_action !== "function") ? function(){} : confirm_cancel_action;
 		okbtn.click(confirm_ok_action);
-		$("<button class='button alert_button'>"+_("Cancel")+"</button>").click(confirm_cancel_action).click(close).appendTo(div);
+		$("<button class='button alert_button' style='margin-left: 10px;'>"+_T("Отмена")+"</button>").click(confirm_cancel_action).click(close).appendTo(div);
 		bg.click(confirm_cancel_action);
 		okbtn.click(confirm_cancel_action);
 		closebtn.click(confirm_cancel_action);
@@ -131,11 +320,57 @@ function get_cookie(cookie_name) {
 }
 
 function highlightReply(id, event) {
+	
+
+	if(is_mobile) {
+		return false;
+	}
+
+	$('.highlighted').removeClass('highlighted');
+	var $reply = get_reply(id);
+	var reply = $reply[0];
+
+	if($reply.length == 0)
+		return false;
+
+	$reply.addClass('highlighted');
+	$reply.addClass('post_notice');
+
+
+	setTimeout(function(){
+		$reply.removeClass('post_notice');
+	}, 3000);
+
+
+	/*
+	if (history.pushState) {
+		history.pushState(null, null, window.document.location.protocol + "//" + window.document.location.host + window.document.location.pathname + window.document.location.search + '#' + id); 
+	} else {
+		window.location.hash = id;
+	}	*/
+
+	if (active_page == 'thread' && typeof event.preventDefault != "undefined")
+		event.preventDefault();
+
+	var reply_top = reply.getBoundingClientRect().top;
+	var body_top = document.body.getBoundingClientRect().top;
+	var boardlist_height = document.getElementsByClassName('header')[0].getBoundingClientRect().height;
+
+	if(reply_top<0)
+		reply_top-=10;
+
+	var offset = (reply_top - body_top) - boardlist_height;
+
+	window.scrollTo(0, offset);
+
+
+
+/*
 	// check if external post
 	var post_list, arr, i;
 	id = id.toString();
 
-	post_list = document.querySelectorAll('a.post_no');
+	post_list = document.querySelectorAll('a.post_anchor');
 	for (i = 0, arr = []; i<post_list.length; i++) {
 		arr.push(post_list[i]);
 	}
@@ -190,9 +425,13 @@ function highlightReply(id, event) {
 
 			window.scrollTo(0, offset);
 		}
-	}
+	}*/
 	return true;
 }
+
+
+
+
 
 function generatePassword() {
 	var pass = '';
@@ -204,78 +443,128 @@ function generatePassword() {
 	return pass;
 }
 
-function dopost(form) {
-	if (form.elements['name']) {
-		localStorage.name = form.elements['name'].value.replace(/( |^)## .+$/, '');
-	}
-	if (form.elements['password']) {
-		localStorage.password = form.elements['password'].value;
-	}
-	if (form.elements['user_flag']) {
-		if (localStorage.userflags) {
-			var userflags = JSON.parse(localStorage.userflags);
-		} else {
-			localStorage.userflags = '{}';
-			userflags = {};
-		}
-		userflags[board_name] = form.elements['user_flag'].value;
-		localStorage.userflags = JSON.stringify(userflags);
-	}
-	if (form.elements['email'] && form.elements['email'].value != 'sage') {
-		localStorage.email = form.elements['email'].value;
-	}
-	
-	saved[document.location] = form.elements['body'].value;
-	sessionStorage.body = JSON.stringify(saved);
-	
-	return form.elements['body'].value != "" || form.elements['file'].value != "" || (form.elements.file_url && form.elements['file_url'].value != "");
-}
+function lastReply()
+{
+ 
 
-function citeReply(id, with_link) {
-	var textarea = document.getElementById('body');
-
-	if (!textarea) return false;
-	
-	if (document.selection) {
-		// IE
-		textarea.focus();
-		var sel = document.selection.createRange();
-		sel.text = '>>' + id + '\n';
-	} else if (textarea.selectionStart || textarea.selectionStart == '0') {
-		var start = textarea.selectionStart;
-		var end = textarea.selectionEnd;
-		textarea.value = textarea.value.substring(0, start) + '>>' + id + '\n' + textarea.value.substring(end, textarea.value.length);
+	var box = $("#replybox");
+ 
+	if(box.length == 0)
+	{
+		$("#createbox").show();
+			
+		// apply trip
+		$(".reply-subject[name=neoname]").prop('value', getModTrip());
 		
-		textarea.selectionStart += ('>>' + id).length + 1;
-		textarea.selectionEnd = textarea.selectionStart;
-	} else {
-		// ???
-		textarea.value += '>>' + id + '\n';
+		$("html, body").animate({ scrollTop: 0 }, "slow");
+		$("#createbox").fadeIn(300);
+		return;
 	}
+ 
+	var id = $('.post').length-1;
+	box.hide();
 
-	// multiline quotes
-	var select = sessionStorage.quoteClipboard;
-	if (select) {
-		select = select.split('\n');
-		select.forEach(function (str) {
-			if (str !== '') {
-				str = '>' + str + '\n';
-			} else {
-				str = '\n';
-			}
-			textarea.value += str;
-		});
-		delete sessionStorage.quoteClipboard;
-	}
+	if(id >= 0)
+	{
+		var lastReply = $('.post')[id].id;
+		var div = $('#'+lastReply);
 
-	if (typeof $ != 'undefined') {
-		$(window).trigger('cite', [id, with_link]);
-		$(textarea).change();
+		box.insertAfter(div);
+
+		box.fadeIn(200);
+		$('html').animate({ scrollTop: box.offset().top - ((window.innerHeight/2)-120)}, 200);
 	}
-	return false;
+	else
+	{
+		box.fadeIn(200);
+	}
+ 
+    document.getElementById('replybox_text').focus();
+
 }
 
-function rememberStuff() {
+function getModTrip()
+{
+
+	var curTrip = localStorage.getItem('name');
+
+	if(curTrip === null || curTrip.length < 1)
+	{
+	
+		var text = "";
+		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	
+		for (var i = 0; i < 5; )
+		{
+			var c1 = Math.random();
+			var c2 = new Date().getTime();
+			var c3 = c1 * c2;
+			var c4 = c3.toString().substr(3, 2);
+			var c5 = parseInt(c4);
+ 
+			if(c5 < possible.length)
+			{
+				text += possible.charAt(c5);
+				i++;
+			}
+
+		}
+	
+		return  '##mod' + text;
+	}
+
+	return curTrip;
+}
+
+
+ 
+function cite(event)
+{
+
+	var post = event.target.closest('.post');
+
+	if($("#replybox").length == 0)
+	{
+		window.location.href = '/' + post.dataset.board +  '/res/' + post.dataset.thread + '.html#'+post.dataset.post;
+		return;
+	}
+ 
+
+	if(active_page == 'mega')
+	{
+		$( "input[name$='board']" ).val( post.dataset.board );
+		$( "input[name$='thread']" ).val( post.dataset.thread );
+	} 
+ 
+	$("#replybox").hide();
+
+
+	var pasteText  = '>>' + post.dataset.post + '\n' + getSelectedText(true);
+
+	$("#replybox").insertAfter(post);
+
+	AddTag(pasteText, '', 'replybox_text');
+
+	if(is_mobile)
+	{
+		$("#replybox").show();  
+
+	}
+	else
+	{ 
+		$("#replybox").fadeIn(200);
+	}
+
+	// эту анимацию наверно нужно тоже отключить в мобильной версии
+	$('html').animate({ scrollTop: $("#replybox").offset().top - ((window.innerHeight/2)-120)}, 200);
+	
+	document.getElementById('replybox_text').focus();
+	
+
+}
+
+function rememberStuff() 
+{
 	if (document.forms.post) {
 		if (document.forms.post.password) {
 			if (!localStorage.password)
@@ -283,17 +572,11 @@ function rememberStuff() {
 			document.forms.post.password.value = localStorage.password;
 		}
 		
-		if (localStorage.name && document.forms.post.elements['name'])
-			document.forms.post.elements['name'].value = localStorage.name;
-		if (localStorage.email && document.forms.post.elements['email'])
-			document.forms.post.elements['email'].value = localStorage.email;
+
 		if (localStorage.userflags && document.forms.post.elements['user_flag']) {
 			var userflags = JSON.parse(localStorage.userflags);
 			document.forms.post.elements['user_flag'].value = userflags[board_name];
 		}
-		
-		if (window.location.hash.indexOf('q') == 1)
-			citeReply(window.location.hash.substring(2), true);
 		
 		if (sessionStorage.body) {
 			var saved = JSON.parse(sessionStorage.body);
@@ -389,9 +672,6 @@ if (typeof active_page === "undefined") {
 	active_page = "page";
 }
 
-{% if config.google_analytics %}{% raw %}
-
-var _gaq = _gaq || [];_gaq.push(['_setAccount', '{% endraw %}{{ config.google_analytics }}{% raw %}']);{% endraw %}{% if config.google_analytics_domain %}{% raw %}_gaq.push(['_setDomainName', '{% endraw %}{{ config.google_analytics_domain }}{% raw %}']){% endraw %}{% endif %}{% if not config.google_analytics_domain %}{% raw %}_gaq.push(['_setDomainName', 'none']){% endraw %}{% endif %}{% raw %};_gaq.push(['_trackPageview']);(function() {var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();{% endraw %}{% endif %}
 
 {% if config.statcounter_project and config.statcounter_security %}
 var sc = document.createElement('script');
@@ -400,4 +680,5 @@ sc.innerHTML = 'var sc_project={{ config.statcounter_project }};var sc_invisible
 var s = document.getElementsByTagName('script')[0];
 s.parentNode.insertBefore(sc, s);
 {% endif %}
+
 

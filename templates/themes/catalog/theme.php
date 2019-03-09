@@ -1,5 +1,5 @@
 <?php
-	require 'info.php';
+include_once $config['dir']['themes'] . '/catalog/info.php';
 	
 	function catalog_build($action, $settings, $board) {
 		global $config;
@@ -20,25 +20,13 @@
 		if ($action == 'all') {
 			foreach ($boards as $board) {
 				$b = new Catalog();
-
-				if ($config['smart_build']) {
-					file_unlink($config['dir']['home'] . $board . '/catalog.html');
-				}
-				else {
-					$b->build($settings, $board);
-				}
+				$b->build($settings, $board);
 
 				if (php_sapi_name() === "cli") echo "Rebuilding $board catalog...\n";
 			}
 		} elseif ($action == 'post-thread' || ($settings['update_on_posts'] && $action == 'post') || ($settings['update_on_posts'] && $action == 'post-delete') && (in_array($board, $boards) | $settings['all'])) {
 			$b = new Catalog();
-
-			if ($config['smart_build']) {
-				file_unlink($config['dir']['home'] . $board . '/catalog.html');
-			}
-			else {
-				$b->build($settings, $board);
-			}
+			$b->build($settings, $board);
 		}
 	}
 	
@@ -57,8 +45,8 @@
 			$recent_posts = array();
 			$stats = array();
 			
-                        $query = query(sprintf("SELECT *, `id` AS `thread_id`,
-				(SELECT COUNT(`id`) FROM ``posts_%s`` WHERE `thread` = `thread_id`) AS `reply_count`,
+            $query = query(sprintf("SELECT *, `id` AS `thread_id`,
+				(SELECT COUNT(`id`) FROM ``posts_%s`` WHERE `thread` = `thread_id` AND `deleted` = 0) AS `reply_count`,
 				(SELECT SUM(`num_files`) FROM ``posts_%s`` WHERE `thread` = `thread_id` AND `num_files` IS NOT NULL) AS `image_count`,
 				'%s' AS `board` FROM ``posts_%s`` WHERE `thread`  IS NULL ORDER BY `sticky` DESC, `bump` DESC",
 			$board_name, $board_name, $board_name, $board_name, $board_name)) or error(db_error());

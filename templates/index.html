@@ -1,104 +1,82 @@
 <!doctype html>
 <html>
 <head>
-	<meta charset="utf-8">
-
-        <script type="text/javascript">
+{% include 'head.html' %}
+<title>/{{ board.uri }}/ - {{ board.subtitle }}</title>
+<script type="text/javascript">
 	{% if not no_post_form %}
 		var active_page = "index";
 	{% else %}
 		var active_page = "ukko";
 	{% endif %}
 		var board_name="{{ board.uri }}";
-        </script>
 
-	{% include 'header.html' %}
-	<title>{{ board.url }} - {{ board.title|e }}</title>
+	{% if config.neotube.enable %}
+		var tube_name="{% if config.neotube.redirect %}{{ config.neotube.redirect }}{% else %}{{ board.uri }}{% endif %}";
+	{% endif %}
+	</script>
+{% if config.url_favicon %}<link rel="shortcut icon" href="{{ config.root }}{{ config.url_favicon }}">{% endif %}
 </head>
-<body class="8chan {% if mod %}is-moderator{% else %}is-not-moderator{% endif %} active-{% if not no_post_form %}index{% else %}ukko{% endif %}" data-stylesheet="{% if config.default_stylesheet.1 != '' and not mod %}{{ config.default_stylesheet.1 }}{% else %}default{% endif %}">
-	{{ boardlist.top }}
+<body> 
+{% include 'header.html' %}
+  
+
+<main class="main">
+<section class="board" id="threads">
+<h1 class="page-title"><a href="{{ board.url }}" style="text-decoration: none;">{{ board.title|e }}</a></h1>
+{% if config.global_message %}
+<div class="page-news">{{ config.global_message }}</div>
+{% endif %}
+<br>
+
+{% if not no_post_form %}
+<input id="njs_createbox" type="checkbox" style="display: none">  
+<aside class="reply-container reply-container_board" id='createbox'>
+	<br>
+	{% include 'post_form_new_thread.html' %}
+	<br>
+</aside>
+
+
+<nav>
+	<label for="njs_createbox" class="button mr5 l_new_theread" onclick='lastReply()'></label>
+	<a class="button mr5 l_catalog" href='catalog.html'></a>
+
+	{% include 'pagination.html' %}
 	
-	{% if pm %}<div class="top_notice">You have <a href="?/PM/{{ pm.id }}">an unread PM</a>{% if pm.waiting > 0 %}, plus {{ pm.waiting }} more waiting{% endif %}.</div><hr />{% endif %}
-	{% if config.url_banner %}<img class="board_image" src="{{ config.url_banner }}/random/{{ board.uri|url_encode }}" {% if config.banner_width or config.banner_height %}style="{% if config.banner_width %}width:{{ config.banner_width }}px{% endif %};{% if config.banner_width %}height:{{ config.banner_height }}px{% endif %}" {% endif %}alt="" />{% endif %}
+<div class="board-search" style="display:none;">
+<input class="board-search-input board-search-input_catalog" type="text" placeholder=""></input>
+<button class="board-search-button l_search"></button>
+</div>
+</nav>
+{% endif %}
+
+
+
+<hr>
+
+<section class="threads-container" id="index-thread-container">
+{{ body }}
+</section>
+
+
+
+
+
+{% if not no_post_form %}
+<nav>
+	<a class="button mr5 l_new_theread" onclick='lastReply()'></a>
+	<a class="button mr5 l_catalog"></a>
 	
-	<header>
-		<h1>{{ board.url }} - {{ board.title|e }}</h1>
-		<div class="subtitle">
-			{% if board.subtitle %}
-				{% if config.allow_subtitle_html %}
-					{{ board.subtitle }}
-				{% else %}
-					{{ board.subtitle|e }}
-				{% endif %}
-			{% endif %}
-			{% if mod %}<p><a href="?/">{% trans %}Return to dashboard{% endtrans %}</a></p>{% endif %}
-			<p><a href="{{ config.root }}{{ board.dir }}{{ config.catalog_link }}">{% trans %}Catalog{% endtrans %}</a></p>
-		</div>
-	</header>
+	{% include 'pagination.html' %}	
+</div>
+</nav>
+{% endif %}
 
-	{% include 'attention_bar.html' %}
 
-	{% if config.announcement %}
-		{{ config.announcement }}
-	{% endif %}
-
-	{% include 'ad_top.html' %}
-
-	{% if not no_post_form %}
-		{% include 'post_form.html' %}
-	{% else %}
-		{% include 'boardlist.html' %}
-	{% endif %}
-
-	{% if config.page_nav_top %}
-		<div class="pages top">
-			{% for page in pages %}
-			 [<a {% if page.selected %}class="selected"{% endif %}{% if not page.selected %}href="{{ page.link }}"{% endif %}>{{ page.num }}</a>]{% if loop.last %} {% endif %}
-			{% endfor %}
-			{{ btn.next }}
-		</div>
-	{% endif %}
-	
-	{% if config.global_message %}<hr /><div class="blotter">{{ config.global_message }}</div>{% endif %}
-	<hr />
-	<form name="postcontrols" action="{{ config.post_url }}" method="post">
-	<input type="hidden" name="board" value="{{ board.uri }}" />
-	{% if mod %}<input type="hidden" name="mod" value="1" />{% endif %}
-	{{ body }}
-	{% include 'report_delete.html' %}
-	</form>
-	
-	<div class="pages">
-		{{ btn.prev }} {% for page in pages %}
-		 [<a {% if page.selected %}class="selected"{% endif %}{% if not page.selected %}href="{{ page.link }}"{% endif %}>{{ page.num }}</a>]{% if loop.last %} {% endif %}
-		{% endfor %} {{ btn.next }}
-		{% if config.catalog_link %}
-			 | <a href="{{ config.root }}{{ board.dir }}{{ config.catalog_link }}">Catalog</a>
-		{% endif %}
-	</div>
-	
-	{{ boardlist.bottom }}
-
-	{% if board.uri not in config.banned_ad_boards %}
-		{% include 'ad_bottom.html' %}
-	{% endif %}
-
-	{% if board.uri %}
-		<div id="8ch-bottom"></div>
-	{% endif %}
-
-	<footer>
-		<p class="unimportant" style="margin-top:20px;text-align:center;">- <a href="http://tinyboard.org/">Tinyboard</a> + 
-			<a href='https://int.vichan.net/devel/'>vichan</a> {{ config.version }} -
-		<br><a href="http://tinyboard.org/">Tinyboard</a> Copyright &copy; 2010-2014 Tinyboard Development Group
-		<br><a href="https://int.vichan.net/devel/">vichan</a> Copyright &copy; 2012-2014 vichan-devel
-		<br><a href="https://8ch.net/8code/">infinity</a> Copyright &copy; 2013-2015 Fredrick Brennan &amp; Infinity Development Group</p>
-
-		{% for footer in config.footer %}<p class="unimportant" style="text-align:center;">{{ footer }}</p>{% endfor %}
-	</footer>
-
-	<script type="text/javascript">{% raw %}
-		onready(init); ready();
-	{% endraw %}</script>
+{% include 'footer.html' %}
+</section>
+</main>
+{% include 'body_footer.html' %}
 </body>
 </html>

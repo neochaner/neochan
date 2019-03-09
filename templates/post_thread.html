@@ -1,70 +1,113 @@
+{% if post.subject|trim|length < 1 %}
+{% if post.body|striptags|length > 21 %}
+{% set post_subject = post.body|slice(0,20)|striptags ~ '...' %}
+{% else %}
+{% set post_subject = post.body|striptags %}
+{% endif %}
+{% else %}
+{% set post_subject = post.subject %}
+{% endif %}
+{% set thread_trip = post.trip %}
+
+
 {% filter remove_whitespace %}
 {# tabs and new lines will be ignored #}
+<article class="thread thread_index"  id="thread_{{ post.id }}"  data-board="{{ board.uri }}" data-thread="{{ post.id }}">
+<article class="post post_op post_{{ board.uri }}_{{ post.id }}_{{ post.id }} {% if post.files %} post_file{% endif %}{% if post.num_files > 1 %} post_files{% endif %}" id="post{{ post.id }}" data-board="{{ board.uri }}" data-thread={{ post.id }} data-post={{ post.id }}>
+<header class="post-header">
+	{% if isukko == true %}<h3 class="post-header-item post-subject"><a href="/{{ post.board }}/">/{{ post.board }}</a></h3>{% endif %}
+	{% if not index %}<a id="{{ post.id }}" name="{{ post.id }}" class="post_anchor"></a>{% endif %}
+	<a class="post-header-item post-id" href="{{ post.link }}">#{{ post.id }}</a>
+	<h3 class="post-header-item post-subject"><a href="/{{ board.uri }}/res/{{ post.id }}.html">{{ post_subject }}</a></h3>
+	{% if post.trip %}<span class="post-trip" style='vertical-align:unset'>{{ post.trip }}</span>{% endif %}
+	<time class="post-header-item post-time" unixtime={{ post.time }} edit='{% if post.edited_at %}{{ post.edited_at }}{% else %}{{ post.time }}{% endif %}' datetime="{{ post.time|date('%Y-%m-%dT%H:%M:%S') }}{{ timezone() }}" onclick="hideReply({{ post.id }})">{{ post.time|date(config.post_date) }}</time>
+</header>
 
-<div class="thread" id="thread_{{ post.id }}" data-board="{{ board.uri }}">
-{% if not index %}<a id="{{ post.id }}" class="post_anchor"></a>{% endif %}
+<section class="post-body">
+	{% set is_thread = true %}
+	{% if post.files %}
+	{% include 'post/fileinfo.html' %} 
+	{% endif %}
+	{% set is_thread = false %}
+<blockquote class="post-message">{{ post.body }}{% include 'post/poll.html' %}</blockquote>
+{% include 'post/edited_at.html' %}
+</section>
 
-{% include 'post/fileinfo.html' %}
-<div class="post op{% if post.files %} has-file{% endif %}{% if post.body_nomarkup %} body-not-empty{% endif %}" id="op_{{ post.id }}" {%if post.num_files > 1%}style='clear:both'{%endif%}><p class="intro">
-	<input type="checkbox" class="delete" name="delete_{{ post.id }}" id="delete_{{ post.id }}" />
-	<label for="delete_{{ post.id }}">
-		{% include 'post/subject.html' %}
-		{% include 'post/name.html' %}
-		{% include 'post/ip.html' %}
-		{% include 'post/flag.html' %}
-		{% include 'post/time.html' %}
-	</label>
-	{% include 'post/poster_id.html' %}&nbsp;
-	<a class="post_no" id="post_no_{{ post.id }}" onclick="highlightReply({{ post.id }})" href="{% if isnoko50 %}{{ post.link('', config.file_page50) }}{% else %}{{ post.link }}{% endif %}">No.</a>
-	<a class="post_no" onclick="citeReply({{ post.id }})" href="{% if isnoko50 %}{{ post.link('q', config.file_page50) }}{% else %}{{ post.link('q') }}{% endif %}">{{ post.id }}</a>
-	{% include 'post/mod_attributes.html' %}
-	{% if index %}
-		<a href="{{ post.root }}{{ board.dir }}{{ config.dir.res }}{{ config.file_page|sprintf(post.id) }}">[{% trans %}Reply{% endtrans %}]</a>
-	{% endif %}
-	{% if isnoko50 %}
-		<a href="{{ post.root }}{{ board.dir }}{{ config.dir.res }}{{ config.file_page|sprintf(post.id) }}">[{% trans %}View All{% endtrans %}]</a>
-	{% endif %}
-	{% if hasnoko50 and not isnoko50 %}
-		{% set lastcount = config.noko50_count %}
-		<a href="{{ post.root }}{{ board.dir }}{{ config.dir.res }}{{ config.file_page50|sprintf(post.id) }}">[{% trans %}Last 1 Post{% plural lastcount %}Last {{ count }} Posts{% endtrans %}]</a>
-	{% endif %}
-	{% include 'post/post_controls.html' %}
-	</p>
-	<div class="body">
-		{% endfilter %}{% if index %}{{ post.body|truncate_body(post.link) }}{% else %}{{ post.body }}{% endif %}{% filter remove_whitespace %}
-		{% if post.modifiers['ban message'] %}
-			{{ config.mod.ban_message|sprintf(post.modifiers['ban message']) }}
-		{% endif %}
-	</div>
-	{% if post.omitted or post.omitted_images %}
-		<span class="omitted">
-			{% if post.omitted %}
-				{% trans %}
-					1 post
-				{% plural post.omitted %}
-					{{ count }} posts
-				{% endtrans %}
-				{% if post.omitted_images %}
-					 {% trans %}and{% endtrans %} 
-				{% endif %}
-			{% endif %}
-			{% if post.omitted_images %}
-				{% trans %}
-					1 image reply
-				{% plural post.omitted_images %}
-					{{ count }} image replies
-				{% endtrans %}
-			{% endif %} {% trans %}omitted. Click reply to view.{% endtrans %}
-		</span>
-	{% endif %}
-	{% include 'post/edited_at.html' %}
-{% if not index %}
+<footer class="post-footer">
+<div class="post-controls" {% if index %} style='display: none;'{% endif %}>
+	<a class="control post-control post-ban-control"><i class="fa fa-gavel"></i></a>
+	<a class="control post-control post-quote-control" onclick="cite(event)"><i class="fa fa-reply"></i></a>
+	<a class="control post-control" id="toggle-neotube" title="Кинотеатр" onclick="toggleNeoTube()" style='display: none'><i class="fa fa-film"></i></a>
+</div>
+
+<div class="post-backlinks" {% if index %} style='display: none;'{% endif %}>
+{% if post.backlinks is defined %}
+{% for b_id in post.backlinks %}
+<a class="post-link" data-id='{{ b_id }}' onclick="highlightReply({{ b_id }}, event);" href="#{{ b_id }}">&gt;&gt;{{ b_id }}</a>
+{% endfor %}
 {% endif %}
-</div>{% endfilter %}
+</div>
+</footer>
+
+
+
+</article>
+<div class="omit">
+{% if post.omitted %}
+<div class="omit-info" data-posts='{{ post.omitted }}' data-files='{{ post.omitted_images }}'></div>
+{% endif %}
+{% if index %}
+<a class="omit-link l_view_thread" href="/{{ board.uri }}/res/{{ post.id }}.html"></a>
+{% endif %}
+</div>
+
+{% endfilter %}
 {% set hr = post.hr %}
 {% for post in post.posts %}
 	{% include 'post_reply.html' %}
 {% endfor %}
-<br class="clear"/>
-</div>
-{% if hr %}<hr/>{% endif %}
+</article>
+<hr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

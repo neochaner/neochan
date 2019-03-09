@@ -1,5 +1,5 @@
 {% for ban in ban_appeals %}
-
+{% if mod.type!="25" or ban.board==false %}
 <form action="" method="post" style="margin: 10px 0">
 	<input type="hidden" name="token" value="{{ token }}">
 	<table style="margin: 5px 0">
@@ -16,12 +16,12 @@
 		{% if mod|hasPermission(config.mod.show_ip, board.uri) %}
 			<tr>
 				<th>{% trans 'IP' %}</th>
-				<td>{{ ban.mask }}</td>
+				<td>{{ ban.ident }}</td>
 			</tr>
 		{% elseif mod|hasPermission(config.mod.show_ip_less, board.uri) %}
 			<tr>
 				<th>{% trans 'IP' %}</th>
-				<td>{{ ban.mask|less_ip(ban.board) }}</td>
+				<td>{{ ban.ident|less_ip(ban.board) }}</td>
 			</tr>
 		{% endif %}
 		<tr>
@@ -71,8 +71,8 @@
 		<tr>
 			<th>{% trans 'Staff' %}</th>
 			<td>
-				{% if ban.username %}
-					{{ ban.username|e }}
+				{% if ban.creator %}
+					{{ ban.creator|e }}
 				{% else %}
 					<em>{% trans 'deleted?' %}</em>
 				{% endif %}
@@ -83,11 +83,11 @@
 	<table style="margin: 10px 0">
 		<tr>
 			<th>{% trans 'Appeal time' %}</th>
-			<td>{{ ban.time|date(config.post_date) }}</td>
+			<td>{{ ban.appeal_time|date(config.post_date) }}</td>
 		</tr>
 		<tr>
 			<th>{% trans 'Appeal reason' %}</th>
-			<td>{{ ban.message|e }}</td>
+			<td>{{ ban.appeal_text|e }}</td>
 		</tr>
 		{% if mod|hasPermission(config.mod.ban_appeals, board.uri) %}
 			<tr>
@@ -108,5 +108,5 @@
 	{% endif %}
 </form>
 <hr>
-
+{% endif %}
 {% endfor %}

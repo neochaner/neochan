@@ -1,0 +1,120 @@
+{%set npref = 'neo23' %}
+{%set style_time = filemtime('stylesheets/light.css')%}
+{%set all_time = filemtime('stylesheets/all.css')%}
+{%set url_javascript_time = filemtime(config.url_javascript)%}
+
+<meta charset="utf-8"> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+{% if config.meta_keywords %}<meta name="keywords" content="{{ config.meta_keywords }}">{% endif %}
+{% if config.meta_description %}<meta name="description" content="{{ config.meta_description }}">{% endif %}
+{% if board and not board.indexed %}<meta name="robots" content="noindex" />{% endif %}
+
+
+{% if config.url_favicon %}<link rel="shortcut icon" href="{{ config.root }}{{ config.url_favicon }}">{% endif %}
+
+<!-- CSS  -->
+
+  
+{% if config.country_flags_condensed %}<link rel="stylesheet" href="{{ config.root }}{{ config.country_flags_condensed_css }}">{% endif %}
+
+
+
+
+
+<!-- JS  -->
+<script type="text/javascript" src="/timejs.php?id=1"></script>
+
+
+
+<script type="text/javascript">
+	var config = { max_images : {{ config.max_images }}, test : 0} ;
+	var style_time = '{{ npref }}{{ style_time }}';
+	var all_time = '{{ npref }}{{ all_time }}';
+	var theme = localStorage.getItem('theme-css');
+	var neotube = {% if config.neotube.enable %}true;{% else %}false;{% endif %}
+	var lang = navigator.language || navigator.userLanguage;
+
+
+	{% raw %}
+	var sup_languages = [
+		{% endraw %}
+		{% for word, name in config.sup_languages %}{% raw %}'{% endraw %}{{ word }}{% raw %}',
+		{% endraw %}{% endfor %}{% raw %}
+	];
+	{% endraw %}
+
+
+	var set_language = true;
+	var selected_language = localStorage.getItem('language');
+	var browser_language = (navigator.language || navigator.userLanguage).substr(0, 2);
+
+	if(browser_language == 'ua' || browser_language == 'be' ||browser_language == 'kz')
+	{
+		browser_language='ru';
+	}
+
+	if(selected_language == null){
+		selected_language = browser_language;
+	}
+
+	for(var i=0; i<sup_languages.length; i++){
+		if(sup_languages[i] == selected_language){
+			set_language = false;
+		}
+	}
+
+	if(set_language){
+		selected_language = 'en';
+	}
+
+
+	var css_theme 	 = "<link rel='stylesheet' id='theme-css' type='text/css' href='/stylesheets/"+ (theme === null ? "light_blue" : theme) +".css?" + style_time + "'>";
+	var css_language = "<link rel='stylesheet' id='language-css' type='text/css' href='/stylesheets/lang/"+ selected_language +".css?" + style_time + "'>";
+
+	document.write(css_theme);
+	document.write(css_language);
+	document.close();
+
+	var configRoot="{{ config.root }}";
+	var inMod = {% if mod %}true{% else %}false{% endif %};
+	var modRoot="{{ config.root }}"+(inMod ? "mod.php?/" : "");
+	var max_images={{ config.max_images }};
+	var allow_watch_deleted = {% if config.allow_watch_deleted %}true{% else %}false{% endif %};
+
+	
+	{% raw %}
+	var styles = {
+		{% endraw %}
+		{% for name, uri in config.stylesheets %}{% raw %}'{% endraw %}{{ name|addslashes }}{% raw %}' : '{% endraw %}/stylesheets/{{ uri|addslashes }}{% raw %}',
+		{% endraw %}{% endfor %}{% raw %}
+	};
+	{% endraw %}
+
+
+ 
+	
+</script> 
+
+
+<link rel="stylesheet" id="overall_theme" type="text/css" href='/stylesheets/all.css?{{ all_time }}'>
+<noscript>
+<link rel="stylesheet" href="/stylesheets/light_blue.css?{{ style_time }}">
+<link rel='stylesheet' id='language-css' type='text/css' href='/stylesheets/lang/en.css'>
+</noscript>
+
+
+
+ 
+
+{% if not nojavascript %}
+	<script type="text/javascript" src="{{ config.url_javascript }}?{{ npref }}{{ url_javascript_time }}"></script>
+	{% if not config.additional_javascript_compile %}
+	{% for javascript in config.additional_javascript %}<script type="text/javascript" src="{{ config.additional_javascript_url }}{{ javascript }}"></script>{% endfor %}
+	{% endif %}
+       {% if config.emoji_enable %}
+            <script type="text/javascript" src="/{{ config.additional_javascript.emoji }}"></script>
+       {% endif %}
+{% endif %}
+{% if config.katex %}<script type="text/javascript" src="/js/mathjax/MathJax.js?config=8chanTeX"></script>{% endif %}
+

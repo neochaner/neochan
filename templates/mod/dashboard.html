@@ -1,11 +1,11 @@
 <!-- Messages -->
 <fieldset class="mod-dash mod-dash-set mod-dash-messages">
-	<legend>{% trans 'Messages' %}</legend>
+	<legend>{% trans("Messages") %}</legend>
 	<ul>
 		{% if mod|hasPermission(config.mod.noticeboard) %}
-			{% if noticeboard|count > 0 %}
+			{% if noticeboard and noticeboard|length > 0 %}
 				<li>
-					{% trans 'Noticeboard' %}:
+					{% trans("Noticeboard") %}:
 					<ul>
 						{% for post in noticeboard %}
 							<li>
@@ -13,7 +13,7 @@
 									{% if post.subject %}
 										{{ post.subject|e }}
 									{% else %}
-										<em>{% trans 'no subject' %}</em>
+										<em>{% trans("no subject") %}</em>
 									{% endif %}
 								</a> 
 								<small class="unimportant">
@@ -31,12 +31,12 @@
 					</ul>
 				</li>
 			{% endif %}
-			<li><a href="?/noticeboard">{% trans 'View all noticeboard entries' %}</a></li>
+			<li><a href="?/noticeboard">{% trans("View all noticeboard entries") %}</a></li>
 		{% endif %}
 		<li>
 			<a href="?/inbox">
-				{% trans 'PM inbox' %} 
-				{% if unread_pms > 0 %}<strong>{%endif %}({{ unread_pms }} unread){% if unread_pms > 0 %}</strong>{%endif %}
+				{% trans("PM inbox") %} 
+				{% if unread_pms > 0 %}<strong>{%endif %}({{ unread_pms }} {% trans("unread") %}){% if unread_pms > 0 %}</strong>{%endif %}
 			</a>
 		</li>
 	</ul>
@@ -44,46 +44,46 @@
 
 <!-- Administration -->
 <fieldset class="mod-dash mod-dash-set mod-dash-messages">
-	<legend>{% trans 'Administration' %}</legend>
+	<legend>{% trans("Administration") %}</legend>
 	
 	<ul>
 		{% if mod|hasPermission(config.mod.reports) %}
 			<li>
 				{% if reports > 0 %}<strong>{% endif %}
-					<a href="?/reports">{% trans 'Report queue' %} ({{ reports }})</a>
+					<a href="?/reports">{% trans("Report queue") %} ({{ reports }})</a>
 				{% if reports > 0 %}</strong>{% endif %}&nbsp;
 				{% if global_reports > 0 %}<strong>{% endif %}
-					{% if mod.type != constant('MOD') and mod.type != constant('BOARDVOLUNTEER') %}<a href="?/reports/global">Global reports ({{global_reports}})</a>{% endif %}
-				{% if reports > 0 %}</strong>{% endif %}
+					{% if mod.type != constant('MOD') and mod.type != constant('BOARDVOLUNTEER') %}<a href="?/reports/global">{% trans("Global reports") %} ({{global_reports}})</a>{% endif %}
+				{% if global_reports > 0 %}</strong>{% endif %}
 			</li>
 		{% endif %}
 		{% if mod|hasPermission(config.mod.view_banlist) %}
-			<li><a href="?/bans">{% trans 'Ban list' %}</a></li>
+			<li><a href="?/bans">{% trans("Ban list") %}</a></li>
 		{% endif %}
 		{% if config.ban_appeals and mod|hasPermission(config.mod.view_ban_appeals) %}
-			<li><a href="?/ban-appeals">{% trans 'Ban appeals' %}</a></li>
+			<li><a href="?/ban-appeals">{% trans("Ban appeals") %}</a></li>
 		{% endif %}
 		{% if mod|hasPermission(config.mod.manageusers) %}
-			<li><a href="?/users">{% trans 'Manage users' %}</a></li>
+			<li><a href="?/users">{% trans("Manage users") %}</a></li>
 		{% elseif mod|hasPermission(config.mod.change_password) %}
-			<li><a href="?/users/{{ mod.id }}">{% trans 'Edit profile' %}</a> <span class="unimportant hint">(username, email, password)</span></li>
+			<li><a href="?/users/{{ mod.id }}">{% trans("Edit profile") %}</a> <span class="unimportant hint">(username, email, password)</span></li>
 		{% endif %}
 		{% if mod|hasPermission(config.mod.themes) %}
-			<li><a href="?/themes">{% trans 'Manage themes' %}</a></li>
+			<li><a href="?/themes">{% trans("Manage themes") %}</a></li>
 		{% endif %}
 		{% if mod|hasPermission(config.mod.modlog) %}
-			<li><a href="?/log">{% trans 'User actions log' %}</a></li>
+			<li><a href="?/log">{% trans("User actions log") %}</a></li>
 		{% elseif mod.boards[0] != '*' and mod.boards[0] and mod|hasPermission(config.mod.mod_board_log, mod.boards[0]) %}
-			<li><a href="?/log:b:{{ mod.boards[0] }}">{% trans 'Board log' %}</a></li>
+			<li><a href="?/log:b:{{ mod.boards[0] }}">{% trans("Board log") %}</a></li>
 		{% endif %}
 		{% if mod|hasPermission(config.mod.recent) %}
-			<li><a href="?/recent/25">{% trans 'Recent posts' %}</a></li>
+			<li><a href="?/recent/25">{% trans("Recent posts") %}</a></li>
 		{% endif %}
 		{% if mod|hasPermission(config.mod.rebuild) %}
-			<li><a href="?/rebuild">{% trans 'Rebuild' %}</a></li>
+			<li><a href="?/rebuild">{% trans("Rebuild") %}</a></li>
 		{% endif %}
 		{% if mod|hasPermission(config.mod.edit_config) %}
-			<li><a href="?/config">{% trans 'Configuration' %}</a></li>
+			<li><a href="?/config">{% trans("Configuration") %}</a></li>
 		{% endif %}
 		
 	</ul>
@@ -92,7 +92,7 @@
 <!-- Search -->
 {% if mod|hasPermission(config.mod.search) %}
 <fieldset class="mod-dash mod-dash-set mod-dash-search">
-	<legend>{% trans 'Search' %}</legend>
+	<legend>{% trans("Search") %}</legend>
 	
 	<ul>
 		<li>
@@ -104,7 +104,7 @@
 
 <!-- Boards -->
 <fieldset class="mod-dash mod-dash-set mod-dash-boards">
-	<legend>{% trans 'Boards' %}</legend>
+	<legend>{% trans("Boards") %}</legend>
 	
 	<ul>
 		{% for board in boards %}
@@ -113,37 +113,27 @@
 				<a href="?/{{ config.board_path|sprintf(board.uri) }}{{ config.file_index }}">{{ config.board_abbreviation|sprintf(board.uri) }}</a>
 					 - 
 				{{ board.title|e }}
-				{% if board.subtitle %}
-					<small>&mdash; 
-						{% if config.allow_subtitle_html %}
-							{{ board.subtitle }}
-						{% else %}
-							{{ board.subtitle|e }}
-						{% endif %}
-					</small>
-
-				{% endif %}
 				{% if mod.type == "20" %}
-					<a href="?/settings/{{ board.uri }}"><small>[{% trans 'settings' %}]</small></a>
+					 <a href="?/settings/{{ board.uri }}"><small>[{% trans("settings") %}]</small></a>
 				{% endif %}
 				{% if mod|hasPermission(config.mod.manageboards) %}
-					 <a href="?/edit/{{ board.uri }}"><small>[{% trans 'edit' %}]</small></a>
-					 <a href="?/settings/{{ board.uri }}"><small>[{% trans 'settings' %}]</small></a>
+					 <a href="?/edit/{{ board.uri }}"><small>[{% trans("edit") %}]</small></a>
+					 <a href="?/settings/{{ board.uri }}"><small>[{% trans("settings") %}]</small></a>
 				{% endif %}
 			</li>
 		{% endif %}
 		{% endfor %}
 		
 		{% if mod|hasPermission(config.mod.newboard) %}
-			<li style="margin-top:15px"><a href="?/new-board"><strong>{% trans 'Create new board' %}</strong></a></li>
+			<li style="margin-top:15px"><a href="?/new-board"><strong>{% trans("Create new board") %}</strong></a></li>
 		{% endif %}
 	</ul>
 </fieldset>
 
 <!-- Misc -->
-{% if config.mod.dashboard_links|count %}
+{% if config.mod.dashboard_links and config.mod.dashboard_links|length %}
 <fieldset class="mod-dash mod-dash-set mod-dash-misc">
-	<legend>{% trans 'Other' %}</legend>
+	<legend>{% trans("Other") %}</legend>
 
 	<ul>
 		{% for label,link in config.mod.dashboard_links %}
@@ -156,12 +146,12 @@
 <!-- Debug Information -->
 {% if config.debug %}
 <fieldset class="mod-dash mod-dash-set mod-dash-debug">
-	<legend>{% trans 'Debug' %}</legend>
+	<legend>{% trans("Debug") %}</legend>
 	<ul>
-		<li><a href="?/debug/antispam">{% trans 'Anti-spam' %}</a></li>
-		<li><a href="?/debug/recent">{% trans 'Recent posts' %}</a></li>
+		<li><a href="?/debug/antispam">{% trans("Anti-spam") %}</a></li>
+		<li><a href="?/debug/recent">{% trans("Recent posts") %}</a></li>
 		{% if mod|hasPermission(config.mod.debug_sql) %}
-			<li><a href="?/debug/sql">{% trans 'SQL' %}</a></li>
+			<li><a href="?/debug/sql">{% trans("SQL") %}</a></li>
 		{% endif %}
 	</ul>
 </fieldset>
@@ -183,10 +173,9 @@
 
 <!-- Account Actions -->
 <fieldset class="mod-dash mod-dash-set mod-dash-account">
-	<legend>{% trans 'User account' %}</legend>
+	<legend>{% trans("User account") %}</legend>
 	
 	<ul>
-		<li><a href="?/logout/{{ logout_token }}">{% trans 'Logout' %}</a></li>
+		<li><a href="?/logout/{{ logout_token }}">{% trans("Logout") %}</a></li>
 	</ul>
 </fieldset>
-

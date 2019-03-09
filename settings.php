@@ -16,7 +16,7 @@ $safe_config['subtitle'] = $board['subtitle'];
 $safe_config['indexed'] = ($board['indexed'] == "1");
 $safe_config['country_flags'] = $config['country_flags'];
 $safe_config['field_disable_name'] = $config['field_disable_name'];
-$safe_config['enable_embedding'] = $config['enable_embedding'];
+$safe_config['enable_embedding'] = false;// option is removed!
 $safe_config['force_image_op'] = $config['force_image_op'];
 $safe_config['disable_images'] = $config['disable_images'];
 $safe_config['poster_ids'] = $config['poster_ids'];
@@ -35,7 +35,6 @@ $safe_config['default_stylesheet'] = $config['default_stylesheet'];
 $safe_config['captcha'] = $config['captcha'];
 $safe_config['force_subject_op'] = $config['force_subject_op'];
 $safe_config['tor_posting'] = $config['tor_posting'];
-$safe_config['new_thread_capt'] = $config['new_thread_capt'];
 $safe_config['hour_max_threads'] = $config['hour_max_threads'];
 $safe_config['disable_images'] = $config['disable_images'];
 $safe_config['locale'] = $config['locale'];

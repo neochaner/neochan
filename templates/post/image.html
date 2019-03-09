@@ -1,33 +1,32 @@
-<a href="
-	{% if post.file|extension == 'webm' or post.file|extension == 'mp4' %}
-		{{ config.root }}player.php?v={{ config.uri_img }}{{ post.file }}&amp;t={{ post.filename|e('url') }}&amp;loop=1
-	{% else %}
-		{{ config.uri_img }}{{ post.file }}
-	{% endif %}
-	"
+{% if file.replace %}
+{% set video_full_path = file.replace %}
+{% else %}
+{% set video_full_path = config.uri_img ~ post.file %}
+{% endif %}
+
+
+<a class="post-file-link" href="{{ video_full_path }}"
 	 target="_blank"
-	{% if post.thumb == 'file' or post.modifiers['is_file'] == '1' or post.filename|extension == 'webm' or post.file|extension == 'mp4' %}
+	{% if post.thumb == 'file' or post.modifiers['is_file'] == '1' or extension == 'webm' or extension == 'mp4' %}
 		 class="file"
 	{% endif %}
->
-	{% if post.thumb|extension == 'webm' or post.thumb|extension == 'mp4' %}
-		<video autoplay class="post-image" src="{{ config.uri_thumb }}{{ post.thumb }}"
-			 poster="
-				{{ config.root }}
-				{% if config.file_icons[post.filename|extension] %}
-					{{ config.file_thumb|sprintf(config.file_icons[post.filename|extension]) }}
-				{% else %}
-					{{ config.file_thumb|sprintf(config.file_icons.default) }}
-				{% endif %}
-			"
-			 style="width:{{ post.thumbwidth }}px;height:{{ post.thumbheight }}px"
-			 data-md5="{{ post.hash|hex2bin|base64_encode }}"
-		>
-		</video>
+
+
+	{% if post.extension == 'webm' or post.extension == 'mp4' %}
+
+	onclick="return expand('{{ post.hash }}','{{ video_full_path }}','{{ post.uri_thumb }}',{{ post.width }},{{post.height}},{{ post.thumbwidth }},{{post.thumbheight}}, 0, 0, event)"
+	
 	{% else %}
-		<img class="post-image" 
-			src="
-				{% if post.thumb == 'file' %}
+
+	onclick="return expand('{{ post.hash }}','{{ video_full_path }}','{{ post.uri_thumb }}',{{ post.width }},{{post.height}},{{ post.thumbwidth }},{{post.thumbheight}}, 0, 0, event)"
+	
+	{% endif %}
+>
+	 
+	{% if post.extension == 'webm' or post.extension == 'mp4' %}
+
+
+	<img src="{% if post.thumb == 'file' %}
 					{{ config.root }}
 					{% if config.file_icons[post.filename|extension] %}
 						{{ config.file_thumb|sprintf(config.file_icons[post.filename|extension]) }}
@@ -40,8 +39,60 @@
 					{{ config.uri_thumb }}{{ post.thumb }}
 				{% endif %}
 			"
-			 style="width:{{ post.thumbwidth }}px;height:{{ post.thumbheight }}px" alt="" 
-			 data-md5="{{ post.hash|hex2bin|base64_encode }}"
-		/>
+		width="{{ post.thumbwidth }}" height="{{ post.thumbheight }}"
+		class="img preview webm-file "
+		data-md5="{{ post.hash }}"
+	/>
+
+
+
+	{% else %}
+
+	{% if is_thread == true and post.extension == 'gif'  %}
+
+	<img class="img preview"
+		src="{{ config.uri_img }}{{ post.file }}"
+		 style="width:{{ post.thumbwidth }}px;height:{{ post.thumbheight }}px"
+		 alt="{{post.width }}x{{ post.height }}" 
+		 data-md5="{{ post.hash }}"
+	/>
+	{% else %}
+
+		
+	{% if post.extension == 'gif' %}
+		<span class='post-gif-marker'></span>
 	{% endif %}
+
+	<img class="img preview {% if post.thumb == 'spoiler' %}spoilered{% endif %}"
+	
+		src="{% if post.resize_error %}{{ config.uri_img }}{{ post.file }}{% else %}
+			{% if post.thumb == 'file' %}
+				{{ config.root }}
+				{% if config.file_icons[post.filename|extension] %}
+					{{ config.file_thumb|sprintf(config.file_icons[post.filename|extension]) }}
+				{% else %}
+					{{ config.file_thumb|sprintf(config.file_icons.default) }}
+				{% endif %}
+			{% elseif post.thumb == 'spoiler' %}
+				{{ config.root }}{{ config.spoiler_image }}
+			{% else %}
+				{{ config.uri_thumb }}{{ post.thumb }}
+			{% endif %}
+			{% endif %}
+		"
+		{% if post.origThumbwidth %}
+		style="width:{{ post.origThumbwidth }}px;height:{{ post.origThumbheight }}px"
+		{% else %}
+		style="width:{{ post.thumbwidth }}px;height:{{ post.thumbheight }}px"
+		{% endif %}
+		alt="{{post.width }}x{{ post.height }}"  
+		data-md5="{{ post.hash }}"
+ 
+	/>
+
+	{% endif %}
+
+
+	{% endif %}
+	
 </a>

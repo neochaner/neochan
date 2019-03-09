@@ -6,6 +6,7 @@
 		<th>{% trans 'Board' %}</th>
 		<th>{% trans 'Action' %}</th>
 	</tr>
+{% if logs is iterable %}
 	{% for log in logs if log.text != 'Looked at dashboard' %}
 		<tr>
 			<td class="minimal">
@@ -49,7 +50,7 @@
 	{% endfor %}
 </table>
 
-{% if count > logs|count %}
+{% if count > logs|length %}
 	<p class="unimportant" style="text-align:center;word-wrap:break-word">
 		{% for i in range(0, (count - 1) / config.mod.modlog_page) %}
 			{% if public %}
@@ -59,5 +60,6 @@
 			{% endif %}
 		{% endfor %}
 	</p>
+{% endif %}
 {% endif %}
 

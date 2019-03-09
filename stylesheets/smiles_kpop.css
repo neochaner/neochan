@@ -1,0 +1,625 @@
+.s42
+{
+    background-image:url(/static/smiles84_v37.png);
+    background-size:85px 6000px;
+    cursor: pointer;
+    display: inline-block; 
+    width:42px;
+    height:42px;
+}
+
+
+body:after{
+    content:url(/static/smiles84_v37.png);
+    display:none
+}
+
+
+ 
+
+
+
+ 
+.s42-katana{ 
+    background-position: 0px -43px;
+}.s42-gun{ 
+    background-position: 0px -86px;
+}.s42-heart1{ 
+    background-position: 0px -129px;
+}.s42-heart2{ 
+    background-position: 0px -172px;
+}.s42-heart3{ 
+    background-position: 0px -215px;
+}.s42-pepe_sad{ 
+    background-position: 0px -258px;
+}.s42-pepe_cool{ 
+    background-position: 0px -301px;
+}.s42-shakal{ 
+    background-position: 0px -344px;
+}.s42-oldfag{ 
+    background-position: 0px -387px;
+}.s42-oldfag_lol{ 
+    background-position: 0px -430px;
+}.s42-cage_lol{ 
+    background-position: 0px -473px;
+}.s42-shy2{ 
+    background-position: 0px -516px;
+}.s42-shy{ 
+    background-position: 0px -559px;
+}.s42-mina_fail{ 
+    background-position: 0px -602px;
+}.s42-hyuina_lol{ 
+    background-position: 0px -645px;
+}.s42-ye_lol{ 
+    background-position: 0px -688px;
+}.s42-jyp1{ 
+    background-position: 0px -731px;
+}.s42-jyp2{ 
+    background-position: 0px -774px;
+}.s42-hyperlol{ 
+    background-position: 0px -817px;
+}.s42-bin_wow{ 
+    background-position: 0px -860px;
+}.s42-harold{ 
+    background-position: 0px -903px;
+}.s42-shit{ 
+    background-position: 0px -946px;
+}.s42-tat{ 
+    background-position: 0px -989px;
+}.s42-bin_pl{ 
+    background-position: 0px -1032px;
+}.s42-troll{ 
+    background-position: 0px -1075px;
+}.s42-foreveralone{ 
+    background-position: 0px -1118px;
+}.s42-tellme{ 
+    background-position: 0px -1161px;
+}.s42-peka{ 
+    background-position: 0px -1204px;
+}.s42-peka_lol{ 
+    background-position: 0px -1247px;
+}.s42-hyeri_pls{ 
+    background-position: 0px -1290px;
+}.s42-di{ 
+    background-position: 0px -1333px;
+}.s42-mouse_yessir{ 
+    background-position: 0px -1376px;
+}.s42-eunha_like{ 
+    background-position: 0px -1419px;
+}.s42-eunha_fat{ 
+    background-position: 0px -1462px;
+}.s42-crying{ 
+    background-position: 0px -1505px;
+}.s42-hide_cry{ 
+    background-position: 0px -1548px;
+}.s42-cry2{ 
+    background-position: 0px -1591px;
+}.s42-cage_waw{ 
+    background-position: 0px -1634px;
+}.s42-gop{ 
+    background-position: 0px -1677px;
+}.s42-nap{ 
+    background-position: 0px -1720px;
+}.s42-trick{ 
+    background-position: 0px -1806px;
+}.s42-lol_pls{ 
+    background-position: 0px -1849px;
+}.s42-cruz_lol{ 
+    background-position: 0px -1849px;
+}.s42-facepalm{ 
+    background-position: 0px -1892px;
+}.s42-autism{ 
+    background-position: 0px -1935px;
+}.s42-arin_dream{ 
+    background-position: 0px -1978px;
+}.s42-v{ 
+    background-position: 0px -2021px;
+}.s42-kewow{ 
+    background-position: 0px -2064px;
+}.s42-sosmile{ 
+    background-position: 0px -2107px;
+}.s42-bup{ 
+    background-position: 0px -2150px;
+}.s42-smokeman{ 
+    background-position: 0px -2193px;
+}.s42-nobrain{ 
+    background-position: 0px -2236px;
+}.s42-shui{ 
+    background-position: 0px -2279px;
+}.s42-euth{ 
+    background-position: 0px -2322px;
+}.s42-nay_gl{ 
+    background-position: 0px -2365px;
+}.s42-day_wow{ 
+    background-position: 0px -2408px;
+}.s42-day_you{ 
+    background-position: 0px -2451px;
+}.s42-hackerman{ 
+    background-position: 0px -2494px;
+}.s42-cocacola{ 
+    background-position: 0px -2537px;
+}.s42-han{ 
+    background-position: 0px -2580px;
+}.s42-suy_happy{ 
+    background-position: 0px -2623px;
+}.s42-bstory{ 
+    background-position: 0px -2666px;
+}.s42-cgluda{ 
+    background-position: 0px -2709px;
+}.s42-jpgun{ 
+    background-position: 0px -2752px;
+}.s42-aina_drink{ 
+    background-position: 0px -2795px;
+}.s42-zontjp{ 
+    background-position: 0px -2838px;
+}.s42-ubu_tea{ 
+    background-position: 0px -2881px;
+}.s42-tongue{ 
+    background-position: 0px -2924px;
+}.s42-smug{ 
+    background-position: 0px -2967px;
+}.s42-run{ 
+    background-position: 0px -3010px;
+}.s42-rly{ 
+    background-position: 0px -3053px;
+}.s42-panluna{ 
+    background-position: 0px -3096px;
+}.s42-mug{ 
+    background-position: 0px -3139px;
+}.s42-komi_blood{ 
+    background-position: 0px -3182px;
+}.s42-juon{ 
+    background-position: 0px -3225px;
+}.s42-eye{ 
+    background-position: 0px -3268px;
+}.s42-jp_anon{ 
+    background-position: 0px -3311px;
+}.s42-interesting{ 
+    background-position: 0px -3354px;
+}.s42-hage_tyan{ 
+    background-position: 0px -3397px;
+}.s42-ems_pamu{ 
+    background-position: 0px -3440px;
+}.s42-emp_bed{ 
+    background-position: 0px -3483px;
+}.s42-egg_ufo{ 
+    background-position: 0px -3526px;
+}.s42-daoko_gun{ 
+    background-position: 0px -3569px;
+}.s42-chicchi_smug{ 
+    background-position: 0px -3612px;
+}.s42-bloodyeye{ 
+    background-position: 0px -3655px;
+}.s42-bis_pand{ 
+    background-position: 0px -3698px;
+}.s42-atsuko_scorn{ 
+    background-position: 0px -3741px;
+}.s42-aina_smile{ 
+    background-position: 0px -3784px;
+}.s42-cs_why{ 
+    background-position: 0px -3827px;
+}.s42-dayo_what{ 
+    background-position: 0px -3870px;
+}.s42-kpalm{ 
+    background-position: 0px -3913px;
+}.s42-yuji_hope{ 
+    background-position: 0px -3956px;
+}.s42-yuji_listen{ 
+    background-position: 0px -3999px;
+}.s42-yuji_np{ 
+    background-position: 0px -4042px;
+}.s42-yuji_sml{ 
+    background-position: 0px -4085px;
+}.s42-somi_angry{ 
+    background-position: 0px -4128px;
+}.s42-somi_sight{ 
+    background-position: 0px -4171px;
+}.s42-somik{ 
+    background-position: 0px -4214px;
+}.s42-somi_flashback{ 
+    background-position: 0px -4214px;
+}.s42-somi_asight{ 
+    background-position: 0px -4257px;
+}.s42-somi_angry2{ 
+    background-position: 0px -4300px;
+}.s42-somi_rage{ 
+    background-position: 0px -4343px;
+}.s42-hana_smile{ 
+    background-position: 0px -4386px;
+}.s42-hana_lol{ 
+    background-position: 0px -4429px;
+}.s42-hana_you{ 
+    background-position: 0px -4472px;
+}.s42-hana_hard{ 
+    background-position: 0px -4515px;
+}.s42-hana_wtf{ 
+    background-position: 0px -4558px;
+}.s42-hana_pretty{ 
+    background-position: 0px -4601px;
+}.s42-nana_wow{ 
+    background-position: 0px -4644px;
+}.s42-hyunjoo_sexy{ 
+    background-position: 0px -4687px;
+}.s42-hyejeong_trick{ 
+    background-position: 0px -4730px;
+}.s42-mina_boring{ 
+    background-position: 0px -4773px;
+}.s42-seol_coffee{ 
+    background-position: 0px -4816px;
+}.s42-yuji_1{ 
+    background-position: 0px -4859px;
+}.s42-yuji_hope{ 
+    background-position: 0px -4902px;
+}.s42-yuji_bad{ 
+    background-position: 0px -4945px;
+}.s42-yuji_2{ 
+    background-position: 0px -4988px;
+}.s42-yuji_wow{ 
+    background-position: 0px -5031px;
+}.s42-hyejeong_cute{ 
+    background-position: 0px -5074px;
+}.s42-hyejeong_wink{ 
+    background-position: 0px -5117px;
+}.s42-mina_cry{ 
+    background-position: 0px -5160px;
+}.s42-jooe_herpderp{ 
+    background-position: 0px -5203px;
+}.s42-yves_shot{ 
+    background-position: 0px -5246px;
+}.s42-hyejeong_frowns{ 
+    background-position: 0px -5289px;
+}.s42-jennie_vaseline{ 
+    background-position: 0px -5332px;
+}.s42-momo_song{ 
+    background-position: 0px -5375px;
+}.s42-sally_wow{ 
+    background-position: 0px -5418px;
+}.s42-h_s_hug{ 
+    background-position: 0px -5461px;
+}.s42-yuna_listen{ 
+    background-position: 0px -5504px;
+}.s42-luda_sexy{ 
+    background-position: 0px -5547px;
+}.s42-hana_sleep{ 
+    background-position: 0px -5590px;
+}.s42-yves_aim{ 
+    background-position: 0px -5633px;
+}.s42-yeri_ok{ 
+    background-position: 0px -5676px;
+}.s42-tzuyu_revnost{ 
+    background-position: 0px -5719px;
+}.s42-soyee_ok{ 
+    background-position: 0px -5762px;
+}.s42-sexy_dance{ 
+    background-position: 0px -5805px;
+}.s42-seulgi_hubris{ 
+    background-position: 0px -5848px;
+}.s42-sana_sorry{ 
+    background-position: 0px -5891px;
+}.s42-sana_cheese{ 
+    background-position: 0px -5934px;
+}
+
+
+ 
+ 
+
+
+ 
+.s42-salt{ 
+    background-position: 43px 0px;
+}.s42-rose_see{ 
+    background-position: 43px -43px;
+}.s42-rose_ok{ 
+    background-position: 43px -86px;
+}.s42-reina_see{ 
+    background-position: 43px -129px;
+}.s42-nayeon_disgust{ 
+    background-position: 43px -172px;
+}.s42-joy_side{ 
+    background-position: 43px -215px;
+}.s42-jim_wut{ 
+    background-position: 43px -258px;
+}.s42-joy_say{ 
+    background-position: 43px -301px;
+}.s42-jenni_sing{ 
+    background-position: 43px -344px;
+}.s42-im_crazy{ 
+    background-position: 43px -387px;
+}.s42-jim_smile1{ 
+    background-position: 43px -430px;
+}.s42-jim_smile2{ 
+    background-position: 43px -473px;
+}.s42-jim_smile3{ 
+    background-position: 43px -516px;
+}.s42-jim_depression{ 
+    background-position: 43px -559px;
+}.s42-old_man{ 
+    background-position: 43px -602px;
+}.s42-bomi_hey{ 
+    background-position: 43px -645px;
+}.s42-cheeck{ 
+    background-position: 43px -688px;
+}.s42-hyejeong_tired{ 
+    background-position: 43px -731px;
+}.s42-hyejeong_cream{ 
+    background-position: 43px -774px;
+}.s42-hyejeong_wow{ 
+    background-position: 43px -817px;
+}.s42-hyejeong_finderkiss{ 
+    background-position: 43px -860px;
+}.s42-hyejeong_heart{ 
+    background-position: 43px -903px;
+}.s42-hyejeong_kiss{ 
+    background-position: 43px -946px;
+}.s42-irene_see{ 
+    background-position: 43px -989px;
+}.s42-hyejong_stare{ 
+    background-position: 43px -1032px;
+}.s42-nana_smile{ 
+    background-position: 43px -1075px;
+}.s42-yuji_like{ 
+    background-position: 43px -1118px;
+}.s42-yuji_prt{ 
+    background-position: 43px -1161px;
+}
+.s42-yuji_science{ 
+    background-position: 43px -1204px;
+}.s42-yuji_sunshine{ 
+    background-position: 43px -1247px;
+}.s42-hyejeon_skirt{ 
+    background-position: 43px -1290px;
+}.s42-hyejeong_skirt{ 
+    background-position: 43px -1290px;
+}.s42-yuji_trouble{ 
+    background-position: 43px -1333px;
+}.s42-yuji_wonder{ 
+    background-position: 43px -1376px;
+}.s42-rose_zero{ 
+    background-position: 43px -1419px;
+}.s42-hyejeong_rejection{ 
+    background-position: 43px -1462px;
+}.s42-hyejeong_fun{ 
+    background-position: 43px -1505px;
+}.s42-naeun_tease{ 
+    background-position: 43px -1548px;
+}.s42-eunji_smile{ 
+    background-position: 43px -1591px;
+}.s42-eunji_secret{ 
+    background-position: 43px -1634px;
+}.s42-eunji_hi{ 
+    background-position: 43px -1677px;
+}.s42-best_work{ 
+    background-position: 43px -1720px;
+}.s42-yoojin_sulk{ 
+    background-position: 43px -1763px;
+}.s42-yeeun_sad{ 
+    background-position: 43px -1806px;
+}.s42-thinking{ 
+    background-position: 43px -1849px;
+}.s42-tagaren_fist{ 
+    background-position: 43px -1892px;
+}.s42-suss{ 
+    background-position: 43px -1935px;
+}.s42-panluna2{ 
+    background-position: 43px -1978px;
+}.s42-mitoll{ 
+    background-position: 43px -2021px;
+}.s42-jp_half_anon{ 
+    background-position: 43px -2064px;
+}.s42-hyejeong_sad{ 
+    background-position: 43px -2107px;
+}.s42-hyejeong_omg{ 
+    background-position: 43px -2150px;
+}.s42-hyejeong_laugh{ 
+    background-position: 43px -2193px;
+}.s42-hyejeong_amazed{ 
+    background-position: 43px -2236px;
+}.s42-jp_hug{ 
+    background-position: 43px -2279px;
+}.s42-hospade_kakya_nyasha{ 
+    background-position: 43px -2322px;
+}.s42-gyaru{ 
+    background-position: 43px -2365px;
+}.s42-jp_dude2{ 
+    background-position: 43px -2408px;
+}.s42-jp_dude{ 
+    background-position: 43px -2451px;
+}.s42-drochesh{ 
+    background-position: 43px -2494px;
+}.s42-jp_coolstory{ 
+    background-position: 43px -2537px;
+}.s42-bite{ 
+    background-position: 43px -2580px;
+}.s42-hana_ohyou{ 
+    background-position: 43px -2623px;
+}.s42-hana_lips{ 
+    background-position: 43px -2666px;
+}.s42-aina_smile2{ 
+    background-position: 43px -2709px;
+}.s42-sana_wow{ 
+    background-position: 43px -2752px;
+}.s42-sana_sorrow{ 
+    background-position: 43px -2795px;
+}.s42-sana_smile{ 
+    background-position: 43px -2838px;
+}.s42-nunu_smart{ 
+    background-position: 43px -2881px;
+}.s42-eunha_beast{ 
+    background-position: 43px -2924px;
+}.s42-blackpink_kiss{ 
+    background-position: 43px -2967px;
+}.s42-hyejeong_bestgirl{ 
+    background-position: 43px -3010px;
+}.s42-hyejeong_ohyou{ 
+    background-position: 43px -3053px;
+}.s42-hyejeong_ownage{ 
+    background-position: 43px -3096px;
+}.s42-naeun_wrinkle{ 
+    background-position: 43px -3139px;
+}.s42-sumni_sulk{ 
+    background-position: 43px -3182px;
+}
+
+.s42-cha_wine{ 
+    background-position: 43px -3225px;
+}.s42-yoojin_lol{ 
+    background-position: 43px -3268px;
+}.s42-elk_lol{ 
+    background-position: 43px -3268px;
+}.s42-seol_smart{ 
+    background-position: 43px -3311px;
+}.s42-umji_glum{ 
+    background-position: 43px -3354px;
+}.s42-unn_notbad{ 
+    background-position: 43px -3397px;
+}.s42-chae_wut{ 
+    background-position: 43px -3440px;
+}.s42-chae_tiger{ 
+    background-position: 43px -3483px;
+}.s42-chae_sulk{ 
+    background-position: 43px -3526px;
+}.s42-chae_bombom{ 
+    background-position: 43px -3569px;
+}.s42-chae_eat{ 
+    background-position: 43px -3612px;
+}.s42-chae_laught{ 
+    background-position: 43px -3655px;
+}.s42-chae_lol{ 
+    background-position: 43px -3698px;
+}.s42-chae_notbad{ 
+    background-position: 43px -3741px;
+}.s42-chae_smile{ 
+    background-position: 43px -3784px;
+}.s42-chae_like{ 
+    background-position: 43px -3827px;
+}.s42-hyejeong_contain{ 
+    background-position: 43px -3870px;
+}.s42-soju{ 
+    background-position: 43px -3913px;
+}.s42-joy_contempt{ 
+    background-position: 43px -3956px;
+}.s42-hyejeong_blame{ 
+    background-position: 43px -3999px;
+}.s42-hyejeong_feed{ 
+    background-position: 43px -4042px;
+}.s42-spoon{ 
+    background-position: 43px -4085px;
+}.s42-mina_sorrow{ 
+    background-position: 43px -4128px;
+}.s42-nayoung_smile{ 
+    background-position: 43px -4171px;
+}.s42-cat_tired{ 
+    background-position: 43px -4214px;
+}.s42-luffy_sugoi{ 
+    background-position: 43px -4257px;
+}.s42-dahyun_smile{ 
+    background-position: 43px -4300px;
+}.s42-ohmygod{ 
+    background-position: 43px -4343px;
+}.s42-chae_ser{ 
+    background-position: 43px -4386px;
+}.s42-hyejeong_funny{ 
+    background-position: 43px -4429px;
+}.s42-hyejeong_cheeks{ 
+    background-position: 43px -4472px;
+}.s42-kgirl1{ 
+    background-position: 43px -4515px;
+}.s42-kgirl2{ 
+    background-position: 43px -4558px;
+}.s42-nayong_lol{ 
+    background-position: 43px -4601px;
+}.s42-box_shy{ 
+    background-position: 43px -4644px;
+}.s42-hyejeong_hz{ 
+    background-position: 43px -4687px;
+}.s42-hyejeong_sulk{ 
+    background-position: 43px -4730px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -4773px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -4816px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -4859px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -4902px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -4945px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -4988px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5031px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5074px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5117px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5160px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5203px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5246px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5289px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5332px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5375px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5418px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5461px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5504px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5547px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5590px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5633px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5676px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5719px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5762px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5805px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5848px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5891px;
+}.s42-xxxxxxxx{ 
+    background-position: 43px -5934px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+

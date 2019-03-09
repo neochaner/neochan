@@ -14,41 +14,55 @@
  *
  */
 
-$(document).ready(function(){
-	var showOPLinks = function() {
-		var OP;
-		
-		if ($('div.banner').length == 0) {
-			OP = parseInt($(this).parent().find('div.post.op a.post_no:eq(1)').text());
-		} else {
-			OP = parseInt($('div.post.op a.post_no:eq(1)').text());
-		}
-		
-		$(this).find('div.body a:not([rel="nofollow"])').each(function() {
-			var postID;
-			
-			if(postID = $(this).text().match(/^>>(\d+)$/))
-				postID = postID[1];
-			else
-				return;
-			
-			if (postID == OP) {
-				$(this).after(' <small>(OP)</small>');
-			}
-		});
-	};
+
+function showOpLinks(links) {
+	let thread =  document.getElementById('thread_id');
+
+	if(!thread)
+		return;
+
+	let OP = thread.dataset.id;
 	
-	$('div.post.reply').each(showOPLinks);
+	for(let i = 0, l=links.length; i < l; i++) {
+		if( links[i].dataset.id == OP && 
+		!links[i].innerHTML.includes('(') )
+			links[i].innerHTML += ' (OP)';
+	}
+}
+
+$(document).ready(function() {
 	
-	// allow to work with auto-reload.js, etc.
-	$(document).on('new_post', function(e, post) {
-		if ($(post).is('div.post.reply')) {
-			$(post).each(showOPLinks);
-		}
-		else {
-			$(post).find('div.post.reply').each(showOPLinks);
-		}
-	});
+	showOpLinks( document.getElementsByClassName('post-link'));
+
 });
+
+$(document).on('new_post', function(e, post) {
+	
+	showOpLinks(post.getElementsByClassName('post-link'));
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,0 +1,479 @@
+
+
+
+{% set active_modpage='settings' %}
+{% include 'mod/settings/header.html' %}
+
+
+<br><br>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(event) { 
+
+var checkboxes = document.querySelectorAll('input[type=checkbox]'),
+    checkboxArray = Array.from( checkboxes );
+
+
+checkboxArray.forEach(function(checkbox) {
+  checkbox.addEventListener('change', check);
+});
+
+});
+
+
+function check() {
+
+
+  if (this.checked && this.dataset.disable) {
+     var dbox = document.querySelector('input[name="'+this.dataset.disable+'"]');
+	 console.log(dbox);
+	 console.log(this.dataset.disable);
+	 dbox.checked = false;
+	 
+  }
+}
+
+
+</script>
+
+<div class="board-settings">
+ <form action="{{ action }}" method="post">
+
+
+	<ul style="padding:0;text-align:center;list-style:none">
+		<li>
+			{% trans %}Board announcement{% endtrans %}
+			<input type="text" name="blotter" value="{{config.blotter|e}}" size="75" class='theme-textbox'>
+		</li>
+	</ul>
+ 
+
+
+	<br>
+	<p style="text-align: center" class="unimportant">{% trans %}Tip: Some changes made on this page won't take effect until a new post is made on your board.{% endtrans %}</p>
+
+	<div class='tbl-table'>
+		<div class="tbl-header">
+				<table cellpadding="0" cellspacing="0" border="0" style="width: 100%;table-layout: fixed;">
+					<thead>
+					<tr>
+						<th class='s-key'>*</th>
+						<th class='s-value'>Описание</th>
+					</tr>
+					</thead>
+				</table>
+		</div>
+
+		<div class="tbl-content">
+				<table cellpadding="0" cellspacing="0" border="0" style="width: 100%;table-layout: fixed;">
+					<tbody>
+
+			
+						<tr>
+							<td class='s-key'>
+							<label class="checktainer_xs">
+							<input type="checkbox" name="meta_noindex"{% if not board.indexed %} checked{% endif %}>
+							<span class="checkmark_xs"></span>
+							</label></td>
+							<td  class='s-value'>{% trans %}No index{% endtrans %} ({% trans %}Hide from boards index and do not index in search engines{% endtrans %})</td>
+						</tr>
+
+						<tr>
+							<td class='s-key'>
+							<label class="checktainer_xs">
+							<input type="checkbox" name="poster_ids"{% if config.poster_ids %} checked{% endif %}>
+							<span class="checkmark_xs"></span>
+							</label></td>
+							<td  class='s-value'>{% trans %}Poster ID's{% endtrans %}</td>
+						</tr>
+
+
+						<tr>
+							<td class='s-key'>
+							<label class="checktainer_xs">
+							<input type="checkbox" name="force_image_op"{% if config.force_image_op %} checked{% endif %}>
+							<span class="checkmark_xs"></span>
+							</label></td>
+							<td  class='s-value'>{% trans %}Require image for OP{% endtrans %}</td>
+						</tr>
+
+
+					
+							
+						<tr>
+							<td class='s-key'>
+							<label class="checktainer_xs">
+							<input type="checkbox" name="force_subject_op"{% if config.force_subject_op %} checked{% endif %}>
+							<span class="checkmark_xs"></span>
+							</label></td>
+							<td  class='s-value'>{% trans %}Require subject for OP{% endtrans %}</td>
+						</tr>
+								
+						<tr>
+							<td class='s-key'>
+							<label class="checktainer_xs">
+							<input type="checkbox" name="force_flag"{% if config.force_flag %} checked{% endif %}>
+							<span class="checkmark_xs"></span>
+							</label></td>
+							<td  class='s-value'>{% trans %}Require user/country flag for all posts{% endtrans %}</td>
+						</tr>
+							
+
+
+
+
+
+
+								
+						<tr>
+							<td class='s-key'>
+							<label class="checktainer_xs">
+							<input type="checkbox" name="country_flags" data-disable="user_flags" {% if config.country_flags %}checked{% endif %}>
+							<span class="checkmark_xs"></span>
+							</label></td>
+							<td  class='s-value'>{% trans %}Country flags{% endtrans %}</td>
+						</tr>
+					
+					
+						<tr>
+							<td class='s-key'>
+							<label class="checktainer_xs">
+							<input type="checkbox" name="user_flags" data-disable="country_flags" {% if config.user_flag %}checked{% endif %}>
+							<span class="checkmark_xs"></span>
+							</label></td>
+							<td  class='s-value'>User flags (Make sure to actually upload some first on the flags page!)</td>
+						</tr>
+					
+					
+						<tr>
+							<td class='s-key'>
+							<label class="checktainer_xs">
+							<input type="checkbox" name="custom_assets" data-disable-checkbox="" {% if config.custom_assets %}checked{% endif %}>
+							<span class="checkmark_xs"></span>
+							</label></td>
+							<td  class='s-value'>{% trans %}Custom board assets{% endtrans %}<span class="unimportant">Enabling this uses your custom spoiler/deleted/no file images.<br>Make sure to actually upload some first on the assets page or they will 404!</td>
+						</tr>
+						
+						
+								
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="allow_delete" {% if config.allow_delete %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Allow a poster to delete his own posts{% endtrans %}</td></tr>
+								
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="view_bumplock" {% if config.mod.view_bumplock == -1 %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Allow posters to see when a thread is bumplocked{% endtrans %}</td></tr>
+						
+
+
+
+						<tr>
+							<td class='s-key'>
+							<label class="checktainer_xs">
+							<input type="checkbox" name="field_disable_name" data-disable-checkbox="" {% if config.field_disable_name %}checked{% endif %}>
+							<span class="checkmark_xs"></span>
+							</label></td>
+							<td  class='s-value'>{% trans %}Forced anonymous reply{% endtrans %}<span class="unimportant">Disable name in post form</td>
+						</tr>
+						
+						
+						
+						<tr>
+							<td class='s-key'>
+							<label class="checktainer_xs">
+							<input type="checkbox" name="force_anon_thread" data-disable-checkbox="" {% if config.force_anon_thread %}checked{% endif %}>
+							<span class="checkmark_xs"></span>
+							</label></td>
+							<td  class='s-value'>{% trans %}Forced anonymous thread{% endtrans %}<span class="unimportant">Disable name in  create thread form</td>
+						</tr>
+
+
+
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="image_reject_repost" {% if config.image_reject_repost %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Don't allow users to repost images (whole board){% endtrans %}</td></tr>
+
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="image_reject_repost_in_thread" {% if config.image_reject_repost_in_thread %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Don't allow users to repost images (same thread){% endtrans %}</td></tr>
+
+				
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="show_sages" {% if config.show_sages %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Display SAGE! after saged posts{% endtrans %}</td></tr>
+		
+						
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="auto_unicode" {% if config.auto_unicode %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>Use unicodify {% trans %}Automatically convert ... to …{% endtrans %}</td></tr>
+						
+
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="strip_combining_chars" {% if config.strip_combining_chars %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Disallow combining characters ("Zalgo", Vietnamese text){% endtrans %}</td></tr>
+						
+
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="code_tags" {% if 'js/code_tags/run_prettify.js' in config.additional_javascript %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}[code] tags{% endtrans %}</td></tr>
+
+
+
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="oekaki" {% if config.oekaki %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Oekaki{% endtrans %}</td></tr>
+								
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="katex" {% if config.katex %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Format math between $${% endtrans %}</td></tr>
+										
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="allow_roll" {% if config.allow_roll %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Enable dice rolling{% endtrans %}</td></tr>
+												
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="enable_emoji" {% if config.enable_emoji %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Enable twemojis{% endtrans %}</td></tr>
+
+						<tr><td class='s-key'>
+						<input style="width: 46px;" type="text" class='theme-textbox' name="anonymous" value="{{config.anonymous|e}}">
+						</td>
+						<td class='s-value'>{% trans %}Default poster name{% endtrans %}</td></tr>
+				
+
+			 
+
+
+
+						<tr><td class='s-key'></td><td style="padding: 16px;"><strong>Anti - Spam Options</strong></td></tr>
+
+
+
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="captcha_for_post" {% if config.captcha.captcha_for_post %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>Enable captcha for post</td></tr>
+
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="captcha_for_thread" {% if config.captcha.captcha_for_thread %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>Enable captcha for thread</td></tr>
+
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="tor_posting" {% if config.tor_posting %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Allow posters to post via the Tor onion router{% endtrans %}</td></tr>
+			
+
+
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="early_404" {% if config.early_404 %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Early 404{% endtrans %}<br><span class="unimportant">With this enabled, threads with less than 10 replies will 404 at page 5 instead of at page 15.<br>In effect, this makes it so that raiders have to put 10 replies in all their threads to slide an entire board.</span></td></tr>
+				
+					
+						<tr><td class='s-key'>
+						<select name="hour_max_threads">
+								<option value="none">none</option>
+								{% for i in 1..100 %}
+								<option value="{{ i }}" {% if config.hour_max_threads == i %} selected {% endif %}>{{ i }}</option>
+								{% endfor %}
+						</select>
+						</td>
+						<td class='s-value'>{% trans %}Max threads per hour board-wide{% endtrans %}<br><span class="unimportant">Only allow X threads to be made per hour, regardless of poster<br>If a thread is deleted, it's not counted</span></td></tr>
+						
+						
+
+
+
+						<tr><td class='s-key'></td><td style="padding: 16px;"><strong>Limits</strong></td></tr>
+
+
+						<tr><td class='s-key'>
+						<select name="max_newlines"><option value="0" {% if config.max_newlines == 0 %}selected{% endif %}>No</option>{% for i in range(20, 300) %}<option value="{{ i }}" {% if config.max_newlines == i %}selected{% endif %}>{{ i }}</option>{% endfor %}</select>
+						</td>
+						<td class='s-value'>{% trans %}Max number of newlines per post{% endtrans %}</td></tr>
+						
+						<tr><td class='s-key'>
+						<select name="max_images">{% for i in 1..5 %}<option value="{{ i }}" {% if config.max_images == i %} selected {% endif %}>{{ i }}</option>{% endfor %}</select>
+						</td>
+						<td class='s-value'>{% trans %}Max images per post{% endtrans %}</td></tr>
+								
+						<tr><td class='s-key'>
+						<select name="max_pages">{% for i in range(1, 25) %}<option value="{{ i }}" {% if config.max_pages == i %}selected{% endif %}>{{ i }}</option>{% endfor %}</select>
+						</td>
+						<td class='s-value'>{% trans %}Page count{% endtrans %}</td></tr>
+				
+						<tr><td class='s-key'>
+						<select name="reply_limit">{% for i in range(250, 750, 25) %}<option value="{{ i }}" {% if config.reply_limit == i %}selected{% endif %}>{{ i }}</option>{% endfor %}</select>
+						</td>
+						<td class='s-value'>{% trans %}Bump limit{% endtrans %}</td></tr>
+
+						<tr><td class='s-key'>
+						<input class='theme-textbox' type="text" name="min_body" value={{ config.min_body }} style="width:33px">
+						</td><td class='s-value'>{% trans %}Minimum OP text length{% endtrans %} <span class="unimportant">(integer between 0 and 1024)</span></td></tr>
+					
+						
+
+
+						<tr><td class='s-key'></td><td style="padding: 16px;"><strong>Moderation</strong></td></tr>
+
+									
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="public_bans" {% if board.public_bans %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>{% trans %}Public bans{% endtrans %}<br><span class="unimportant">{% trans %}Displays your bans for the public{% endtrans %}</span></td></tr>
+						
+						<tr><td class='s-key'>
+						<select name="public_logs"><option value="0" {% if board.public_logs == 0 %}selected{% endif %}>None</option><option value="1" {% if board.public_logs == 1 %}selected{% endif %}>Full log</option><option value="2" {% if board.public_logs == 2 %}selected{% endif %}>Full log, no usernames</option>
+						</td>
+						<td class='s-value'>{% trans %}Public action log{% endtrans %}<br><span class="unimportant">{% trans %}Displays all actions to the public{% endtrans %}</span></span></td></tr>
+								
+									
+	 
+ 
+							 
+						
+						
+	
+
+
+			 
+						
+						
+				</table>
+		</div>
+	</div>
+<br><br>
+
+
+
+	<!-- DISABLE BOARD TYPE
+	<table>
+		<tr><th>{% trans %}Board type{% endtrans %}</th><td><select name="board_type" id="board_type">
+			<option value="imgboard" {% if not config.disable_images and not config.file_board %}selected{% endif %}>Image board</option>
+			<option value="txtboard" {% if config.disable_images %}selected{% endif %}>Text board</option>
+			<option value="fileboard" {% if config.file_board %}selected{% endif %}>File board</option>
+		</select></td></tr>
+	!-->
+
+	<!-- DISABLE ROBOT9000
+	<tr><th><a href="http://blog.xkcd.com/2008/01/14/robot9000-and-xkcd-signal-attacking-noise-in-chat/">{% trans %}ROBOT9000{% endtrans %}</a>
+	</th><td><input type="checkbox" name="robot_enable" {% if config.robot_enable %}checked{% endif %}></td></tr>
+	!-->
+
+	<!-- DISABLE LANGUAGE
+
+	<tr><th>{% trans %}Language{% endtrans %}<br/><span class="unimportant">{% trans %}Read this page for more information about contributing translations:<br><a href="/translation.html">Translation tutorial</a> or use <a href="https://www.transifex.com/projects/p/infinity/">Transifex</a>{% endtrans %}</span></th><td>
+		<select name="locale">
+			<option value="en" {% if "en" == config.locale %}selected{% endif %}>en</option>
+			{% for language in languages %}
+				{% set locale = language ~ '.UTF-8' %}
+				<option value="{{ language }}" {% if locale == config.locale %}selected{% endif %}>{{ language }}</option>
+			{% endfor %}
+		</select>
+		</td></tr>
+	-->
+
+	<!-- DISABLE BOARD TYPE
+
+		<tr class='fileboard'><th>{% trans %}Allowed file types{% endtrans %}</th><td>
+			{% for type in config.fileboard_allowed_types %}
+				<label><input type='checkbox' name='allowed_type[]' value='{{ type }}' {% if type in config.allowed_ext_files %}checked{% endif %}>{{ type }}</label>  
+			{% endfor %}
+		</td></tr>
+		<tr class='fileboard'><th>{% trans %}Disable OP image upload{% endtrans %}</th><td><input type="checkbox" name="allowed_ext_op" {% if config.allowed_ext_op %}checked{% endif %}>
+			<label> (<input type="checkbox" name="allowed_ext_op_video" {% if config.allowed_ext_op and 'webm' in config.allowed_ext_op %}checked{% endif %}> also allow video upload)</label></td></tr>
+		<tr class='fileboard'><th>{% trans %}Keep original filename{% endtrans %}</th><td><input type="checkbox" name="anal_filenames" {% if config.filename_func == 'filename_func' %}checked{% endif %}></td></tr>
+		</tr>
+	-->
+ 
+
+
+	<!-- DISABLE BOARD STYLE
+	<table>
+		<tr><th>{% trans %}Stylesheet{% endtrans %}<br/><span class="unimportant">{% trans %}note: does not validate CSS{% endtrans %}</span><br/><span class="unimportant">{% trans %}Allowed URLs:{% endtrans %}<br/>{{ allowed_urls|join('<br>') }}</span></th><td><textarea name="css" style="height:100px;width:500px">{{css}}</textarea></td><tr>
+	</table>
+	-->
+
+
+	<table id="wf" style="width: 80%;table-layout: fixed;">
+		<th colspan="2">{% trans %}Wordfilters{% endtrans %}</th>
+		<tr><th>{% trans %}Replace{% endtrans %}</th><th>{% trans %}With{% endtrans %}</th></tr>
+		{% if config.wordfilters %}
+			{% for wf in config.wordfilters %}
+				{% if wf.0 != '\\rule' %}
+					<tr><td><input name="replace[]" value="{{wf.0|e}}"></td><td><input name="with[]" value="{{wf.1|e}}"></td></tr>
+				{% endif %}
+			{% endfor %}
+		{% else %}
+			<tr><td><input name="replace[]"></td><td><input name="with[]"></td></tr>
+		{% endif %}
+	</table>
+
+	<ul style="padding:0;text-align:center;list-style:none">
+		<li><input type="button" value="{% trans 'Add another wordfilter' %}" id="wf_add"></li>
+	</ul>
+	
+	<table id="tags" class='fileboard'>
+		<th colspan="2">{% trans %}Tags{% endtrans %}</th>
+                <tr><th>{% trans %}ID{% endtrans %}</th><th>{% trans %}Description{% endtrans %}</th></tr>
+		{% if config.allowed_tags %}
+			{% for tag_id, tag_desc in config.allowed_tags %}
+				<tr><td><input name="tag_id[]" value="{{ tag_id|e }}"></td><td><input name="tag_desc[]" value="{{ tag_desc|e }}"></td></tr>
+			{% endfor %}
+		{% else %}
+			<tr><td><input name="tag_id[]"></td><td><input name="tag_desc[]"></td></tr>
+		{% endif %}
+	</table>
+
+	<ul style="padding:0;text-align:center;list-style:none">
+		<li class='fileboard'><input type="button" value="{% trans 'Add another tag' %}" id="tag_add"></li>
+		<li>	
+		<br>
+			<input type="submit" value="{% trans 'Save changes' %}" class='button'>
+			<br>
+		</li>
+		{#
+		{% if mod|hasPermission(config.mod.deleteboard) %}
+			<li><input name="delete" onclick="return confirm({% trans 'Are you sure you want to permanently delete this board?' %});" type="submit" value="{% trans 'Delete board' %}"></li>
+		{% endif %} #}
+	</ul>
+
+
+
+ 
+	<br><br>
+</form>
+</div>
+
+<script>
+$('#wf_add').on('click', function() {
+  $('#wf').append('<tr><td><input name="replace[]"></td><td><input name="with[]"></td></tr>');
+});
+
+$('#tag_add').on('click', function() {
+  $('#tags').append('<tr><td><input name="tag_id[]"></td><td><input name="tag_desc[]"></td></tr>');
+});
+
+var update_fields;
+$('#board_type').on('change', update_fields = function() {
+  $('.txtboard, .fileboard, .imgboard').hide();
+  $('.'+$('#board_type').val()).show();
+});
+update_fields();
+</script>

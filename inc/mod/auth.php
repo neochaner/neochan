@@ -5,6 +5,7 @@
  */
 
 defined('TINYBOARD') or exit;
+require_once 'inc/functions.php';
 
 // create a hash/salt pair for validate logins
 function mkhash($username, $password, $salt = false) {
@@ -18,7 +19,8 @@ function mkhash($username, $password, $salt = false) {
 	}
 	
 	// generate hash (method is not important as long as it's strong)
-	$hash = substr(base64_encode(md5($username . $config['cookies']['salt'] . sha1($username . $password . $salt . ($config['mod']['lock_ip'] ? $_SERVER['REMOTE_ADDR'] : ''), true), true)), 0, 20);
+	$identity = session::GetIdentity();
+	$hash = substr(base64_encode(md5($username . $config['cookies']['salt'] . sha1($username . $password . $salt . ($config['mod']['lock_ip'] ? $identity : ''), true), true)), 0, 20);
 	
 	if (isset($generated_salt))
 		return array($hash, $salt);
@@ -38,13 +40,17 @@ function login($username, $password, $makehash=true) {
 	if ($makehash) {
 		$password = sha1($password);
 	}
-	
+
+	 
+
 	$query = prepare("SELECT `id`, `type`, `boards`, `password`, `salt` FROM ``mods`` WHERE BINARY `username` = :username");
 	$query->bindValue(':username', $username);
 	$query->execute() or error(db_error($query));
-	
+ 
+
 	if ($user = $query->fetch(PDO::FETCH_ASSOC)) {
 		if ($user['password'] === hash('sha256', $user['salt'] . $password)) {
+
 			return $mod = array(
 				'id' => $user['id'],
 				'type' => $user['type'],
@@ -78,11 +84,15 @@ function destroyCookies() {
 	setcookie($config['cookies']['mod'], 'deleted', time() - $config['cookies']['expire'], $config['cookies']['jail']?$config['cookies']['path'] : '/', null, !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off', true);
 }
 
-function modLog($action, $_board=null) {
+
+function modLog($action, $_board=null, $mod_id=-1) 
+{
+
 	global $mod, $board, $config;
+	$identity = session::GetIdentity();
 	$query = prepare("INSERT INTO ``modlogs`` VALUES (:id, :ip, :board, :time, :text)");
-	$query->bindValue(':id', (isset($mod['id']) ? $mod['id'] : -1), PDO::PARAM_INT);
-	$query->bindValue(':ip', $_SERVER['REMOTE_ADDR']);
+	$query->bindValue(':id', (isset($mod['id']) ? $mod['id'] : $mod_id), PDO::PARAM_INT);
+	$query->bindValue(':ip', $identity);
 	$query->bindValue(':time', time(), PDO::PARAM_INT);
 	$query->bindValue(':text', $action);
 	if (isset($_board))
@@ -130,7 +140,11 @@ function make_secure_link_token($uri) {
 	return substr(sha1($config['cookies']['salt'] . '-' . $uri . '-' . $mod['id']), 0, 8);
 }
 
-function check_login($prompt = false) {
+
+
+function check_login($prompt = false, $dont_exit = false)
+{
+
 	global $config, $mod;
 	// Validate session
 	if (isset($_COOKIE[$config['cookies']['mod']])) {
@@ -139,8 +153,11 @@ function check_login($prompt = false) {
 		if (count($cookie) != 3) {
 			// Malformed cookies
 			destroyCookies();
-			if ($prompt) mod_login();
-			exit;
+			if ($prompt) 
+				mod_login();
+			
+			if(!$dont_exit)
+				exit;
 		}
 		
 		$query = prepare("SELECT `id`, `type`, `boards`, `password` FROM ``mods`` WHERE `username` = :username");
@@ -152,8 +169,11 @@ function check_login($prompt = false) {
 		if ($cookie[1] !== mkhash($cookie[0], $user['password'], $cookie[2])) {
 			// Malformed cookies
 			destroyCookies();
-			if ($prompt) mod_login();
-			exit;
+			if ($prompt) 
+				mod_login();
+				
+			if(!$dont_exit)
+				exit;
 		}
 		
 		$mod = array(
@@ -164,9 +184,6 @@ function check_login($prompt = false) {
 		);
 	}
 
-	if ($config['debug'])
-		$parse_start_time = microtime(true);
-
 	// Fix for magic quotes
 	if (get_magic_quotes_gpc()) {
 		function strip_array($var) {
@@ -176,4 +193,75 @@ function check_login($prompt = false) {
 		$_GET = strip_array($_GET);
 		$_POST = strip_array($_POST);
 	}
+}
+
+function check_profile(){
+
+	global $config, $mod;
+
+	if (!isset($_COOKIE[$config['cookies']['mod']]))
+		return null;
+
+	$cookie = explode(':', $_COOKIE[$config['cookies']['mod']]);
+
+	if (count($cookie) != 3)
+		return null;
+
+	$query = prepare("SELECT `id`, `type`, `boards`, `password` FROM ``mods`` WHERE `username` = :username");
+	$query->bindValue(':username', $cookie[0]);
+	$query->execute() or error(db_error($query));
+	$user = $query->fetch(PDO::FETCH_ASSOC);
+
+	if ($cookie[1] !== mkhash($cookie[0], $user['password'], $cookie[2]))
+		return null;
+
+	$mod = array(
+		'id' => $user['id'],
+		'type' => $user['type'],
+		'username' => $cookie[0],
+		'boards' => explode(',', $user['boards'])
+	);
+
+	return $mod;
+
+}
+
+function check_opmod_login()
+{
+
+	global $config, $mod, $board;
+
+	if(empty($_POST['trip']))
+		return;
+
+
+	$mod_trip=generate_tripcode($_POST['trip']);
+    
+    if(count($mod_trip) < 2)
+		return;
+
+	$mod_trip = $mod_trip[1];
+	$mod_threads = array();
+
+	
+    $query = prepare(sprintf("SELECT id FROM `posts_%s` WHERE `thread` IS NULL AND `trip` =  :trip", $board['uri']));
+    $query->bindValue(':trip', $mod_trip, PDO::PARAM_STR);
+    $query->execute() or error(db_error($query));
+
+	
+    if ($threads = $query->fetchAll(PDO::FETCH_ASSOC)) 
+    { 
+		foreach($threads as $thread)
+			$mod_threads[] = "{$board['uri']}_{$thread['id']}";
+			
+	}
+
+	$mod = array(
+		'id' => 0,
+		'type' => BOARDVOLUNTEER,
+		'username' => $mod_trip,
+		'threads' => $mod_threads,
+	);
+
+
 }

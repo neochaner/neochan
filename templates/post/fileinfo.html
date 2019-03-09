@@ -1,38 +1,77 @@
-	{% if post.embed %}
-		{{ post.embed }}
-    {% else %}
-    <div class="files">
-    {% for file in post.files %}
-        <div class="file{% if post.num_files > 1 %} multifile" style="width:{{ file.thumbwidth + 40 }}px"{% else %}"{% endif %}>
-	{% if file.file == 'deleted' %}
-		<img class="post-image deleted" src="{{ config.root }}{{ config.image_deleted }}" alt="" />
-	{% else %}
-		<p class="fileinfo">File: <a href="{{ config.uri_img }}{{ file.file }}">{{ file.file }}</a> <span class="unimportant">
-		(
-			{% if file.thumb == 'spoiler' %}
-				{% trans %}Spoiler Image{% endtrans %}, 
-			{% endif %}
-			{{ file.size|filesize }}
-			{% if file.width and file.height %}
-				, {{ file.width}}x{{ file.height }}
-				{% if config.show_ratio %}
-					, {{ ratio(file.width, file.height) }}
+{% if post.embed %}
+	{{ post.embed }}
+{% else %}
+    
+<div class="post-files">
+	{% for file in post.files %}
+		{% if file.size < 1048580 %}
+			{% set file_size_str =  ((file.size/1024)|round) ~ ' Кб' %}
+		{% else %}
+			{% set file_size_str =  ((file.size/1024/1024)|round(1, 'floor')) ~ ' Мб' %}
+		{% endif %} 
+
+ 
+		{% if file.file == 'deleted' %}
+
+		<figure class="post-file">
+		<figcaption class="post-file-info">	
+			<span class="post-file-info-item post-file-dims">{{ file.width}}x{{ file.height }}</span>
+			<span class="post-file-info-item post-file-size">{{ file_size_str }}</span>
+		</figcaption>
+		<img class="post-image post-file-link deleted" src="{{ config.root }}{{ config.image_deleted }}" alt="" />
+		</figure>
+		{% else %}
+			{% if file.extension == 'mp3' or file.extension == 'wav' or file.extension == 'ogg' or file.extension == 'flac' or file.extension == 'm4a' %}
+
+
+			{% else %}
+			<figure class="post-file">
+			<figcaption class="post-file-info">	
+				{% if file.video_title %}
+				<span class="file-info-button fa fa-info-circle" onclick='alert("{{ file.video_title }}")'></span>
 				{% endif %}
-			{% endif %}
-			{% if config.show_filename and file.filename %}
-				, 
-				{% if file.filename|length > config.max_filename_display %}
-					<span class="postfilename" title="{{ file.filename|e|bidi_cleanup }}">{{ file.filename|truncate_filename(config.max_filename_display)|e|bidi_cleanup }}</span>
-				{% else %}
-					<span class="postfilename">{{ file.filename|e|bidi_cleanup }}</span>
+
+				{% if thread_trip == 'VideoBot' or thread_trip == 'bot_p2Fi7V' %}
+				<span class="post-file-comm" onclick='window.open("/info.php?md5={{ file.hash }}")' style='margin:0 3px;cursor:pointer'><i class='fa fa-question'></i></span>
 				{% endif %}
+				<span class="post-file-info-item post-file-dims">{{ file.width}}x{{ file.height }}</span>
+				<span class="post-file-info-item post-file-size">{{ file_size_str }}</span>
+			</figcaption>
+
+			{% include "post/file_controls.html" %}
+
+
+			{% include "post/image.html" with {'post':file} %}
+
 			{% endif %}
-		)
-		{% include "post/image_identification.html" %}
-		{% include "post/file_controls.html" %}</span></p>
-	{% include "post/image.html" with {'post':file} %}
-	{% endif %}
+		</figure>
+		{% endif %}
+	{% endfor %}
+
+
+	
+	{% for file in post.files %}
+		{% if file.size < 1048580 %}
+			{% set file_size_str =  ((file.size/1024)|round) ~ ' Кб' %}
+		{% else %}
+			{% set file_size_str =  ((file.size/1024/1024)|round(1, 'floor')) ~ ' Мб' %}
+		{% endif %}  
+
+		{% if file.extension == 'mp3' or file.extension == 'wav' or file.extension == 'ogg' or file.extension == 'flac' or file.extension == 'm4a' %}
+		<figure class="post-file audioplayer is__covered">
+			<figcaption class="post-file-info">
+				<a class="desktop" target="_blank"   id="title-{{ file.hash }}"></a>
+				<div id="exlink-{{ file.hash }}" class="image-link"></div>
+				<span class="post-file-info-item post-file-size">{{ file_size_str }}</span>
+				<span class="post-file-info-item post-file-name" title='{{ file.name }}'>{{ file.name }}</span>
+			</figcaption>
+			{% include "post/sound.html" with {'post':file} %}
+		{% endif %}
+		</figure>
+	{% endfor %}
+
+
+
+
 </div>
-    {% endfor %}
-</div>
-    {% endif %}
+{% endif %}

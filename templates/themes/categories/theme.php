@@ -1,5 +1,5 @@
 <?php
-	require 'info.php';
+include_once $config['dir']['themes'] . '/categories/info.php';
 	
 	function categories_build($action, $settings, $board) {
 		// Possible values for $action:

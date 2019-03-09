@@ -18,8 +18,10 @@ class Twig_Extensions_Extension_Tinyboard extends Twig_Extension
 			new Twig_SimpleFilter('sprintf', 'sprintf'),
 			new Twig_SimpleFilter('capcode', 'capcode'),
 			new Twig_SimpleFilter('remove_modifiers', 'remove_modifiers'),
+			new Twig_SimpleFilter('remove_markups', 'twig_remove_markups'),
 			new Twig_SimpleFilter('hasPermission', 'twig_hasPermission_filter'),
 			new Twig_SimpleFilter('date', 'twig_date_filter'),
+			new Twig_SimpleFilter('dateISO', 'twig_dateISO_filter'),
 			new Twig_SimpleFilter('remove_whitespace', 'twig_remove_whitespace_filter'),
 			new Twig_SimpleFilter('less_ip', 'twig_less_ip'),
 			new Twig_SimpleFilter('count', 'count'),
@@ -47,7 +49,9 @@ class Twig_Extensions_Extension_Tinyboard extends Twig_Extension
 			new Twig_SimpleFunction('hiddenInputsHash', 'hiddenInputsHash'),
 			new Twig_SimpleFunction('ratio', 'twig_ratio_function'),
 			new Twig_SimpleFunction('secure_link_confirm', 'twig_secure_link_confirm'),
-			new Twig_SimpleFunction('secure_link', 'twig_secure_link')
+			new Twig_SimpleFunction('secure_link', 'twig_secure_link'),
+			new Twig_SimpleFunction('filemtime', 'twig_filemtime')
+			
 		);
 	}
 	
@@ -73,6 +77,10 @@ function twig_push_filter($array, $value) {
 
 function twig_remove_whitespace_filter($data) {
 	return preg_replace('/[\t\r\n]/', '', $data);
+}
+
+function twig_dateISO_filter($date) {
+	return gmstrftime("%Y-%m-%dT%H:%M:%SZ", (int) $date);
 }
 
 function twig_date_filter($date, $format) {
@@ -125,14 +133,41 @@ function twig_filename_truncate_filter($value, $length = 30, $separator = '…')
 function twig_ratio_function($w, $h) {
 	return fraction($w, $h, ':');
 }
-function twig_secure_link_confirm($text, $title, $confirm_message, $href) {
+function twig_secure_link_confirm($text, $title, $confirm_message, $href, $with_tag="") {
 	global $config;
 
-	return '<a onclick="if (event.which==2) return true;if (confirm(\'' . htmlentities(addslashes($confirm_message)) . '\')) document.location=\'?/' . htmlspecialchars(addslashes($href . '/' . make_secure_link_token($href))) . '\';return false;" title="' . htmlentities($title) . '" href="?/' . $href . '">' . $text . '</a>';
+	return '<a ' . $with_tag . ' onclick="if (event.which==2) return true;if (confirm(\'' . htmlentities(addslashes($confirm_message)) . '\')) document.location=\'?/' . htmlspecialchars(addslashes($href . '/' . make_secure_link_token($href))) . '\';return false;" title="' . htmlentities($title) . '" href="?/' . $href . '">' . $text . '</a>';
 }
+
+
 function twig_secure_link($href) {
 	return $href . '/' . make_secure_link_token($href);
 }
 function twig_less_ip($ip, $board = '') {
 	return less_ip($ip, $board);
+}
+
+function twig_filemtime($path)
+{
+	if(!file_exists($path) && !empty($path))
+	{
+		$path = substr($path, 1, strlen($path)-1);
+	}
+
+	if(file_exists($path))
+	{
+		$time = filemtime($path);
+		return "$time";	
+	}
+
+	return -1;
+}
+
+function twig_remove_markups($body) {
+	foreach ($config['markup'] as $markup) {
+		if (is_string($markup[1])) {
+			$body = preg_replace($markup[0], '$1', $body);
+		}
+	}
+	return $body;
 }

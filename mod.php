@@ -35,11 +35,6 @@ $pages = array(
 	'/edit_news'				=> 'secure_POST news',		// view news
 	'/edit_news/(\d+)'			=> 'secure_POST news',		// view news
 	'/edit_news/delete/(\d+)'		=> 'secure news_delete',	// delete from news
-
-	'/edit_pages(?:/?(\%b)?)'		=> 'secure_POST pages',
-	'/edit_page/(\d+)'			=> 'secure_POST edit_page',
-	'/edit_pages/delete/([a-z0-9]+)'	=> 'secure delete_page',
-	'/edit_pages/delete/([a-z0-9]+)/(\%b)'	=> 'secure delete_page_board',
 	
 	'/noticeboard'				=> 'secure_POST noticeboard',	// view noticeboard
 	'/noticeboard/(\d+)'			=> 'secure_POST noticeboard',	// view noticeboard
@@ -66,6 +61,24 @@ $pages = array(
 	'/reports/(global)?(?:/)?(\d+)/promote(?:/)?'                             => 'secure report_promote', // promote a local report to a global report
 	'/reports/(global)?(?:/)?(\%b)/(un)?clean/(\d+)/(global)?(?:\+)?(local)?' => 'secure report_clean',   // protect/unprotect from reports
 	
+
+	// board settings  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	'/settings/(\%b)'														=> 'settings',		// general board setttings
+	'/settings/tags/(\%b)' 													=> 'tags',			// edit board tags
+	'/settings/reassign/(\%b)' 												=> 'reassign',		// ???? (прихватизация чужой доски)
+	'/settings/volunteers/(\%b)' 											=> 'volunteers',	// manage board volunteers
+	'/settings/flags/(\%b)' 												=> 'flags',			// add/remove custom flags
+	'/settings/banners/(\%b)' 												=> 'banners',		// add/remove banners
+	'/settings/assets/(\%b)' 												=> 'assets',		// custom assets: spoiler, etc...
+
+	/*
+	'/settings/edit_pages(?:/?(\%b)?)'		=> 'secure_POST pages',
+	'/settings/edit_page/(\d+)'			=> 'secure_POST edit_page',
+	'/settings/edit_pages/delete/([a-z0-9]+)'	=> 'secure delete_page',
+	'/settings/edit_pages/delete/([a-z0-9]+)/(\%b)'	=> 'secure delete_page_board',*/
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 	'/IP/([\w.:]+)'				=> 'secure_POST ip',		// view ip address
 	'/IP/([\w.:]+)/remove_note/(\d+)'	=> 'secure ip_remove_note',	// remove note from ip address
 	'/IP_less/(\%b)/(\d+)'				=> 'secure_POST ip_less',		// view ip address (limited for user privacy)
@@ -84,11 +97,15 @@ $pages = array(
 	
 	// Content management
 	'/(\%b)/ban(&delete)?/(\d+)'                      => 'secure_POST ban_post',   // ban poster
+	'/(\%b)/ban(range)?/(\d+)'                      => 'secure_POST ban_post',   // ban poster
+	'/(\%b)/ban(&delete)?byip/(\d+)(/global)?'        => 'secure_POST ban_postbyip',   // ban poster by ip
 	'/(\%b)/move/(\d+)'                               => 'secure_POST move',       // move thread
 	'/(\%b)/move_reply/(\d+)'                         => 'secure_POST move_reply', // move reply
 	'/(\%b)/edit(_raw)?/(\d+)'                        => 'secure_POST edit_post',  // edit post
 	'/(\%b)/delete/(\d+)'                             => 'secure delete',          // delete post
 	'/(\%b)/deletefile/(\d+)/(\d+)'                   => 'secure deletefile',      // delete file from post
+	'/(\%b)/deletefilebyip/(\d+)/(\d+)'               => 'secure deletefilebyip',      // delete file by IP address from post
+	'/(\%b)/deletefilebyip/(\d+)/(\d+)(/thread)?'     => 'secure deletefilebyip_thread',      // delete file by IP address from post
 	'/(\%b+)/spoiler/(\d+)/(\d+)'                     => 'secure spoiler_image',   // spoiler file
 	'/(\%b+)/spoiler_all/(\d+)'                       => 'secure spoiler_images',   // spoiler file
 	'/(\%b)/deletebyip/(\d+)(/global)?'               => 'secure deletebyip',      // delete all posts by IP address
@@ -173,16 +190,7 @@ foreach ($pages as $uri => $handler) {
 			}
 			$handler = preg_replace('/^secure(_POST)? /', '', $handler);
 		}
-		
-		if ($config['debug']) {
-			$debug['mod_page'] = array(
-				'req' => $query,
-				'match' => $uri,
-				'handler' => $handler,
-			);
-			$debug['time']['parse_mod_req'] = '~' . round((microtime(true) - $parse_start_time) * 1000, 2) . 'ms';
-		}
-		
+				
 		if (is_string($handler)) {
 			if ($handler[0] == ':') {
 				header('Location: ' . substr($handler, 1),  true, $config['redirect_http']);

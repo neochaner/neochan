@@ -1,0 +1,71 @@
+
+{% if board is iterable %}
+{% set board_uri = board.uri %}
+{% else %}
+{% set board_uri = board %}
+{% endif %}
+
+<!--
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+-->
+
+<style>
+.btn-group>.button:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+    border-radius: 0 !important;
+	border-right: 0;
+}
+
+.btn-group>.button:first-child{
+    border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border-right: 0;
+	
+}
+
+.btn-group>.button:last-child{
+    border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	
+}
+
+</style>
+
+<nav class="board-settings" style="text-align: center">
+<div class="btn-group" role="group" aria-label="...">
+	<a class="button {% if active_modpage=='settings' %}button-active{% endif %} l_mod_settings"  href="?/settings/{{board_uri}}"></a>
+<!-- TEMPORARY DISABLED
+	<a class="button {% if active_modpage=='banners' %}button-active{% endif %} l_mod_banners"  href="?/settings/banners/{{board_uri}}"></a>
+-->
+	<a class="button {% if active_modpage=='assets' %}button-active{% endif %} l_mod_assets" href="?/settings/assets/{{board_uri}}"></a>
+	<a class="button {% if active_modpage=='flags' %}button-active{% endif %} l_mod_flags"  href="?/settings/flags/{{board_uri}}"></a>
+	<a class="button {% if active_modpage=='volunteers' %}button-active{% endif %} l_mod_volunteers"  href="?/settings/volunteers/{{board.uri}}"></a>
+	<a class="button {% if active_modpage=='tags' %}button-active{% endif %} l_mod_tags"  href="?/settings/tags/{{board_uri}}"></a>
+<!-- TEMPORARY DISABLED
+	<a class="button {% if active_modpage=='edit_pages' %}button-active{% endif %}  l_mod_pages"  href="?/settings/edit_pages/{{board_uri}}"></a>
+-->
+</div>
+</nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

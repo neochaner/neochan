@@ -1,5 +1,5 @@
 <?php
-	require 'info.php';
+include_once $config['dir']['themes'] . '/basic/info.php';
 	
 	function basic_build($action, $settings, $board) {
 		// Possible values for $action:

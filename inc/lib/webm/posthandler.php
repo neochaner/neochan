@@ -14,6 +14,11 @@ function postHandler($post) {
           $file->width = $webminfo['width'];
           $file->height = $webminfo['height'];
 
+          if(isset($webminfo['title']))
+          {
+              $file->video_title = $webminfo['title'];
+          }
+
           if ($config['spoiler_images'] && isset($_POST['spoiler'])) {
             $file = webm_set_spoiler($file);
           }

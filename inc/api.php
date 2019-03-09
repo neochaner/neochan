@@ -93,10 +93,27 @@ class Api {
 		$dotPos = strrpos($file->file, '.');
 		$apiPost['ext'] = substr($file->file, $dotPos);
 		$apiPost['tim'] = urlencode(substr($file->file, 0, $dotPos));
+		$apiPost['spoiler'] = (isset($file->thumb_path) && $file->thumb_path == "spoiler") ? 1 : 0;
 		if (isset($file->hash))
 			$apiPost['md5'] = base64_encode(hex2bin($file->hash));
 	}
 
+        private function get_embed_thumb($apiPost,$post_embed){
+
+          if (strpos($post_embed, 'xhamster.com') !== false) {
+            preg_match('/<div\s.*?\bstyle=\"background-image:url\(\'(.*?)\".*>/si', stripslashes($post_embed), $matches);
+            $matches[1] = substr($matches[1], 0, strpos($matches[1], "');"));
+          }else{
+            preg_match('/<img\s.*?\bsrc=\"(.*?)\".*>/si', stripslashes($post_embed), $matches);      if ((strpos($post_embed, 'vimeo.com') !== false) || (strpos($post_embed, 'tube8.com') !== false) || (strpos($post_embed, 'youjizz.com') !== false) || (strpos($post_embed, 'dailymotion.com') !== false) || (strpos($post_embed, 'vaughnlive.tv') !== false) || (strpos($post_embed, 'streamable.com') !== false) || (strpos($post_embed, 'soundcloud.com') !== false) || (strpos($post_embed, 'vlive.tv') !== false)) {
+              $matches[1] = "https://8ch.net".$matches[1];
+            }
+          }
+
+          if(isset($matches[1])) $apiPost['embed_thumb'] = $matches[1];
+
+          return $apiPost;
+        }
+	
 	private function translatePost($post, $threadsPage = false) {
 		global $config, $board;
 		$apiPost = array();
@@ -111,6 +128,8 @@ class Api {
 			}
 		}
 
+		$apiPost = $this->get_embed_thumb($apiPost,$post->embed);
+		
 		if ($threadsPage) return $apiPost;
 
 		// Handle country field

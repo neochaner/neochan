@@ -10,7 +10,7 @@
 		{% endif %}
 		<th>&hellip;</th>
 	</tr>
-	
+{% if users is iterable %}
 	{% for user in users %}
 		<tr>
 			<td><small>{{ user.id }}</small></td>
@@ -83,3 +83,5 @@
 	</p>
 {% endif %}
 
+
+{% endif %}

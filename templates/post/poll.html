@@ -1,0 +1,14 @@
+{% if post.poll %}
+{% set poll_counter = 0 %}
+<div class="poll" style="opacity: 1;">
+{% for poll in post.poll %}
+    <div class="poll-group"> 
+        <a class="poll-control" href='/api.php?vote={{ poll_counter }}&board={{ board.uri }}&post={{ post.id }}'>
+        <i class="fa fa-check"><b>{{ poll.text }}</b></i></a><small>({{ poll.percent }}%, {{ poll.votes }} Голосов)</small>
+        <div class="pollbar" style="width: {{ poll.percent }}%;"></div>
+    </div>
+    {% set poll_counter = poll_counter + 1 %}
+{% endfor %}
+
+</div>
+{% endif %}

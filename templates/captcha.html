@@ -1,0 +1,11 @@
+
+<div class="captcha-box" style="width: 600px; margin: 6px 0 20px 0;"> 
+	<div id="captcha" data-timeout="{{ config.captcha.expires_in }}" class="captcha-wrap" style="width:{{ config.captcha.width }}px; height:{{ config.captcha.height }}px">
+		<iframe id='captcha-iframe' src="{{ config.captcha.provider_get }}?board={{ board.uri }}&thread={{ id }}" width="{{ config.captcha.width }}px" height="{{ config.captcha.height }}px" frameborder="0" hspace="0" vspace="0" marginheight="2px" marginwidth="0" scrolling="no" seamless></iframe>
+	</div>
+
+	<div style="margin: 0px 12px;"> 
+		<span class="l_enter_captcha" style="display:block;margin-left: 2px;"></span>
+		<input class="captcha_text theme-textbox" type="text" name="captcha_text" size="25" maxlength="6" autocomplete="new-password" style="width:120px; box-sizing: border-box;">
+	</div>
+</div>

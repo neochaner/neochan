@@ -1,0 +1,13 @@
+{%set smiles_css = config.root ~ 'stylesheets/smiles.css'%}
+{%set smiles_css_time = filemtime('stylesheets/smiles.css')%}
+
+{%set plyr_css_time = filemtime('stylesheets/plyr/plyr.css')%}
+
+
+
+
+
+
+
+<link rel="stylesheet" href="{{ smiles_css }}?{{ smiles_css_time }}">
+<link rel="stylesheet" id="plyr_theme" type="text/css" href="/stylesheets/plyr/plyr3.5.2.css?{{ plyr_css_time }}">

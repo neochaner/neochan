@@ -5,28 +5,19 @@
  *   $config['additional_javascript'][] = 'js/jquery.min.js';
  *   $config['additional_javascript'][] = 'js/file-selector.js';
  */
-function init_file_selector(max_images) {
 
-$(document).ready(function () {
-	// add options panel item
-	if (window.Options && Options.get_tab('general')) {
-		Options.extend_tab('general', '<label id="file-drag-drop"><input type="checkbox">' + _('Drag and drop file selection') + '</label>');
 
-		$('#file-drag-drop>input').on('click', function() {
-			if ($('#file-drag-drop>input').is(':checked')) {
-				localStorage.file_dragdrop = 'true';
-			} else {
-				localStorage.file_dragdrop = 'false';
-			}
-		});
-
-		if (typeof localStorage.file_dragdrop === 'undefined') localStorage.file_dragdrop = 'true';
-		if (localStorage.file_dragdrop === 'true') $('#file-drag-drop>input').prop('checked', true);
-	}
+$(document).ready(function() {
+	if(typeof config != 'undefined')
+		init_file_selector(config.max_images);
 });
 
-// disabled by user, or incompatible browser.
-if (localStorage.file_dragdrop == 'false' || !(window.URL.createObjectURL && window.File))
+
+function init_file_selector(max_images) {
+
+
+// incompatible browser.
+if ( !(window.URL && window.URL.createObjectURL && window.File))
 	return;
 
 // multipost not enabled
@@ -35,12 +26,16 @@ if (typeof max_images == 'undefined') {
 }
 
 var files = [];
-$('#upload_file').hide();  // hide the original file selector
+$('#upload_file').hide();  // remove the original file selector
 $('.dropzone-wrap').css('user-select', 'none').show();  // let jquery add browser specific prefix
 
-function addFile(file) {
+function addFile(file) 
+{
+	
 	if (files.length == max_images)
+	{
 		return;
+	}
 
 	files.push(file);
 	addThumb(file);
@@ -57,6 +52,7 @@ function getThumbElement(file) {
 function addThumb(file) {
 
 	var fileName = (file.name.length < 24) ? file.name : file.name.substr(0, 22) + '…';
+	var spoiler = "<label class='checktainer_xs' style='margin-left:5px;bottom:2px'>Спойлер<input id=\"spoiler_"+file.size+"\" type='checkbox'><span class='checkmark_xs'></span></label>";
 	var fileType = file.type.split('/')[0];
 	var fileExt = file.type.split('/')[1];
 	var $container = $('<div>')
@@ -65,7 +61,9 @@ function addThumb(file) {
 		.append(
 			$('<div>').addClass('remove-btn').html('✖'),
 			$('<div>').addClass('file-tmb'),
-			$('<div>').addClass('tmb-filename').html(fileName)
+			$('<div>').addClass('tmb-filename').html(spoiler)
+			//$('<div>').addClass('tmb-filename').html(fileName)
+			
 		)
 		.appendTo('.file-thumbs');
 
@@ -80,57 +78,108 @@ function addThumb(file) {
 }
 
 $(document).on('ajax_before_post', function (e, formData) {
-	for (var i=0; i<max_images; i++) {
+
+	var old_vi = false;
+
+	for (var i=0; i<max_images; i++)
+	{
 		var key = 'file';
 		if (i > 0) key += i + 1;
+		if (typeof files[i] === 'undefined') break;
+ 
+		var spkey = "spoiler_" + files[i].size;
+		var state = false;
+
+		if(document.getElementById(spkey) && document.getElementById(spkey).checked)
+		{
+			state = true;
+		} 
+		formData.append(spkey, state);
 		formData.append(key, files[i]);
+
+		// old vichan support
+		if(!old_vi && state)
+		{
+			formData.append('spoiler', 'on');
+			old_vi = true;
+		}
 	}
+
+
+
 });
 
 // clear file queue and UI on success
-$(document).on('ajax_after_post', function () {
+$(document).on('clear_post_files', function () {
 	files = [];
 	$('.file-thumbs').empty();
 });
 
+var is_firefox = (/Firefox/i.test(navigator.userAgent));
+
 var dragCounter = 0;
 var dropHandlers = {
-	dragenter: function (e) {
-		e.stopPropagation();
-		e.preventDefault();
+	dragenter: function (e) 
+	{
+		if(e.originalEvent.dataTransfer == null || e.originalEvent.dataTransfer.types[0] == 'Files') 
+		{
 
-		if (dragCounter === 0) $(this).addClass('dragover');
-		dragCounter++;
+			e.stopPropagation();
+			e.preventDefault();
+
+			if (dragCounter === 0) $('.dropzone').addClass('dragover');
+			dragCounter++;
+		}
+
 	},
 	dragover: function (e) {
 		// needed for webkit to work
-		e.stopPropagation();
-		e.preventDefault();
+ 
+
+		if(is_firefox)// && (e.originalEvent.dataTransfer == null || e.originalEvent.dataTransfer.types[0] == 'Files'))
+		{
+			e.stopPropagation();
+			e.preventDefault();
+		}
 	},
 	dragleave: function (e) {
-		e.stopPropagation();
-		e.preventDefault();
 
-		dragCounter--;
-		if (dragCounter === 0) $(this).removeClass('dragover');
+		if(e.originalEvent.dataTransfer.types[0] == 'Files')
+		{
+			e.stopPropagation();
+			e.preventDefault();
+
+			dragCounter--;
+			if (dragCounter === 0) $('.dropzone').removeClass('dragover');
+		}
 	},
 	drop: function (e) {
-		e.stopPropagation();
-		e.preventDefault();
 
-		$(this).removeClass('dragover');
-		dragCounter = 0;
+		if(e.originalEvent.dataTransfer.files.length != 0)
+		{
+	
+			e.stopPropagation();
+			e.preventDefault();
 
-		var fileList = e.originalEvent.dataTransfer.files;
-		for (var i=0; i<fileList.length; i++) {
-			addFile(fileList[i]);
+			$('.dropzone').removeClass('dragover');
+			dragCounter = 0;
+
+			var fileList = e.originalEvent.dataTransfer.files;
+			for (var i=0; i<fileList.length; i++) {
+				addFile(fileList[i]);
+			}
 		}
+
 	}
 };
 
 
-// attach handlers
-$(document).on(dropHandlers, '.dropzone');
+
+
+if(!is_mobile)
+{
+	$(document).on(dropHandlers);
+}
 
 $(document).on('click', '.dropzone .remove-btn', function (e) {
 	e.stopPropagation();
@@ -141,27 +190,25 @@ $(document).on('click', '.dropzone .remove-btn', function (e) {
 	removeFile(file);
 });
 
-$(document).on('keypress click', '.dropzone', function (e) {
+
+$(document).on('keypress click', '.reply-attach-control', function (e) {
 	e.stopPropagation();
 
-	// accept mouse click or Enter
-	if ((e.which != 1 || e.target.className != 'file-hint') &&
-		 e.which != 13)
-		return;
 
-	var $fileSelector = $('<input type="file" multiple>');
+	$('<input type="file" id="fsel" style="display:none" multiple>').insertAfter('.reply-files')
 
-	$fileSelector.on('change', function (e) {
+	$('#fsel').on('change', function (e) {
 		if (this.files.length > 0) {
 			for (var i=0; i<this.files.length; i++) {
 				addFile(this.files[i]);
 			}
 		}
-		$(this).remove();
+		$('#fsel').remove();
 	});
 
-	$fileSelector.click();
+	$('#fsel').click();
 });
+
 
 $(document).on('paste', function (e) {
 	var clipboard = e.originalEvent.clipboardData;

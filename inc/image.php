@@ -6,7 +6,8 @@
 
 defined('TINYBOARD') or exit;
 
-class Image {
+class Image 
+{
 	public $src, $format, $image, $size;
 	public function __construct($src, $format = false, $size = false) {
 		global $config;
@@ -233,7 +234,7 @@ class ImageImagick extends ImageBase {
 
 
 class ImageConvert extends ImageBase {
-	public $width, $height, $temp, $gm = false, $gifsicle = false;
+	public $width, $height, $temp, $gm = false, $gifsicle = false, $error=false;
 	
 	public function init() {
 		global $config;
@@ -340,7 +341,8 @@ class ImageConvert extends ImageBase {
 						$this->height,
 						escapeshellarg($this->temp)))) || !file_exists($this->temp)) {
 					$this->destroy();
-					error(_('Failed to resize image!'), null, $error);
+					$this->error = true;
+					//error(_('Failed to resize image!'), null, $error);
 				}
 				if ($size = $this->get_size($this->temp)) {
 					$this->width = $size[0];
@@ -366,11 +368,13 @@ class ImageConvert extends ImageBase {
 					if (strpos($error, "known incorrect sRGB profile") === false &&
                                             strpos($error, "iCCP: Not recognizing known sRGB profile that has been edited") === false) {
 						$this->destroy();
-						error(_('Failed to resize image!')." "._('Details: ').nl2br(htmlspecialchars($error)), null, array('convert_error' => $error));
+						$this->error=true;
+						//error(_('Failed to resize image!')." "._('Details: ').nl2br(htmlspecialchars($error)), null, array('convert_error' => $error));
 					}
 					if (!file_exists($this->temp)) {
 						$this->destroy();
-						error(_('Failed to resize image!'), null, $error);
+						$this->error=true;
+						//error(_('Failed to resize image!'), null, $error);
 					}
 			}
 			if ($size = $this->get_size($this->temp)) {
@@ -489,23 +493,23 @@ class ImageJPEG extends ImageJPG {
 
 class ImageBMP extends ImageBase {
 	public function from() {
-		$this->image = @imagecreatefrombmp($this->src);
+		$this->image = @imagecreatefrombmp_old($this->src);
 	}
 	public function to($src) {
-		imagebmp($this->image, $src);
+		imagebmp_old($this->image, $src);
 	}
 }
 
 
 /*********************************************/
-/* Fonction: imagecreatefrombmp              */
+/* Fonction: imagecreatefrombmp_old          */
 /* Author:   DHKold                          */
 /* Contact:  admin@dhkold.com                */
 /* Date:     The 15th of June 2005           */
 /* Version:  2.0B                            */
 /*********************************************/
 
-function imagecreatefrombmp($filename) {
+function imagecreatefrombmp_old($filename) {
    if (! $f1 = fopen($filename,"rb")) return FALSE;
    $FILE = unpack("vfile_type/Vfile_size/Vreserved/Vbitmap_offset", fread($f1,14));
    if ($FILE['file_type'] != 19778) return FALSE;
@@ -583,7 +587,7 @@ function imagecreatefrombmp($filename) {
  return $res;
 }
 
-function imagebmp(&$img, $filename='') {
+function imagebmp_old(&$img, $filename='') {
 	$widthOrig = imagesx($img);
 	$widthFloor = ((floor($widthOrig/16))*16);
 	$widthCeil = ((ceil($widthOrig/16))*16);

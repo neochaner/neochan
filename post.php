@@ -4,6 +4,7 @@
  */
 require "./inc/functions.php";
 require "./inc/anti-bot.php";
+ 
 
 // Fix for magic quotes
 if (get_magic_quotes_gpc()) {
@@ -87,6 +88,7 @@ if (isset($_POST['delete'])) {
 		}
 	}
 	
+
 	buildIndex();
 
 	$is_mod = isset($_POST['mod']) && $_POST['mod'];
@@ -99,9 +101,9 @@ if (isset($_POST['delete'])) {
 		echo json_encode(array('success' => true));
 	}
 
-        // We are already done, let's continue our heavy-lifting work in the background (if we run off FastCGI)
-        if (function_exists('fastcgi_finish_request'))
-                @fastcgi_finish_request();
+    // We are already done, let's continue our heavy-lifting work in the background (if we run off FastCGI)
+    if (function_exists('fastcgi_finish_request'))
+            @fastcgi_finish_request();
 
 	rebuildThemes('post-delete', $board['uri']);
 
@@ -116,7 +118,9 @@ if (isset($_POST['delete'])) {
 		}
 	}
 	
-	if (checkDNSBL()) error("Tor users may not report posts.");
+	//if (checkDNSBL()) 
+	if(!$config['tor_allow_reports'] && session::$is_onion)
+		error("Tor users may not report posts.");
 		
 	// Check if board exists
 	if (!openBoard($_POST['board']))
@@ -124,6 +128,9 @@ if (isset($_POST['delete'])) {
 	
 	// Check if banned
 	checkBan($board['uri']);
+	
+	if(strlen($_POST['reason']) > 50)
+		error($config['error']['report_limit_50']);
 	
 	if (empty($report))
 		error($config['error']['noreport']);
@@ -135,7 +142,10 @@ if (isset($_POST['delete'])) {
 		error($config['error']['bot']);
 	}
 
-	if ($config['report_captcha']) {
+	if ($config['report_captcha']) 
+	{
+		die('function is temporary unavalible...');
+		/*
 		$resp = file_get_contents($config['captcha']['provider_check'] . "?" . http_build_query([
 			'mode' => 'check',
 			'text' => $_POST['captcha_text'],
@@ -145,12 +155,13 @@ if (isset($_POST['delete'])) {
 
 		if ($resp !== '1') {
 			$error = $config['error']['captcha'];
-		}
+		}*/
 	}
 	
 	if (isset($error)) {
 		if ($config['report_captcha']) {
-			$captcha = generate_captcha($config['captcha']['extra']);
+			die('function is temporary unavalible...');
+			//$captcha = generate_captcha($config['captcha']['extra']);
 		} else {
 			$captcha = null;
 		}
@@ -191,11 +202,12 @@ if (isset($_POST['delete'])) {
 						' for "' . $reason . '"'
 					);
 				}
+				$identity = session::GetIdentity();
 				
 				$query = prepare("INSERT INTO `reports` (`time`, `ip`, `board`, `post`, `reason`, `local`, `global`) VALUES (:time, :ip, :board, :post, :reason, :local, :global)");
 				$query->bindValue(':time',   time(), PDO::PARAM_INT);
-				$query->bindValue(':ip',     $_SERVER['REMOTE_ADDR'], PDO::PARAM_STR);
-				$query->bindValue(':board',  $board['uri'], PDO::PARAM_INT);
+				$query->bindValue(':ip',     $identity, PDO::PARAM_STR);
+				$query->bindValue(':board',  $board['uri'], PDO::PARAM_STR);
 				$query->bindValue(':post',   $id, PDO::PARAM_INT);
 				$query->bindValue(':reason', $reason, PDO::PARAM_STR);
 				$query->bindValue(':local',  $report_local, PDO::PARAM_BOOL);
@@ -208,15 +220,28 @@ if (isset($_POST['delete'])) {
 	$is_mod = isset($_POST['mod']) && $_POST['mod'];
 	$root = $is_mod ? $config['root'] . $config['file_mod'] . '?/' : $config['root'];
 	
-	if (!isset($_POST['json_response'])) {
+	/*if (!isset($_POST['json_response'])) {
 		$index = $root . $board['dir'] . $config['file_index'];
 		echo Element('page.html', array('config' => $config, 'body' => '<div style="text-align:center"><a href="javascript:window.close()">[ ' . _('Close window') ." ]</a> <a href='$index'>[ " . _('Return') . ' ]</a></div>', 'title' => _('Report submitted!')));
-	} else {
-		header('Content-Type: text/json');
-		echo json_encode(array('success' => true));
-	}
+	} else {*/
+	header('Content-Type: text/json');
+	echo json_encode(array('success' => true));
+	//}
 }
-elseif (isset($_POST['post'])) {
+elseif (isset($_POST['post'])) 
+{
+
+
+	if(isset($_POST['name'], $_POST['neoname']) && strlen($_POST['name']) > 0){
+
+		file_put_contents('tmp/robot_spam_' . time() . '.json', json_encode($_POST));
+		error($config['error']['bot']);
+	}
+
+	if(isset($_POST['neoname'])){
+		$_POST['name'] = $_POST['neoname'];
+	}
+
 	if (!isset($_POST['body'], $_POST['board'])) {
 		error($config['error']['bot']);
 	}
@@ -232,9 +257,17 @@ elseif (isset($_POST['post'])) {
 		error($config['error']['noboard']);
 
 	
-	if (!isset($_POST['name']))
+	if (!isset($_POST['name'])){
 		$_POST['name'] = $config['anonymous'];
-	
+	} else {
+		if (stripos($_POST['name'], 'sage') === 0){
+			
+			$_POST['no-bump'] = true;
+			$_POST['name'] = substr($_POST['name'], 4);
+
+		}
+	}
+ 
 	if (!isset($_POST['email']))
 		$_POST['email'] = '';
 	
@@ -250,50 +283,34 @@ elseif (isset($_POST['post'])) {
 	} else
 		$post['op'] = true;
 
-	// The dnsbls is an optional DNS blacklist include.
-	// Squelch warnings if it doesn't exist.
-	if (!$config['captcha']['enabled'] && !($post['op'] && $config['new_thread_capt'])) {
-		@include "./inc/dnsbls.php";
-	}
 
-	// Check if banned
-	checkBan($board['uri']);
 
-	// Check for CAPTCHA right after opening the board so the "return" link is in there
-	if ($config['recaptcha']) {
-		if (!isset($_POST['recaptcha_challenge_field']) || !isset($_POST['recaptcha_response_field']))
-			error($config['error']['bot']);
-		// Check what reCAPTCHA has to say...
-		$resp = recaptcha_check_answer($config['recaptcha_private'],
-			$_SERVER['REMOTE_ADDR'],
-			$_POST['recaptcha_challenge_field'],
-			$_POST['recaptcha_response_field']);
-		if (!$resp->is_valid) {
-			error($config['error']['captcha']);
+
+
+
+	session::Load();
+
+	if(session::antispam_state() == 0){
+		$html = "Вам необходимо пройти\n<a href='/antispam.php?board={$_POST['board']}'>антиспам проверку</a>";
+		server_reponse($html, array('success'=> false, 'need_antispam_check'=> $html));
+	}  
+
+
+	// Проверка на капчу при создании треда и отправке поста
+	if(($config['captcha']['enabled_for_post'] && !$post['op']) || ($config['captcha']['enabled_for_thread'] && $post['op'])){
+
+		if (!chanCaptcha::check()) {
+				server_reponse("l_captcha_mistype", array('success'=> false, 'l_captcha_mistype'=> true), $_SERVER['HTTP_REFERER']);
 		}
 	}
 
-	// Same, but now with our custom captcha provider
-	//if ($config['captcha']['enabled']) {
-	//New thread captcha
-	if (($config['captcha']['enabled']) || (($post['op']) && ($config['new_thread_capt'])) ) {
-		$resp = file_get_contents($config['captcha']['provider_check'] . "?" . http_build_query([
-			'mode' => 'check',
-			'text' => $_POST['captcha_text'],
-			'extra' => $config['captcha']['extra'],
-			'cookie' => $_POST['captcha_cookie']
-		]));
 
-		if ($resp !== '1') {
-                        error($config['error']['captcha'] .
-			'<script>if (actually_load_captcha !== undefined) actually_load_captcha("'.$config['captcha']['provider_get'].'", "'.$config['captcha']['extra'].'");</script>');
-		}
-	}
+ 
 
-	//if (!(($post['op'] && $_POST['post'] == $config['button_newtopic']) ||
-		//(!$post['op'] && $_POST['post'] == $config['button_reply'])))
-		//error($config['error']['bot']);
-	
+	checkNBan(isset($post['thread']) ? $post['thread'] : NULL);
+
+ 
+
 	// Check the referrer
 	if ($config['referer_match'] !== false &&
 		(!isset($_SERVER['HTTP_REFERER']) || !preg_match($config['referer_match'], rawurldecode($_SERVER['HTTP_REFERER'])))) {
@@ -329,62 +346,49 @@ elseif (isset($_POST['post'])) {
 		checkMute();
 	}
 	
+    /*Check Force Anonymous thread*/
+	if(isset($config['force_anon_thread']))
+	{
+        if (isset($_POST['force_anon']) && $post['op']) {
+                $post['force_anon'] = true;
+        } else{
+                $post['force_anon'] = false;
+
+                if (isset($_POST['thread'])) {
+                    //Check if force_anon is enable or 1, then forced anonymous, to avoid field form injection.
+                    $query = prepare(sprintf("SELECT `force_anon` FROM ``posts_%s`` WHERE `id` = :id", $board['uri']));
+                    $query->bindValue(':id', $post['thread'], PDO::PARAM_INT);
+                    $query->execute() or error(db_error());
+						
+					if ($row = $query->fetch()) {
+                        if($row['force_anon']==1){
+                            $_POST['name'] = $config['anonymous']; // forced anonymous
+                        }
+                    }
+                }
+
+        }
+    }
+	
 	//Check if thread exists
 	if (!$post['op']) {
-		$query = prepare(sprintf("SELECT `sticky`,`locked`,`cycle`,`sage` FROM ``posts_%s`` WHERE `id` = :id AND `thread` IS NULL LIMIT 1", $board['uri']));
+		$query = prepare(sprintf("SELECT `sticky`,`locked`,`cycle`,`sage`,`trip` FROM ``posts_%s`` WHERE `id` = :id AND `thread` IS NULL LIMIT 1", $board['uri']));
 		$query->bindValue(':id', $post['thread'], PDO::PARAM_INT);
 		$query->execute() or error(db_error());
 		
-		if (!$thread = $query->fetch(PDO::FETCH_ASSOC)) {
+		if (!$thread = $query->fetch(PDO::FETCH_ASSOC)) 
+		{
 			// Non-existant
 			error($config['error']['nonexistant']);
+		}
+
+		if(!empty($thread['trip']))
+		{
+			checkBan($thread['trip']);
 		}
 	}
 		
 	
-	// Check for an embed field
-	if ($config['enable_embedding'] && isset($_POST['embed']) && !empty($_POST['embed'])) {
-		// yep; validate it
-		$value = $_POST['embed'];
-		foreach ($config['embedding'] as &$embed) {
-			if (preg_match($embed[0], $value)) {
-				// Valid link
-				$post['embed'] = $value;
-				// This is bad, lol.
-				$post['no_longer_require_an_image_for_op'] = true;
-				break;
-			}
-		}
-		if (!isset($post['embed'])) {
-			error($config['error']['invalid_embed']);
-		}
-
-		if ($config['image_reject_repost']) {
-			if ($p = getPostByEmbed($post['embed'])) {
-				error(sprintf($config['error']['fileexists'], 
-					($post['mod'] ? $config['root'] . $config['file_mod'] . '?/' : $config['root']) .
-					($board['dir'] . $config['dir']['res'] .
-						($p['thread'] ?
-							$p['thread'] . '.html#' . $p['id']
-						:
-							$p['id'] . '.html'
-						))
-				));
-			}
-		} else if (!$post['op'] && $config['image_reject_repost_in_thread']) {
-			if ($p = getPostByEmbedInThread($post['embed'], $post['thread'])) {
-				error(sprintf($config['error']['fileexistsinthread'], 
-					($post['mod'] ? $config['root'] . $config['file_mod'] . '?/' : $config['root']) .
-					($board['dir'] . $config['dir']['res'] .
-						($p['thread'] ?
-							$p['thread'] . '.html#' . $p['id']
-						:
-							$p['id'] . '.html'
-						))
-				));
-			}
-		}
-	}
 	
 	if (!hasPermission($config['mod']['bypass_field_disable'], $board['uri'])) {
 		if ($config['field_disable_name'])
@@ -423,12 +427,14 @@ elseif (isset($_POST['post'])) {
 			error($config['error']['unknownext']);
 
 		$post['file_tmp'] = tempnam($config['tmp'], 'url');
-		function unlink_tmp_file($file) {
-			@unlink($file);
-			fatal_error_handler();
-		}
-		register_shutdown_function('unlink_tmp_file', $post['file_tmp']);
+
+ 
+
+		register_shutdown_function('fatal_unlink', $post['file_tmp']);
 		
+
+
+
 		$fp = fopen($post['file_tmp'], 'w');
 		
 		$curl = curl_init();
@@ -476,12 +482,17 @@ elseif (isset($_POST['post'])) {
 
 	// Handle our Tor users
 	$tor = checkDNSBL();
+	
 	if ($tor && !(isset($_SERVER['HTTP_X_TOR'], $_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] == '127.0.0.2' && $_SERVER['HTTP_X_TOR'] = 'true'))
-		error('To post on 8chan over Tor, you must use the hidden service for security reasons. You can find it at <a href="http://fullchan4jtta4sx.onion">http://fullchan4jtta4sx.onion</a>.');
+	{
+		if(!$config['tor_posting_on_web'])
+			error('To post on neochan over Tor, you must use the hidden service for security reasons. You can find it at <a href="http://fullchan4jtta4sx.onion">http://fullchan4jtta4sx.onion</a>.');
+	}
 	if ($tor && $post['has_file'] && !$config['tor_image_posting'])
 		error('Sorry. Tor users can\'t upload files on this board.');
 	if ($tor && !$config['tor_posting'])
 		error('Sorry. The owner of this board has decided not to allow Tor posters for some reason...');
+
 
 	if ($post['has_file'] && $config['disable_images']) {
 		error($config['error']['images_disabled']);
@@ -498,7 +509,8 @@ elseif (isset($_POST['post'])) {
 	if ($config['force_subject_op'] && $post['op']) {
 		$stripped_whitespace = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $post['subject']);
 		if ($stripped_whitespace == '') {
-			error(_('It is required to enter a subject when starting a new thread on this board.'));
+
+			error(_('It is required to enter a [' . $post['subject']  . '] subject when starting a new thread on this board.'));
 		}
 	}
 	
@@ -588,13 +600,17 @@ elseif (isset($_POST['post'])) {
 
 				if (sizeof($_FILES) > 1)
 					$file['file_id'] .= "-$i";
-				
+
+
+				$file['fat'] =  ($config['fat_system'] == true && $file['size'] > $config['fat_size']);
 				$file['file'] = $config['dir']['img_root'] . $board['dir'] . $config['dir']['img'] . $file['file_id'] . '.' . $file['extension'];
+				 
 
 				while (file_exists ($file['file'])) {
-					$file['file_id'] .= rand(0,9);
+					$file['file_id'] .= rand(0,19);
 					$file['file'] = $config['dir']['img_root'] . $board['dir'] . $config['dir']['img'] . $file['file_id'] . '.' . $file['extension'];
 				}
+
 
 				$file['thumb'] = $config['dir']['img_root'] . $board['dir'] . $config['dir']['thumb'] . $file['file_id'] . '.' . ($config['thumb_ext'] ? $config['thumb_ext'] : $file['extension']);
 				$post['files'][] = $file;
@@ -602,6 +618,7 @@ elseif (isset($_POST['post'])) {
 			}
 		}
 	}
+ 
 
 	if (empty($post['files'])) $post['has_file'] = false;
 
@@ -623,7 +640,7 @@ elseif (isset($_POST['post'])) {
 	}
 	
 	// Check string lengths
-	if (mb_strlen($post['name']) > 35)
+	if (mb_strlen($post['name']) > 20)
 		error(sprintf($config['error']['toolong'], 'name'));	
 	if (mb_strlen($post['email']) > 40)
 		error(sprintf($config['error']['toolong'], 'email'));
@@ -653,23 +670,45 @@ elseif (isset($_POST['post'])) {
 	}
 	
 	if (($config['country_flags'] && (!$config['allow_no_country'] || $config['force_flag'])) || ($config['country_flags'] && $config['allow_no_country'] && !isset($_POST['no_country']))) {
-		require 'inc/lib/geoip/geoip.inc';
-		$gi=geoip\geoip_open('inc/lib/geoip/GeoIPv6.dat', GEOIP_STANDARD);
-	
-		function ipv4to6($ip) {
-			if (strpos($ip, ':') !== false) {
-				if (strpos($ip, '.') > 0)
-					$ip = substr($ip, strrpos($ip, ':')+1);
-				else return $ip;  //native ipv6
-			}
-			$iparr = array_pad(explode('.', $ip), 4, 0);
-			$part7 = base_convert(($iparr[0] * 256) + $iparr[1], 10, 16);
-			$part8 = base_convert(($iparr[2] * 256) + $iparr[3], 10, 16);
-			return '::ffff:'.$part7.':'.$part8;
+		
+		$country_code = '';
+		$country_name = '';
+
+		if(isset($config['geoip_cloudflare_enable'], $_SERVER['GEOIP_COUNTRY_CODE'], $_SERVER['GEOIP_COUNTRY_NAME']) && $config['geoip_cloudflare_enable']){
+			$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
+			$country_name = $_SERVER['HTTP_CF_IPCOUNTRY'];
+
+			// need parse country_name ....
 		}
-	
-		$country_code = geoip\geoip_country_code_by_addr_v6($gi, ipv4to6($_SERVER['REMOTE_ADDR']));
-		$country_name = geoip\geoip_country_name_by_addr_v6($gi, ipv4to6($_SERVER['REMOTE_ADDR']));
+
+		if(isset($config['geoip_nginx_enable'], $_SERVER['GEOIP_COUNTRY_CODE'], $_SERVER['GEOIP_COUNTRY_NAME']) && $config['geoip_nginx_enable']){
+			$country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
+			$country_name = $_SERVER['GEOIP_COUNTRY_NAME'];
+		}
+
+
+		if(empty($country_code) || empty($country_name)){
+
+			require 'inc/lib/geoip/geoip.inc';
+			$gi=geoip\geoip_open('inc/lib/geoip/GeoIPv6.dat', GEOIP_STANDARD);
+		
+			function ipv4to6($ip) {
+				if (strpos($ip, ':') !== false) {
+					if (strpos($ip, '.') > 0)
+						$ip = substr($ip, strrpos($ip, ':')+1);
+					else return $ip;  //native ipv6
+				}
+				$iparr = array_pad(explode('.', $ip), 4, 0);
+				$part7 = base_convert(($iparr[0] * 256) + $iparr[1], 10, 16);
+				$part8 = base_convert(($iparr[2] * 256) + $iparr[3], 10, 16);
+				return '::ffff:'.$part7.':'.$part8;
+			}
+		
+			$country_code = geoip\geoip_country_code_by_addr_v6($gi, ipv4to6($_SERVER['REMOTE_ADDR']));
+			$country_name = geoip\geoip_country_name_by_addr_v6($gi, ipv4to6($_SERVER['REMOTE_ADDR']));
+
+		}
+ 
 		if (!$country_code) $country_code = 'A1';
 		if (!$country_name) $country_name = 'Unknown';
 
@@ -749,12 +788,9 @@ elseif (isset($_POST['post'])) {
 			}
 
 			// filter files by MD5
-			$query = prepare('SELECT * FROM ``filters`` WHERE `type` = "md5" and `value` = :value');
-			$query->bindValue(':value', $hash);
-			$result = $query->execute() or error(db_error());
-			if ($row = $query->fetch()) {
-				$reason = utf8tohtml($row['reason']);
-				error("Sorry, cannot upload. Matched MD5 of disallowed file. Reason: {$reason}");
+			if($config['hash_filter'] && nban::is_hashban($board['uri'], $file['size'], $hash))
+			{
+				error("Sorry, cannot upload. Matched MD5 of disallowed file.");
 			}
 
 			$file['hash'] = $hash;
@@ -773,7 +809,7 @@ elseif (isset($_POST['post'])) {
 		
 		do_filters($post);
 	}
-	
+ 
 	if ($post['has_file']) {
 		foreach ($post['files'] as $key => &$file) {
 		if ($file['is_an_image'] && $config['ie_mime_type_detection'] !== false) {
@@ -840,16 +876,34 @@ elseif (isset($_POST['post'])) {
 				$image->delete();
 				error($config['error']['maxsize']);
 			}
-			
+
 			$file['width'] = $image->size->width;
 			$file['height'] = $image->size->height;
-			
-			if ($config['spoiler_images'] && isset($_POST['spoiler'])) {
+
+			$thumb;
+			$thumb_width = $post['op'] ? $config['thumb_op_width'] : $config['thumb_width'];
+			$thumb_height = $post['op'] ? $config['thumb_op_height'] : $config['thumb_height'];
+
+			$disable_key = "spoiler_{$file['size']}";
+			$disable_spoiler = isset($_POST[$disable_key]) && $_POST[$disable_key] == 'false';
+ 
+
+			if ($config['spoiler_images'] && isset($_POST['spoiler']) && !$disable_spoiler) {
 				$file['thumb'] = 'spoiler';
 				
 				$size = @getimagesize($config['spoiler_image']);
 				$file['thumbwidth'] = $size[0];
 				$file['thumbheight'] = $size[1];
+
+				$thumb = $image->resize(
+					$config['thumb_ext'] ? $config['thumb_ext'] : $file['extension'],
+					$thumb_width,
+					$thumb_height
+				);
+
+				$file['origThumbwidth'] = $thumb->width;
+				$file['origThumbheight'] =  $thumb->height;
+
 			} elseif ($config['minimum_copy_resize'] &&
 				$image->size->width <= $config['thumb_width'] &&
 				$image->size->height <= $config['thumb_height'] &&
@@ -861,19 +915,53 @@ elseif (isset($_POST['post'])) {
 				$file['thumbwidth'] = $image->size->width;
 				$file['thumbheight'] = $image->size->height;
 			} else {
+
+			
+				$abord_resize = false; 
+
 				$thumb = $image->resize(
 					$config['thumb_ext'] ? $config['thumb_ext'] : $file['extension'],
-					$post['op'] ? $config['thumb_op_width'] : $config['thumb_width'],
-					$post['op'] ? $config['thumb_op_height'] : $config['thumb_height']
+					$thumb_width,
+					$thumb_height
 				);
+
+
+				if(exif_imagetype($file['tmp_name']) == IMAGETYPE_PNG)
+				{
+					
+					$new_path = substr_replace($file['thumb'], 'png', strrpos($file['thumb']  , '.') +1);
+					
+					
+
+					if(resizePng($file['tmp_name'], $new_path ,   $thumb->width, $thumb->height))
+					{
+						$file['thumbwidth'] = $thumb->width;
+						$file['thumbheight'] =  $thumb->height;
+						$file['thumb'] = $new_path ;
+						$abord_resize = true;
+					}
+				}
+		
+				if(!$abord_resize)
+				{
+					
+					$thumb->to($file['thumb']);
 				
-				$thumb->to($file['thumb']);
-			
-				$file['thumbwidth'] = $thumb->width;
-				$file['thumbheight'] = $thumb->height;
-			
-				$thumb->_destroy();
+					$file['thumbwidth'] = $thumb->width;
+					$file['thumbheight'] = $thumb->height;
+					$thumb->_destroy();
+				}
+
+			 
+ 
 			}
+ 
+		 
+			if($config['enable_resize_fix'] && $file['size'] < $config['resize_fix_maxsize'] && $thumb->error)
+			{
+				$file['resize_error'] = true;
+			}
+
 			
 			if ($config['redraw_image'] || (!@$file['exif_stripped'] && $config['strip_exif'] && ($file['extension'] == 'jpg' || $file['extension'] == 'jpeg'))) {
 				if (!$config['redraw_image'] && $config['use_exiftool']) {
@@ -886,7 +974,69 @@ elseif (isset($_POST['post'])) {
 				}
 			}
 			$image->destroy();
-		} else {
+		} 
+		// get Audio metadata
+		else if(in_array( $file['extension'], array('mp3', 'wav', 'flac', 'm4a', 'ogg')))
+		{
+
+			if($config['music_info_extract']){
+		
+				$info = getAudioInfo($file['tmp_name']);
+
+				if($info['Artist'] != null)
+					$file['metaArtist'] = $info['Artist'];
+				if($info['Album'])
+					$file['metaAlbum'] = $info['Album'];
+				if($info['Artist'])
+					$file['metaTitle'] = $info['Title'];
+
+			}
+
+			if($config['music_covers_resolve'] && $info['image'] == null){
+
+
+				require_once 'inc/lib/tools/CoverSearcher.php';
+
+				// search by meta data 
+				if(isset($file['metaAlbum'],$file['metaArtist'])){
+
+					$info['image'] = CoverSearcher::Search($file['metaAlbum'], $file['metaArtist']);
+					$info['image_ext'] = 'jpg';
+				} 
+				// search by filename without extension
+				else if (preg_match('/[\/]*([^\/]+)\.([^\.]+)$/i', $file['name'], $match)) {
+
+					$info['image'] = CoverSearcher::Search($match[1]);
+					$info['image_ext'] = 'jpg';
+				}
+			}
+
+			
+			if($info['image'] != null)
+			{
+
+				if($info['image'] && empty($info['image_ext']))
+					$info['image_ext']='jpg';
+ 
+				$file['thumb'] = $file['file_id'] . '.' . $info['image_ext'];
+				$file['thumb_path'] = $config['dir']['img_root'] . $board['dir'] . $config['dir']['thumb'] .$file['thumb'];
+				$file['thumb_ext'] = $info['image_ext'];
+		
+				file_put_contents($file['thumb_path'], $info['image']);
+
+				$size = @getimagesize($file['thumb_path']);
+				$file['thumbwidth'] = $size[0];
+				$file['thumbheight'] = $size[1];
+			
+			}
+			else
+			{
+				$file['thumb'] = 'file';
+			}
+		
+		
+		}
+		else {
 			// not an image
 			//copy($config['file_thumb'], $post['thumb']);
 			$file['thumb'] = 'file';
@@ -897,15 +1047,43 @@ elseif (isset($_POST['post'])) {
 			$file['thumbwidth'] = $size[0];
 			$file['thumbheight'] = $size[1];
 		}
+
 		
-		if (!isset($dont_copy_file) || !$dont_copy_file) {
-			if (isset($file['file_tmp'])) {
-				if (!@rename($file['tmp_name'], $file['file']))
+		if (!isset($dont_copy_file) || !$dont_copy_file) 
+		{
+
+
+			if (isset($file['file_tmp']))
+			{
+				if($file['fat'])
+				{
+					to_fat_storage($file['tmp_name'], $board['uri'] .'/'.  $file['file_id'] . '.' . $file['extension']);
+					$file['replace'] = $config['fat_server'] . '/' . $board['uri'] . '/' . $file['file_id'] . '.' . $file['extension'];
+				}
+				else
+				{
+					if (!@rename($file['tmp_name'], $file['file']))
+						error($config['error']['nomove']);
+					chmod($file['file'], 0644);
+				}
+			} 
+			else 
+			{ 
+
+				if(!@move_uploaded_file($file['tmp_name'], $file['file']))
 					error($config['error']['nomove']);
-				chmod($file['file'], 0644);
-			} elseif (!@move_uploaded_file($file['tmp_name'], $file['file']))
-				error($config['error']['nomove']);
+
+				if($file['fat'])
+				{
+					to_fat_storage($file['file'], $board['uri'] .'/'.  $file['file_id'] . '.' . $file['extension']);
+					$file['replace'] = $config['fat_server'] . '/' . $board['uri'] . '/' . $file['file_id'] . '.' . $file['extension'];
+				}
 			}
+		
+		}
+
+
+
 		}
 
 		if ($config['image_reject_repost']) {
@@ -936,7 +1114,7 @@ elseif (isset($_POST['post'])) {
 			}
 		}
 	}
-	
+
 	if (!hasPermission($config['mod']['postunoriginal'], $board['uri']) && $config['robot_enable'] && checkRobot($post['body_nomarkup'])) {
 		undoImage($post);
 		if ($config['robot_mute']) {
@@ -954,13 +1132,25 @@ elseif (isset($_POST['post'])) {
 			$file['file'] = mb_substr($file['file'], mb_strlen($config['dir']['img_root'] . $board['dir'] . $config['dir']['img']));
 			if ($file['is_an_image'] && $file['thumb'] != 'spoiler')
 				$file['thumb'] = mb_substr($file['thumb'], mb_strlen($config['dir']['img_root'] . $board['dir'] . $config['dir']['thumb']));
+ 
 		}
 	}
+
 	
+
+
+	$oldpst = $post;
 	$post = (object)$post;
 	$post->files = array_map(function($a) { return (object)$a; }, $post->files);
 	$error = event('post', $post);
 	$post->files = array_map(function($a) { return (array)$a; }, $post->files);
+
+ 
+
+	if ($oldpst['files'])
+		foreach ($oldpst['files'] as $key => &$file) 
+			if($file['fat'])
+				unlink($file['file_path']);
 
 	if ($error) {
 		undoImage((array)$post);
@@ -972,10 +1162,20 @@ elseif (isset($_POST['post'])) {
 		$post['files'] = $post['files'];
 	$post['num_files'] = sizeof($post['files']);
 	
+
+
+	// Create pools
+	CreatePoolFromPost($post);
+
+
 	// Commit the post to the database.
-	$post['id'] = $id = post($post);
-	
-	if (!$tor) insertFloodPost($post);
+	$template=null;
+	$post['id'] = $id = post($post, $template);
+
+
+
+	if (!session::$is_onion && !session::$is_i2p)
+		insertFloodPost($post);
 	
 	// Update statistics for this board.
 	updateStatisticsForPost( $post );
@@ -1014,10 +1214,7 @@ elseif (isset($_POST['post'])) {
 	
 	if (isset($_SERVER['HTTP_REFERER'])) {
 		// Tell Javascript that we posted successfully
-		if (isset($_COOKIE[$config['cookies']['js']]))
-			$js = json_decode($_COOKIE[$config['cookies']['js']]);
-		else
-			$js = (object) array();
+		$js = (object) array();
 		// Tell it to delete the cached post for referer
 		$js->{$_SERVER['HTTP_REFERER']} = true;
 		// Encode and set cookie
@@ -1063,7 +1260,13 @@ elseif (isset($_POST['post'])) {
 		echo json_encode(array(
 			'redirect' => $redirect,
 			'noko' => $noko,
-			'id' => $id
+			'id' => $id,
+			'thread'=> $post['op'] ? $id : $post['thread'],
+			'board' => $board['uri'],
+			'template'=>$template,
+			'creation_time'=>$post['time'],
+			'time'=>$post['time'],
+
 		));
 	}
 	
@@ -1081,7 +1284,7 @@ elseif (isset($_POST['post'])) {
 	}
 
 	buildIndex();
-	
+
 	if ($post['op']) {
 		rebuildThemes('post-thread', $board['uri']);
 	}
@@ -1090,46 +1293,236 @@ elseif (isset($_POST['post'])) {
 	}
 }
 elseif (isset($_POST['appeal'])) {
+	
+	
 	if (!isset($_POST['ban_id']))
 		error($config['error']['bot']);
+		
+	if (!isset($_POST['board']) || !openBoard($_POST['board']))
+		error($config['error']['noboard']);
+
+	$ban = nban::getid($_POST['ban_id']);
+
+	if($ban == null)
+		$config['error']['noban'];
+
+	if($ban['ident'] != session::$ip && $ban['ident'] != session::$ip_range &&
+	$ban['ident'] != session::GetIdentity() && $ban['ident'] != session::GetIdentityRange())
+		$config['error']['nobanforyou'];
+
 	
-	$ban_id = (int)$_POST['ban_id'];
-	
-	$bans = Bans::find($_SERVER['REMOTE_ADDR']);
-	foreach ($bans as $_ban) {
-		if ($_ban['id'] == $ban_id) {
-			$ban = $_ban;
-			break;
-		}
+	if($ban['appeal_state'] == 0){
+		nban::send_appear($ban['id'], $_POST['appeal']);
+		error(_("Success."));
 	}
-	
-	if (!isset($ban)) {
-		error(_("That ban doesn't exist or is not for you."));
+	else if($ban['appeal_state'] == 1)
+		error(_("There is already a pending appeal for this ban."));
+	else if($ban['appeal_state'] == 2)
+		error(_("Appeal is denied."));
+		
+
+	error(_("That ban doesn't exist or is not for you."));
+
+}
+elseif (isset($_POST['user_edit']))
+{
+
+
+
+
+
+
+	if(!isset($_POST['board'], $_POST['id'], $_POST['action']))
+		error($config['error']['wrong params']);
+
+	if (!openBoard($_POST['board']))
+		error($config['error']['noboard']);
+
+	$mod_request = false;
+	$action = $_POST['action'];
+
+	if(substr($action, 0, 4) == 'mod_'){
+
+		$action = substr($action, 4);
+
+		check_login(false, true);
+
+		if($mod == NULL)
+			error($config['error']['noaccess']);
+
+		if(hasPermission($config['mod']['editpost']) && ($action == 'set_body' || $action == 'get_body'))
+			$mod_request = true;
+
+		if(hasPermission($config['mod']['spoilerimage']) && $action == 'spoiler_file')
+			$mod_request = true;
+
+		if(hasPermission($config['mod']['deletefile']) && $action == 'delete_file')
+			$mod_request = true;
+
+		if(hasPermission($config['mod']['banfilehash']) && $action == 'banfilehash')
+			$mod_request = true;
+
+			 
 	}
-	
-	if ($ban['expires'] && $ban['expires'] - $ban['created'] <= $config['ban_appeals_min_length']) {
-		error(_("You cannot appeal a ban of this length."));
+
+
+	if($mod_request && $action == 'banfilehash')
+	{ 
+		$md5 = $_POST['text'];
+		$size = (int)$_POST['id'];
+		
+		nban::add_hashban($board['uri'], $size, $md5);
+		json_response(array('banfilehash_success' => true));
 	}
-	
-	$query = query("SELECT `denied` FROM ``ban_appeals`` WHERE `ban_id` = $ban_id") or error(db_error());
-	$ban_appeals = $query->fetchAll(PDO::FETCH_COLUMN);
-	
-	if (count($ban_appeals) >= $config['ban_appeals_max']) {
-		error(_("You cannot appeal this ban again."));
-	}
-	
-	foreach ($ban_appeals as $is_denied) {
-		if (!$is_denied)
-			error(_("There is already a pending appeal for this ban."));
-	}
-	
-	$query = prepare("INSERT INTO ``ban_appeals`` VALUES (NULL, :ban_id, :time, :message, 0)");
-	$query->bindValue(':ban_id', $ban_id, PDO::PARAM_INT);
-	$query->bindValue(':time', time(), PDO::PARAM_INT);
-	$query->bindValue(':message', $_POST['appeal']);
+
+
+
+	$query = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `id` = :id", $board['uri']));
+	$query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
 	$query->execute() or error(db_error($query));
+
+	if ($post = $query->fetch(PDO::FETCH_ASSOC)) 
+	{
+
+		$user_access = session::GetIdentity() == $post['ip'] && strlen($post['ip']) >= 2;
+
+		if(!$user_access && !$mod_request)
+			server_reponse('No access', array('error' => 'Доступ запрещён'));
+
+
+		if(!$mod_request && time() > $post['time']+(60*3))
+			json_response(array('error' => 'Истекло время редактирования'));
+
+		if(strpos($post['body_nomarkup'], '[SECTAG_') !== false)
+			json_response(array('error' => 'Нельзя редактировать сообщение со спец. тегами'));
+		
+		if(!$mod_request && strpos($post['body_nomarkup'], 'roll(') !== false)
+			json_response(array('error' => 'Нельзя редактировать ролл'));
+			
+		if($action == 'get_body')
+		{
+			json_response(array('get_post_success' => true, 'source' => $post['body_nomarkup']));
+		}
+		
+		if($action == 'set_body')
+		{
+
+			if (mb_strlen($_POST['text']) > $config['max_body'])
+				error($config['error']['toolong_body']);
+
+			$query = prepare(sprintf("UPDATE ``posts_%s`` SET `body_nomarkup` = :body_nomarkup, `edited_at` = UNIX_TIMESTAMP(NOW()), `changed_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = :id", $board['uri']));
+			$query->bindValue(':body_nomarkup',  $_POST['text']);
+			$query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+			$query->execute() or error(db_error($query));
+
+			rebuildPost($_POST['id']);
+			buildIndex();
+
+			json_response(array('save_post_success' => true));
+		}
+
+		if($action == 'delete_file' || $action == 'spoiler_file')
+		{ 
+		  
+
+			$files = json_decode($post['files']);
+
+			foreach ($files as $i => $f) {
+
+				if ($file !== false && $f->hash == $_POST['text']) 
+				{
+
+					if ($action == 'delete_file'){
+			
+						// delete from stoarge is exists
+						delete_fat_file($f);
+			
+						// Delete thumbnail
+						file_unlink($config['dir']['img_root'] . $board['dir'] . $config['dir']['thumb'] . $f->thumb);
+			 
+						// Delete file
+						file_unlink($config['dir']['img_root'] . $board['dir'] . $config['dir']['img'] . $f->file);
+
+						unset($files[$i]->thumb);
+						$files[$i]->file = 'deleted';
+
+					}
+					else if($action == 'spoiler_file'){
+
+						if($f->thumb == 'spoiler'){
+							$f->thumb = $f->file_id . '.' . $f->extension;
+							$f->thumb_path = '/' . $config['dir']['thumb'] . $f->file_id . '.' . $f->extension;
+						}
+						else{
+							$f->thumb = 'spoiler';
+							$f->thumb_path = 'spoiler';
+						}
+					}
+
+
+					$query = prepare(sprintf("UPDATE ``posts_%s`` SET `files` = :files, `edited_at` = UNIX_TIMESTAMP(NOW()), `changed_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = :id", $board['uri']));
+					$query->bindValue(':files', json_encode($files), PDO::PARAM_STR);
+					$query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+					$query->execute() or error(db_error($query));
+
+					rebuildPost($_POST['id']);
+					if($post['thread'])
+						buildThread($post['thread']);
+					buildIndex();
+
+					$res =  $action == 'delete_file' ? 'delete_file_success' : 'spoiler_file_success';
+					json_response(array( $res => true));
+
+				}
+			}
+		}
+ 
+
+	}
 	
-	displayBan($ban);
+	
+	error($config['error']['wrong params']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 else {
 	if (!file_exists($config['has_installed'])) {
@@ -1139,3 +1532,11 @@ else {
 		error($config['error']['nopost']);
 	}
 }
+
+
+function fatal_unlink($file) {
+	//echo "remove [$file]";
+	@unlink($file);
+	fatal_error_handler();
+}
+

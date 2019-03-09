@@ -33,6 +33,28 @@ CREATE TABLE IF NOT EXISTS `antispam` (
   KEY `expires` (`expires`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii COLLATE=ascii_bin;
 
+
+
+
+CREATE TABLE IF NOT EXISTS cookie (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `key` varchar(128) NOT NULL,
+  `created` DATETIME NOT NULL,
+  `last`  DATETIME NOT NULL,
+  `data` blob,
+  PRIMARY KEY (`id`)
+ ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+
+
+CREATE TABLE IF NOT EXISTS `playlist` (
+  `nkey` varchar(128) NOT NULL,
+  `board` varchar(58) NOT NULL,
+  `json` text,
+   UNIQUE KEY `nkey` (`nkey`),
+   KEY `board` (`board`)
+ ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 ;
+ 
+
 -- --------------------------------------------------------
 
 --
@@ -41,8 +63,7 @@ CREATE TABLE IF NOT EXISTS `antispam` (
 
 CREATE TABLE IF NOT EXISTS `bans` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ipstart` varbinary(16) NOT NULL,
-  `ipend` varbinary(16) DEFAULT NULL,
+  `iphash` varchar(32) NOT NULL,
   `created` int(10) unsigned NOT NULL,
   `expires` int(10) unsigned DEFAULT NULL,
   `board` varchar(58) DEFAULT NULL,
@@ -52,8 +73,54 @@ CREATE TABLE IF NOT EXISTS `bans` (
   `post` blob,
   PRIMARY KEY (`id`),
   KEY `expires` (`expires`),
-  KEY `ipstart` (`ipstart`,`ipend`)
+  KEY `iphash` (`iphash`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+
+
+
+CREATE TABLE IF NOT EXISTS `nbans` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ident` varchar(128) NOT NULL,
+  `created` int(10) unsigned NOT NULL,
+  `expires` int(10) unsigned DEFAULT NULL,
+  `board` varchar(58) DEFAULT NULL,
+  `creator` varchar(58) DEFAULT NULL,
+  `reason` text,
+  `seen` tinyint(1) NOT NULL,
+  `post` blob,
+
+  `appeal_state` tinyint(1) NOT NULL, /* 0-disabled,  1-request appeal, 2-appeal denied  */
+  `appeal_text` text,
+  `appeal_time` int(10) unsigned NOT NULL,
+
+
+
+  PRIMARY KEY (`id`),
+  KEY `expires` (`expires`),
+  KEY `ident` (`ident`),
+  KEY `appeal_state` (`appeal_state`)
+  
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+
+
+
+CREATE TABLE IF NOT EXISTS `banned_files` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `md5` varchar(32) NOT NULL,
+  `size` int(10) unsigned NOT NULL, 
+  `board` varchar(58) DEFAULT NULL,
+
+  `created` int(10) unsigned NOT NULL, 
+  `creator` varchar(58) DEFAULT NULL,
+
+  PRIMARY KEY (`id`),
+  KEY `md5` (`md5`),
+  KEY `size` (`size`),
+  KEY `board` (`board`)
+  
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+
+
 
 -- --------------------------------------------------------
 
@@ -71,13 +138,10 @@ CREATE TABLE IF NOT EXISTS `boards` (
   `8archive` boolean default false,
   `sfw` boolean default false,
   `posts_total` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`uri`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `board_create` (
-  `time` text NOT NULL,
-  `uri` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -149,7 +213,7 @@ CREATE TABLE IF NOT EXISTS `mods` (
 --
 
 INSERT INTO `mods` VALUES
-(1, 'admin', 'cedad442efeef7112fed0f50b011b2b9bf83f6898082f995f69dd7865ca19fb7', '4a44c6c55df862ae901b413feecb0d49', 30, '*');
+(1, 'admin', 'cedad442efeef7112fed0f50b011b2b9bf83f6898082f995f69dd7865ca19fb7', '4a44c6c55df862ae901b413feecb0d49', 30, '*', NULL);
 
 -- --------------------------------------------------------
 

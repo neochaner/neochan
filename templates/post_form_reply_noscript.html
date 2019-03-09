@@ -1,0 +1,70 @@
+
+
+<form name="post" id='replybox_form' enctype="multipart/form-data" action="{{ config.post_url }}" method="post">
+	
+	{% if id %}<input type="hidden" name="thread" value="{{ id }}">{% endif %}
+	<input type="hidden" name="board" value="{{ board.uri }}">
+
+	{% if current_page %}<input type="hidden" name="page" value="{{ current_page }}">{% endif %}
+	{% if mod %}<input type="hidden" name="mod" value="1">{% endif %}
+
+
+	<div class="reply" style="width: 600px; height: 200px; cursor: inherit;">
+			<div class="reply-inner">
+				<div class="reply-content">
+					<div class="reply-files"></div>
+					<div class="reply-content-inner">
+						<div class="reply-header">
+
+								<input type="text" name="name" size="25" class="reply-subject" id="surprize">
+								
+								{% if thread.force_anon==0 %}
+								{% if not config.field_disable_name or (mod and post.mod|hasPermission(config.mod.bypass_field_disable, board.uri)) %}<tr>
+								<input type="text" name="neoname" class="reply-subject" placeholder="опции">
+								{% endif %}
+								{% endif %}
+ 
+						</div>
+							
+						<textarea class="reply-body ui-droppable" name="body" id="replybox_text" rows="5" cols="35"></textarea>
+					
+					</div>
+				</div>
+					
+				<div class="reply-controls reply-side-controls" id='replycontols'>
+					<div class="reply-side-controls-inner">
+						<div class="control reply-side-control reply-hide-control"><i class="fa fa-remove"></i></div>
+					</div>
+					<div class="reply-dragger"></div>
+				</div>
+							
+			</div>
+							
+ 
+			<div class="reply-controls reply-footer-controls">
+				<input type="file" name="file" id="upload_file">
+				<div class="reply-dragger"></div>
+				
+				<input class="progress button reply-send-button"  accesskey="s"  type="submit" name="post" style="background: linear-gradient(to right, rgb(117, 67, 131) 0%, transparent 0%);" value="Send">
+			</div>
+	</div> 
+ 
+ 
+	{% if (config.captcha.enabled_for_thread and not id) or (config.captcha.enabled_for_post and id) %}
+	<div class="captcha-box" style="margin: 10px 0 20px 0;"> 
+		<div id="captcha" data-timeout="180" class="captcha-wrap" class="captcha-wrap" style="width:{{ config.captcha.width }}px; height:{{ config.captcha.height }}px">
+			<iframe id='captcha-iframe' src=" {{ config.captcha.provider_get }}?board={{ board.uri }}" width="{{ config.captcha.width }}px" height="{{ config.captcha.height }}px" frameborder="0" hspace="0" vspace="0" marginheight="2px" marginwidth="0" scrolling="no" seamless></iframe>
+		</div>
+			
+		<div style="margin: 0px 12px;"> 
+			<span class="l_enter_captcha" style="display:block;margin-left: 2px;"></span>
+			<input class="captcha_text theme-textbox" type="text" name="captcha_text" size="25" maxlength="6" autocomplete="new-password" style="width:120px; box-sizing: border-box;">
+		</div>
+	</div>
+	{% endif %}
+	
+		<input title="No bump" id="no-bump" name="no-bump" type="checkbox" style="display: none;">
+		<input title="Spoiler images" id="spoiler" name="spoiler" type="checkbox" style="display: none;">
+						
+</form>
+

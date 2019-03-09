@@ -1,5 +1,5 @@
 <?php
-	require 'info.php';
+include_once $config['dir']['themes'] . '/recent/info.php';
 	
 	function recentposts_build($action, $settings, $board) {
 		// Possible values for $action:
@@ -25,12 +25,9 @@
 			$this->excluded = explode(' ', $settings['exclude']);
 			
 			if ($action == 'all' || $action == 'post' || $action == 'post-thread' || $action == 'post-delete') {
-				if ($config['smart_build']) {
-					file_unlink($config['dir']['home'] . $settings['html']);
-				}
-				else {
-					file_write($config['dir']['home'] . $settings['html'], $this->homepage($settings));
-				}
+
+				file_write($config['dir']['home'] . $settings['html'], $this->homepage($settings));
+				
 			}
 		}
 		

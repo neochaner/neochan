@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+{% include 'head.html' %}
+<title>Поиск информации о файле</title>
+</head>
+<body> 
+
+{% include 'header.html' %}
+
+  
+<main class="main">
+
+<section class="board" id="threads">
+<h1 class="page-title"><a href="/info.php" style="text-decoration: none;">Функция в разработке</a></h1>
+
+<nav class="thread-nav thread-nav_top">
+	<a class="button thread-nav-item thread-nav-reply" onclick='lastReply()'>Искать</a>
+</nav>
+
+<hr>
+
+<section class="threads-container" id="thread-container">
+<article class="thread_single" id="thread_id" data-id="{{ thread.id }}">
+
+
+
+</article>
+</section>
+
+
+
+
+
+{% include 'footer.html' %}
+</section> 
+</main>
+<aside class="hover-container hover-container_thread"></aside>
+{% include 'body_footer.html' %}
+</body>
+</html>
+
+
+
+
+
+
+
+
+

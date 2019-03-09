@@ -1,0 +1,220 @@
+@charset "utf-8";
+ 
+
+.l_error_noboard::before{
+    content:'Доска не найдена.';
+}.l_error_noaccess::before{
+    content:'Нет доступа.';
+}.l_error_process_file::before{
+    content:'Ошибка при обработке файла.';
+}.l_error_extension_not_supported::before{
+    content:'Тип файла не поддерживается.';
+}
+ 
+.l_enter_captcha::before{
+    content:'капча';
+}.l_captcha_mistype::before{
+    content:'Вы ошиблись при вводе капчи.';
+}.l_back_page::before{
+    content:'Назад';
+}.l_search::before{
+    content:'Поиск';
+}
+
+
+ 
+
+
+.l_board_control::before{
+    content:'Управление доской' 
+}.l_login_out::before{
+    content:'Выход' 
+}.l_login_label::before{
+    content:'имя / трипкод' 
+}.l_passwd_label::before{
+    content:'пароль' 
+}.l_option::before{
+    content:'Настройка' 
+}.l_optionSave::before{
+    content:'импорт' 
+}.l_optionLoad::before{
+    content:'экспорт' 
+}.l_login::before{
+    content:'Авторизация' 
+}.l_sitetheme::before{
+    content:'Тема' 
+}.l_language::before{
+    content:'Язык' 
+}.l_relative::before{
+    content:'Относительное время' 
+}.l_nsfm::before{
+    content:'Скрывать картинки' 
+}.l_test_mode::before{
+    content:'Тестовый режим' 
+}.l_video_vol::before{
+    content:'Громкость плеера';
+}.l_view_thread::before{
+    content:'Перейти к треду';
+}.l_tripmask::before {
+    content: 'Маскировать трипкод';
+}.l_DisableHideStyle::before{
+    content: 'Не помечать скрытые посты';
+}.l_delHiddenPosts::before {
+    content: 'Удалять скрытые посты';
+}.l_notify::before {
+    content: 'Включить уведомления';
+}.l_login_enter::before{
+    content:'Войти' 
+}.l_login_reg::before{
+    content:'Регистрация' 
+}
+
+.l_vote_success::before{
+    content:'Ваш голос учтён.' 
+}.l_alreadyvoted::before{
+    content:'Вы уже голосовали.' 
+}.l_poll_notfound::before{
+    content:'Опрос не найден.' 
+}.l_invalidvote::before{
+    content:'Неверный вариант.' 
+}.l_invalidpost::before{
+    content:'Не верный номер поста.' 
+}
+ 
+
+ 
+.l_new_theread::before{
+    content:'Создать тред'
+}.l_search{
+    content:'Поиск'
+}.l_back::before{
+    content:'Назад'
+}.l_catalog::before{
+    content:'Каталог'
+}.l_reply::before{
+    content:'Ответить'
+}.l_sortby::before{
+    content:'Сортировать: '
+}.l_sortbysize::before{
+    content:'Размер : '
+}
+
+
+/* Шапка */
+.l_latest_threads::before{
+    content:'Последние треды'
+}
+
+/* Меню поста  */
+.l_show_post::before{
+    content:'Показать пост'
+}.l_hide_post::before{
+    content:'Скрыть пост'
+}.l_show_thread::before{
+    content:'Показать тред'
+}.l_hide_thread::before{
+    content:'Скрыть тред'
+}.l_show_trip::before{
+    content:'Показывать трип'
+}.l_hide_trip::before{
+    content:'Скрывать трип'
+}.l_show_anon::before{
+    content:'Показывать анонимов'
+}.l_hide_anon::before{
+    content:'Скрывать анонимов'
+}.l_report::before{
+    content:'Жалоба'
+}.l_hide_thread_trip::before{
+    content: 'Скрыть тред по трипу';
+}.l_show_thread_trip::before{
+    content: 'Показывать тред по трипу';
+}.l_edited::before{
+    content:'Отредактирован'
+}
+
+
+.l_youarebanned::before{
+    content:'Вы забанены'
+}.l_youarebanned_on::before{
+    content:'доска: '
+}.l_youarebanned_allboard::before{
+    content:'На всех досках'
+}.l_permanent_ban::before{
+    content:'Срок блокировки: навсегда'
+}.l_banexpires::before{
+    content:'Истекает: '
+}.l_reason::before{
+    content:'Причина: '
+}.l_ban_appiried::before{
+    content:'Статус: находится на рассмотрении.'
+}.l_ban_apperdenied::before{
+    content:'Статус: в разбане отказано.'
+}
+
+.l_board_notubes::before{
+    content: 'В данный момент нет работающих кинотеатров.';
+}
+
+
+
+.l_footer_text::before{
+    display: block;
+	white-space: pre;
+    content: 'Все права и копирайты на этой странице принадлежат правообладателям. Все комментарии принадлежат лицам, отправившим их.\AЕсли вы обнаружили pfghtotyyинформацию, пожалуйста, сообщите нам на почту admin@neochan.ru'
+}
+
+
+
+
+
+
+.l_mod_settings::before{
+	content: 'Настройки'
+}.l_mod_banners::before{
+	content: 'Баннеры'
+}.l_mod_flags::before{
+	content: 'Флаги'
+}.l_mod_assets::before{
+	content: 'Значки'
+}.l_mod_volunteers::before{
+	content: 'Волонтеры'
+}.l_mod_tags::before{
+	content: 'Теги'
+}.l_mod_pages::before{
+    content: 'Страницы'
+}.l_return_to_dashboard::before{
+    content: '<- вернутся в профиль'
+}.l_mod_save_changes::before{
+    content: 'Сохранить Изменения'
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

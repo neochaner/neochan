@@ -73,9 +73,6 @@ function createBoardlist($mod=false) {
 
 function error($message, $priority = true, $debug_stuff = false) {
 	global $board, $mod, $config, $db_error;
-
-	if (isset($debug_stuff['file']))
-		$message .= " {$debug_stuff['file']}";
 	
 	if ($config['syslog'] && $priority !== false) {
 		// Use LOG_NOTICE instead of LOG_ERR or LOG_WARNING because most error message are not significant.
@@ -85,16 +82,7 @@ function error($message, $priority = true, $debug_stuff = false) {
 	if (defined('STDIN')) {
 		// Running from CLI
 		echo('Error: ' . $message . "\n");
-		debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		die();
-	}
-
-	if ($config['debug'] && isset($db_error)) {
-		$debug_stuff = array_combine(array('SQLSTATE', 'Error code', 'Error message'), $db_error);
-	}
-
-	if ($config['debug']) {
-		$debug_stuff['backtrace'] = debug_backtrace();
 	}
 
 	// Return the bad request header, necessary for AJAX posts
@@ -113,30 +101,32 @@ function error($message, $priority = true, $debug_stuff = false) {
 	}
 	
 	$pw = $config['db']['password'];
-	$debug_callback = function(&$item) use (&$debug_callback, $pw) {
-		if (is_array($item)) {
-			$item = array_filter($item, $debug_callback);
-		}
-		return ($item !== $pw || !$pw);
-	};
 
+	$data = array(
+		'config' => $config,
+		'message' => $message,
+		'mod' => $mod,
+		'board' => isset($board) ? $board : false,
+		'debug' => false
+	);
 
-	if ($debug_stuff) 
-		$debug_stuff = array_filter($debug_stuff, $debug_callback);
+	if(strlen($message) > 2 && substr($message, 0, 2) == 'l_'){
+		$data['lang_message'] = $message;
+	}
+
+	if(isset($config['back_page_link'])){
+		$data['back_page_link'] =$config['back_page_link'];
+	}
 
 	die(Element('page.html', array(
 		'config' => $config,
 		'title' => _('Error'),
 		'subtitle' => _('An error has occured.'),
-		'body' => Element('error.html', array(
-			'config' => $config,
-			'message' => $message,
-			'mod' => $mod,
-			'board' => isset($board) ? $board : false,
-			'debug' => is_array($debug_stuff) ? str_replace("\n", '&#10;', utf8tohtml(print_r($debug_stuff, true))) : utf8tohtml($debug_stuff)
-		))
+		'body' => Element('error.html',  $data )
 	)));
 }
+
+
 
 function loginForm($error=false, $username=false, $redirect=false) {
 	global $config;
@@ -314,11 +304,22 @@ function bidi_cleanup($data) {
 	return $data;
 }
 
-function secure_link_confirm($text, $title, $confirm_message, $href) {
+function secure_link_confirm($text, $title, $confirm_message, $href) 
+{
 	global $config;
 
 	return '<a onclick="if (event.which==2) return true;if (confirm(\'' . htmlentities(addslashes($confirm_message)) . '\')) document.location=\'?/' . htmlspecialchars(addslashes($href . '/' . make_secure_link_token($href))) . '\';return false;" title="' . htmlentities($title) . '" href="?/' . $href . '">' . $text . '</a>';
 }
+
+
+function secure_link_confirm2($text, $title, $confirm_message, $href) 
+{
+	global $config;
+
+	return 'onclick="if (event.which==2) return true;if (confirm(\'' . htmlentities(addslashes($confirm_message)) . '\')) document.location=\'?/' . htmlspecialchars(addslashes($href . '/' . make_secure_link_token($href))) . '\';return false;" title="' . htmlentities($title) . '" href="?/' . $href . '"' ;
+}
+
+
 function secure_link($href) {
 	return $href . '/' . make_secure_link_token($href);
 }
@@ -359,8 +360,11 @@ class Post {
 			$this->{$key} = $value;
 		}
 
+		if(isset($this->poll))
+			$this->poll = is_string($this->poll) ? json_decode($this->poll, TRUE) : $this->poll;
+
 		if (isset($this->files) && $this->files) {
-			$this->files = is_string($this->files) ? json_decode($this->files) : $this->files;
+			$this->files = is_string($this->files) ? json_decode($this->files) : $this->files; 
 			// Compatibility for posts before individual file hashing
 			if ($this->files) {
 			foreach ($this->files as $i => &$file) {
@@ -463,6 +467,10 @@ class Thread extends Post {
 		
 		if (isset($this->files))
 			$this->files = is_string($this->files) ? json_decode($this->files) : $this->files;
+
+		if (isset($this->poll))
+			$this->poll = is_string($this->poll) ? json_decode($this->poll, TRUE) : $this->poll;
+		 
 		
 		$this->subject = utf8tohtml($this->subject);
 		$this->name = utf8tohtml($this->name);
@@ -504,8 +512,8 @@ class Thread extends Post {
 	public function postCount() {
 		   return count($this->posts) + $this->omitted;
 	}
-	public function build($index=false, $isnoko50=false) {
-		global $board, $config, $debug;
+	public function build($index=false, $isnoko50=false, $isukko = false) {
+		global $board, $config;
 		
 		$hasnoko50 = $this->postCount() >= $config['noko50_min'];
 		
@@ -520,6 +528,7 @@ class Thread extends Post {
 			'index' => $index,
 			'hasnoko50' => $hasnoko50,
 			'isnoko50' => $isnoko50,
+			'isukko' => $isukko,
 			'mod' => $this->mod,
 			'clean' => $this->getClean(),
 		));
@@ -527,4 +536,17 @@ class Thread extends Post {
 		return $built;
 	}
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
 
