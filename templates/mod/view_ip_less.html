@@ -1,3 +1,9 @@
+
+
+
+<article class="thread_single" id="thread_id" data-id="0">
+	
+
 {% for board_posts in posts %}
 	{% if board_posts.board in mod.boards or mod.boards.0 == '*' %}
 	<fieldset>
@@ -6,10 +12,18 @@
 				{{ config.board_abbreviation|sprintf(board_posts.board) }}
 			</a>
 		</legend>
-		{{ board_posts.posts|join('<hr>') }}
+
+		<article class="thread thread_index"  id="0" ">
+		{{ board_posts.posts|join('') }}
+		</article>
 	</fieldset>
 	{% endif %}
 {% endfor %}
+
+
+</article>
+
+
 
 {% if mod|hasPermission(config.mod.view_notes) %}
 	<fieldset id="notes">
@@ -166,4 +180,5 @@
 		{% endfor %}
 	</fieldset>
 {% endif %}
+
 

@@ -30,7 +30,7 @@ require_once 'inc/database.php';
 require_once 'inc/events.php';
 require_once 'inc/api.php';
 require_once 'inc/bans.php';
-require_once 'inc/nban.php';
+
 
 if (!extension_loaded('gettext')) {
 	require_once 'inc/lib/gettext/gettext.inc';
@@ -47,9 +47,8 @@ $mod = false;
 
 register_shutdown_function('fatal_error_handler');
 mb_internal_encoding('UTF-8');
+
 loadConfig();
-
-
 
 function init_locale($locale='en', $error='error') {
 	if ($locale === 'en') 
@@ -191,6 +190,7 @@ function loadConfig() {
 	if (!isset($config['post_url']))
 		$config['post_url'] = $config['root'] . $config['file_post'];
 
+	 
 
 	if (!isset($config['referer_match']))
 		if (isset($_SERVER['HTTP_HOST'])) {
@@ -213,6 +213,9 @@ function loadConfig() {
 						')' .
 					'|' .
 						preg_quote($config['file_mod'], '/') . '\?\/.+' .
+					'|' .
+						preg_quote($config['file_usermod'], '/') . '\?\/.+' .
+						
 				')([#?](.+)?)?$/ui';
 		} else {
 			// CLI mode
@@ -1000,9 +1003,8 @@ function displayBan($ban) {
 	if (!$ban['seen']) {
 		Bans::seen($ban['id']);
 	}
-	$identity = session::GetIdentity();
-	
-	$ban['ip'] = $identity;
+
+	$ban['ip'] = session::GetIdentity();
 
 	if ($ban['post'] && isset($ban['post']['board'], $ban['post']['id'])) {
 		if (openBoard($ban['post']['board'])) {
@@ -1019,19 +1021,6 @@ function displayBan($ban) {
 		}
 	}
 	
-	$denied_appeals = array();
-	$pending_appeal = false;
-	
-	if ($config['ban_appeals']) {
-		$query = query("SELECT `time`, `denied` FROM ``ban_appeals`` WHERE `ban_id` = " . (int)$ban['id']) or error(db_error());
-		while ($ban_appeal = $query->fetch(PDO::FETCH_ASSOC)) {
-			if ($ban_appeal['denied']) {
-				$denied_appeals[] = $ban_appeal['time'];
-			} else {
-				$pending_appeal = $ban_appeal['time'];
-			}
-		}
-	}
 	
 	// Show banned page and exit
 	die(
@@ -1044,8 +1033,6 @@ function displayBan($ban) {
 				'ban' => $ban,
 				'board' => $board,
 				'post' => isset($post) ? $post->build(true) : false,
-				'denied_appeals' => $denied_appeals,
-				'pending_appeal' => $pending_appeal
 			)
 		))
 	));
@@ -1086,47 +1073,60 @@ function displayNBan($bans) {
 
 
 
-function checkNBan($thread){
-
-	global $config;
-	$bans = null;
-
-	if(nban::check($thread, $bans))
-		displayNBan($bans);
-}
-
 function checkBan($board = false) {
+	
 	global $config;
-
+	
 	if (!isset($_SERVER['REMOTE_ADDR'])) {
 		// Server misconfiguration
 		return;
-	}		
-
-	if (event('check-ban', $board))
-		return true;
-
-	$identity = session::GetIdentity();
-	$identityrange = session::GetIdentityRange();
-	$bans = Bans::find($identity, $board, $config['show_modname'], false, $identityrange);
-
-	foreach ($bans as &$ban) 
-	{
-		$is_permanent = $ban['expires']  == -1 || $ban['expires']  == null;
-		$active_ban = $is_permanent || $ban['expires'] > time();
-	
-		if(!$active_ban)
-			continue;
-
-		if (isset($_POST['json_response'])) {
-			json_response(array('error' => true, 'banned' => true, 'id'=>$ban['id'], 'time'=>$ban['expires'], 'reason'=> $ban['reason']));
-		} else {
-			displayBan($ban);
-		}
-
 	}
 
+	if (event('check-ban', $board)) {
+		return true;
+	}
+
+	$bans = Bans::find(session::GetIdentity(), $board, $config['show_modname']);
+
+	foreach ($bans as &$ban) {
+
+		if ($ban['expires'] && $ban['expires'] < time()) {
+			Bans::delete($ban['id']);
+			if ($config['require_ban_view'] && !$ban['seen']) {
+				if (!isset($_POST['json_response'])) {
+					displayBan($ban);
+				} else {
+					header('Content-Type: text/json');
+					die(json_encode(array('error' => true, 'banned' => true)));
+				}
+			}
+		} else {
+			if (!isset($_POST['json_response'])) {
+				displayBan($ban);
+			} else {
+				header('Content-Type: text/json');
+				die(json_encode(array('error' => true, 'banned' => true)));
+			}
+		}
+	}
+
+	// I'm not sure where else to put this. It doesn't really matter where; it just needs to be called every
+	// now and then to keep the ban list tidy.
+	if ($config['cache']['enabled'] && $last_time_purged = cache::get('purged_bans_last')) {
+		if (time() - $last_time_purged < $config['purge_bans']) {
+			return;
+		}
+	}
+
+	//Bans::purge();
+
+	if ($config['cache']['enabled']) {
+		cache::set('purged_bans_last', time());
+	}
 }
+
+
+
 
 function threadLocked($id) {
 	global $board;
@@ -2069,60 +2069,6 @@ function buildJavascript() {
 	file_write($config['file_script'], $script);
 }
 
-
-function checkTorTorlist($ip){
-
-    $query = prepare("SELECT COUNT(*) AS `count` FROM ``torlist`` WHERE `ip` = :ip");
-    $query->bindValue(':ip', $ip, PDO::PARAM_STR);
-    $query->execute() or error(db_error($query));
-
-    return $query->fetch(PDO::FETCH_ASSOC);
-}
-
-function isTorExitNode($ip)
-{
-
-	$tor_path = 'torlist';
-	$torlist = Cache::get('torlist');
-
-	if(!$torlist)
-	{
-		if(file_exists($tor_path))
-		{
-			$torlist = file_get_contents($tor_path);
-			Cache::set($torlist, 180);
-		}
-	}
-
-	if($torlist)
-	{
-		if(strpos($torlist, $ip) !== false)
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-function checkDNSBL($use_ip = false) {
-	global $config;
-
-	if (!$use_ip && !isset($_SERVER['REMOTE_ADDR']))
-		return; // Fix your web server configuration
-
-	$ip = ($use_ip ? $use_ip : $_SERVER['REMOTE_ADDR']);
-	if ($ip == '127.0.0.2') return true;
-
-	if (isIPv6($ip))
-		return; // No IPv6 support yet.
-
-	if (in_array($ip, $config['dnsbl_exceptions']))
-		return;
-
-	return isTorExitNode($ip);
-
-}
 
 function isIPv6($ip = false) {
 	return strstr(($ip ? $ip : $_SERVER['REMOTE_ADDR']), ':') !== false;
@@ -3762,6 +3708,7 @@ function CreatePoolFromPost(&$post){
 
 
 
+
 function TimeStatTouch($tag, $tagvalue=null, $duration_sec = 180){
 
 
@@ -3789,3 +3736,38 @@ function TimeStatTouch($tag, $tagvalue=null, $duration_sec = 180){
 	return count($newArray);
 
 }
+
+
+function ip_link($ip, $href = true) {
+	return "<a id=\"ip\"" . ($href ? " href=\"?/IP/$ip\"" : "") . ">$ip</a>";
+}
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

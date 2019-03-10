@@ -74,20 +74,7 @@ code {
     min-width: 46px;
     text-align: center;
 }
-.post-ban {
-    font-size: 14px;
-    color: #bb0000;
-    box-shadow: inset 0px 0px 2px 1px rgba(92, 41, 99, 0.42);
-    margin: 8px ;
-    padding: 8px;
-}
-.post-unban {
-    font-size: 14px;
-    color: #186b24;
-    box-shadow: inset 0px 0px 2px 1px rgba(92, 41, 99, 0.42);
-    margin: 8px ;
-    padding: 8px;
-}
+.public_ban{color: #d11111;}
 .roll-img
 {
     background: url(/static/img/roll_light.png);

@@ -24,10 +24,7 @@
 		{% if post.files %}
 		{% include 'post/fileinfo.html' %} 
 		{% endif %}
-
 		<blockquote class="post-message">{{ post.body }}{% include 'post/poll.html' %}</blockquote>
-
-		{% include 'post/edited_at.html' %}
 	</section>
 	<footer class="post-footer">
 		<div class="post-backlinks">
@@ -38,6 +35,11 @@
 {% endif %}
 		</div>
 		<div class="post-controls">
+			{% if post.modifiers['ban message'] %}
+				{{ config.mod.ban_message|sprintf(post.modifiers['ban message']) }}
+			{% else %}
+			{% include 'post/edited_at.html' %}
+			{% endif %}
 			<a class="control post-quote-control" onclick="cite(event)"><i class="fa fa-reply"></i></a>
 		</div>
 	</footer>

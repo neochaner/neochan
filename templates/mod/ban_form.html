@@ -1,15 +1,5 @@
 {% if post and board %}
-	{% if rangeban %}
-		{% set action = '?/' ~ board ~ '/banrange/' ~ post %}
-        {% elseif bandeletetype == "1" or bandeletetype == "0"%}
-                {% if bandeletetype == "1" %}
-                        {% set action = '?/' ~ board ~ '/ban&deletebyip/' ~ post ~ '/global' %}
-                {% else %}
-                        {% set action = '?/' ~ board ~ '/ban&deletebyip/' ~ post %}
-                {% endif %}
-	{% else %}
-		{% set action = '?/' ~ board ~ '/ban/' ~ post %}
-	{% endif %}
+	{% set action = '?/' ~ board ~ '/ban/' ~ post %}
 {% else %}
 	{% set action = '?/ban' %}
 {% endif %}
@@ -23,26 +13,33 @@
 		<input type="hidden" name="delete" value="{% if delete %}1{% else %}0{% endif %}">
 	{% endif %}
 	{% if tor %}
-		<p style="color:red;font-size:1em;margin-left:17%;margin-right:17%;text-align:center;">Warning! This IP is a Tor exit node. Tor is a global network that allows for truly anonymous posting by obfuscating the user's real IP address. Please do not ban it. On 8chan, Tor users are allowed to post five times per CAPTCHA they complete and are not allowed to upload images. <em>If the global restrictions on Tor users are not enough and you would really like to stop Tor users, there is a setting in your board options. Please think carefully before enabling it.</em></p>
+		<p style="color:red;font-size:2em">{% trans("Warning! This IP is a Tor exit node. Tor is a global network that allows for truly anonymous posting by obfuscating the user's real IP address. Please do not ban it, all bans on Tor exit nodes are globally undone every week. On 8chan, Tor users are allowed to post five times per CAPTCHA they complete, and image uploads are not allowed.") %}<em>{% trans("If the global restrictions on Tor users are not enough and you would really like to stop Tor users, there is a setting in your board options. Please think carefully before enabling it.") %}</em></p>
 	{% endif %}
 	
 	<table>
 		
 		<tr>
 			<th>
-				<label for="ip">{% trans 'IP' %} <span class="unimportant">{% trans '(or subnet)' %}</span></label>
+				<label for="ip">{% trans("IP") %} <span class="unimportant">{% trans("(or subnet)") %}</span></label>
 			</th>
 			<td>
 				{% if not hide_ip %}
-					<input type="text" name="ip" id="ip" size="30" maxlength="60" value="{{ ip }}">
+					<input type="text" name="ip" id="ip" size="30" maxlength="40" value="{{ ip|e }}">
 				{% else %}
 					{{ ip|less_ip(board) }}&nbsp;
+					<select name="range">
+						<option value="">no range ban</option>
+						{% for i in range(29, 12) %}
+							<option value="/{{i}}">/{{i}} (covers {{2**(32-i)}} addresses)</option>
+						{% endfor %}
+					</select>
 				{% endif %}
+				<p class="unimportant hint">{% trans("Be careful with range bans. The bigger the range, the more likely it will affect users you didn't intend.") %}</p>
 			</td>
 		</tr>
 		<tr>
 			<th>
-				<label for="reason">{% trans 'Reason' %}</label>
+				<label for="reason">{% trans("Reason") %}</label>
 			</th>
 			<td>
 				<textarea name="reason" id="reason" rows="5" cols="30">{{ reason|e }}</textarea>
@@ -51,12 +48,12 @@
 		{% if post and board and not delete %}
 			<tr>
 				<th>
-					<label for="reason">{% trans 'Message' %}</label>
+					<label for="reason">{% trans("Message") %}</label>
 				</th>
 				<td>
 					<input type="checkbox" id="public_message" name="public_message"{% if config.mod.check_ban_message %} checked{% endif %}> 
 					<input type="text" name="message" id="message" size="35" maxlength="200" value="{{ config.mod.default_ban_message|e }}"> 
-					<span class="unimportant">({% trans 'public; attached to post' %})</span>
+					<span class="unimportant">({% trans("public; attached to post") %})</span>
 					<script type="text/javascript">
 						document.getElementById('message').disabled = !document.getElementById('public_message').checked;
 						document.getElementById('public_message').onchange = function() {
@@ -68,21 +65,21 @@
 		{% endif %}
 		<tr>
 			<th>
-				<label for="length">{% trans 'Length' %}</label>
+				<label for="length">{% trans("Length") %}</label>
 			</th>
 			<td>
 				<input type="text" name="length" id="length" size="20" maxlength="40"> 
-					<span class="unimportant">(eg. "2d1h30m" or "2 days")</span></td>
+					<span class="unimportant">({% trans('eg. "2d1h30m" or "2 days"') %})</span></td>
 			</tr>
 		<tr>
-			<th>{% trans 'Board' %}</th>
+			<th>{% trans("Board") %}</th>
 			<td>
 				<ul style="list-style:none;padding:2px 5px">
 					{% if mod.boards[0] == '*' %}
 					<li>
 						<input type="radio" name="board" value="*" id="ban-allboards"> 
 						<label style="display:inline" for="ban-allboards">
-							<em>{% trans 'all boards' %}</em>
+							<em>{% trans("all boards") %}</em>
 						</label>
 					</li>
 					{% endif %}
@@ -105,10 +102,104 @@
 				</ul>
 			</td>
 		</tr>
+
+		{% if mod.boards[0] == '*' %}
+		<tr>
+			<th><label>Автозаполнение</label></th>
+			<td>
+			<div class="btn-group"  style="width:100%">
+				<button onclick="autoCompleteBanForm(event, 'Spam / Wipe', [3,5,7,10,30]);">Спам / Вайп</button>
+				<button onclick="autoCompleteBanForm(event, 'CP or CP links', [3,5,7,10,30])"> ЦП </button>
+				<button onclick="autoCompleteBanForm(event,'Пиар параши', [3,5,7,10,30])">Пиар</button>
+				<button onclick="autoCompleteBanForm(event, 'Обход бана', [7,10,30])">Обход бана</button>
+				<button onclick="autoCompleteBanForm(event, 'Призыв к нанесению вреда сайту', [7,10,30])">Вред</button>
+			</div>
+			</td>
+			<br>
+		</tr> 
+
 		<tr>
 			<td></td>
-			<td><input name="new_ban" type="submit" value="{% trans 'New Ban' %}"></td>
+			<td><br><input name="new_ban" type="submit" value="{% trans("New Ban") %}"></td>
 		</tr>
+
+		{% else %}
+
+
+		<tr>
+			<td></td>
+			<td><input name="new_ban" type="submit" value="{% trans("New Ban") %}"></td>
+		</tr>
+
+		{% endif %}
 	</table>
 </form>
 
+
+
+<style>
+.btn-group button {
+  /*background-color: #4CAF50;   Green background */
+  /* border: 1px solid green; /* Green border */
+  /* color: white;  White text */
+  padding: 4px 10px; /* Some padding */
+  cursor: pointer; /* Pointer/hand icon */
+  float: left; /* Float the buttons side by side */
+}
+
+.btn-group button:not(:last-child) {
+  border-right: none; /* Prevent double borders */
+}
+
+/* Clear floats (clearfix hack) */
+.btn-group:after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Add a background color on hover 
+.btn-group button:hover {
+  background-color: #3e8e41;
+} */
+
+</style>
+
+<script>
+
+var lastReason = "";
+
+function autoCompleteBanForm(event, reason, days_array){
+	
+	event.preventDefault();
+	event.stopPropagation();
+
+
+	document.getElementById('reason').value= reason; 
+
+	var cur = document.getElementById('length').value.match(/\d+/);
+
+	if(cur == null || lastReason != reason){
+		document.getElementById('length').value = days_array[0] + ' days';
+		document.getElementsByName('board')[1].checked=true;
+		lastReason = reason;
+		return false;
+	}
+
+	var curInt = parseInt(cur);
+	
+	for(var i=0; i+1<days_array.length; i++){
+		if(days_array[i] == curInt){
+			document.getElementById('length').value = days_array[i+1] + ' days';
+		}
+	}
+ 
+
+	document.getElementsByName('board')[1].checked=true;
+	lastReason = reason;
+    return false;
+
+}
+
+
+</script>

@@ -2,9 +2,9 @@
 /*
  *  Copyright (c) 2010-2014 Tinyboard Development Group
  */
+$init_time = microtime(true);
 require "./inc/functions.php";
 require "./inc/anti-bot.php";
- 
 
 // Fix for magic quotes
 if (get_magic_quotes_gpc()) {
@@ -285,9 +285,6 @@ elseif (isset($_POST['post']))
 
 
 
-
-
-
 	session::Load();
 
 	if(session::antispam_state() == 0){
@@ -305,9 +302,7 @@ elseif (isset($_POST['post']))
 	}
 
 
- 
-
-	checkNBan(isset($post['thread']) ? $post['thread'] : NULL);
+	checkBan($board['uri']);
 
  
 
@@ -345,30 +340,7 @@ elseif (isset($_POST['post']))
 	if ($config['robot_enable'] && $config['robot_mute']) {
 		checkMute();
 	}
-	
-    /*Check Force Anonymous thread*/
-	if(isset($config['force_anon_thread']))
-	{
-        if (isset($_POST['force_anon']) && $post['op']) {
-                $post['force_anon'] = true;
-        } else{
-                $post['force_anon'] = false;
 
-                if (isset($_POST['thread'])) {
-                    //Check if force_anon is enable or 1, then forced anonymous, to avoid field form injection.
-                    $query = prepare(sprintf("SELECT `force_anon` FROM ``posts_%s`` WHERE `id` = :id", $board['uri']));
-                    $query->bindValue(':id', $post['thread'], PDO::PARAM_INT);
-                    $query->execute() or error(db_error());
-						
-					if ($row = $query->fetch()) {
-                        if($row['force_anon']==1){
-                            $_POST['name'] = $config['anonymous']; // forced anonymous
-                        }
-                    }
-                }
-
-        }
-    }
 	
 	//Check if thread exists
 	if (!$post['op']) {
@@ -384,10 +356,10 @@ elseif (isset($_POST['post']))
 
 		if(!empty($thread['trip']))
 		{
+			// дополнительная проверка на оп-бан
 			checkBan($thread['trip']);
 		}
 	}
-		
 	
 	
 	if (!hasPermission($config['mod']['bypass_field_disable'], $board['uri'])) {
@@ -481,31 +453,19 @@ elseif (isset($_POST['post']))
 	$post['has_file'] = (!isset($post['embed']) && (($post['op'] && !isset($post['no_longer_require_an_image_for_op']) && $config['force_image_op']) || !empty($_FILES['file']['name'])));
 
 	// Handle our Tor users
-	$tor = checkDNSBL();
+	$tor = session::$is_darknet;
 	
-	if ($tor && !(isset($_SERVER['HTTP_X_TOR'], $_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] == '127.0.0.2' && $_SERVER['HTTP_X_TOR'] = 'true'))
-	{
-		if(!$config['tor_posting_on_web'])
-			error('To post on neochan over Tor, you must use the hidden service for security reasons. You can find it at <a href="http://fullchan4jtta4sx.onion">http://fullchan4jtta4sx.onion</a>.');
-	}
-	if ($tor && $post['has_file'] && !$config['tor_image_posting'])
-		error('Sorry. Tor users can\'t upload files on this board.');
-	if ($tor && !$config['tor_posting'])
-		error('Sorry. The owner of this board has decided not to allow Tor posters for some reason...');
+	
+	if (session::$is_darknet && $post['has_file'] && !$config['tor_image_posting'])
+		error('Sorry. Tor/i2p users can\'t upload files on this board.');
+	if (session::$is_darknet && !$config['tor_posting'])
+		error('Sorry. The owner of this board has decided not to allow Tor/i2p posters for some reason...');
 
 
 	if ($post['has_file'] && $config['disable_images']) {
 		error($config['error']['images_disabled']);
 	}
 	
-	if (!($post['has_file'] || isset($post['embed'])) || (($post['op'] && $config['force_body_op']) || (!$post['op'] && $config['force_body']))) {
-		// http://stackoverflow.com/a/4167053
-		$stripped_whitespace = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $post['body']);
-		if ($stripped_whitespace == '') {
-			error($config['error']['tooshort_body']);
-		}
-	}
-
 	if ($config['force_subject_op'] && $post['op']) {
 		$stripped_whitespace = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $post['subject']);
 		if ($stripped_whitespace == '') {
@@ -626,6 +586,15 @@ elseif (isset($_POST['post']))
 	if ($post['op'] && !isset($post['no_longer_require_an_image_for_op'])) {
 		if (!$post['has_file'] && $config['force_image_op'])
 			error($config['error']['noimage']);
+
+
+		if (!($post['has_file'] || isset($post['embed'])) || (($post['op'] && $config['force_body_op']) || (!$post['op'] && $config['force_body']))) {
+			// http://stackoverflow.com/a/4167053
+			$stripped_whitespace = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $post['body']);
+			if ($stripped_whitespace == '') {
+				error($config['error']['tooshort_body']);
+			}
+		}
 	}
 
 	// Check for too many files
@@ -640,7 +609,7 @@ elseif (isset($_POST['post']))
 	}
 	
 	// Check string lengths
-	if (mb_strlen($post['name']) > 20)
+	if (mb_strlen($post['name']) > 23)
 		error(sprintf($config['error']['toolong'], 'name'));	
 	if (mb_strlen($post['email']) > 40)
 		error(sprintf($config['error']['toolong'], 'email'));
@@ -677,7 +646,10 @@ elseif (isset($_POST['post']))
 		if(isset($config['geoip_cloudflare_enable'], $_SERVER['GEOIP_COUNTRY_CODE'], $_SERVER['GEOIP_COUNTRY_NAME']) && $config['geoip_cloudflare_enable']){
 			$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
 			$country_name = $_SERVER['HTTP_CF_IPCOUNTRY'];
-
+			
+			if($country_code == 'T1'){
+				$country_name = 'Tor';
+			}
 			// need parse country_name ....
 		}
 
@@ -786,11 +758,26 @@ elseif (isset($_POST['post']))
 			} else {
 				$hash = md5_file($upload);
 			}
+			
+			$type_hash = 'md5';
+
+			if($file['is_an_image']) {
+				include_once 'inc/lib/imagehash/imagehash.php';
+				$hasher = new Jenssegers\ImageHash\ImageHash;
+				$_hash = $hasher->hash($upload);
+				$type_hash = 'imagehash';
+			}
+
 
 			// filter files by MD5
-			if($config['hash_filter'] && nban::is_hashban($board['uri'], $file['size'], $hash))
-			{
-				error("Sorry, cannot upload. Matched MD5 of disallowed file.");
+			$query = prepare('SELECT * FROM ``filters`` WHERE `type` = :typehash and `value` = :value');
+			$query->bindValue(':typehash', $type_hash);
+			$query->bindValue(':value', $_hash);
+			$result = $query->execute() or error(db_error());
+			if ($row = $query->fetch()) {
+				$reason = utf8tohtml($row['reason']);
+				//exit; // Временно
+				error(_("Sorry, cannot upload. Matched of disallowed file. Reason: ") . $reason);
 			}
 
 			$file['hash'] = $hash;
@@ -1173,9 +1160,7 @@ elseif (isset($_POST['post']))
 	$post['id'] = $id = post($post, $template);
 
 
-
-	if (!session::$is_onion && !session::$is_i2p)
-		insertFloodPost($post);
+	insertFloodPost($post);
 	
 	// Update statistics for this board.
 	updateStatisticsForPost( $post );
@@ -1291,37 +1276,56 @@ elseif (isset($_POST['post']))
 	else {
 		rebuildThemes('post', $board['uri']);
 	}
+
+	syslog(1, 'post score =' . (microtime(true) - $init_time));
+
+
 }
 elseif (isset($_POST['appeal'])) {
 	
-	
+ 
+	session::Load();
+
 	if (!isset($_POST['ban_id']))
-		error($config['error']['bot']);
-		
-	if (!isset($_POST['board']) || !openBoard($_POST['board']))
-		error($config['error']['noboard']);
+		error(Vi::$config['error']['bot']);
 
-	$ban = nban::getid($_POST['ban_id']);
+	$ban_id = (int)$_POST['ban_id'];
 
-	if($ban == null)
-		$config['error']['noban'];
-
-	if($ban['ident'] != session::$ip && $ban['ident'] != session::$ip_range &&
-	$ban['ident'] != session::GetIdentity() && $ban['ident'] != session::GetIdentityRange())
-		$config['error']['nobanforyou'];
-
-	
-	if($ban['appeal_state'] == 0){
-		nban::send_appear($ban['id'], $_POST['appeal']);
-		error(_("Success."));
+	$bans = Bans::find(session::GetIdentity());
+	foreach ($bans as $_ban) {
+		if ($_ban['id'] == $ban_id) {
+			$ban = $_ban;
+			break;
+		}
 	}
-	else if($ban['appeal_state'] == 1)
-		error(_("There is already a pending appeal for this ban."));
-	else if($ban['appeal_state'] == 2)
-		error(_("Appeal is denied."));
-		
 
-	error(_("That ban doesn't exist or is not for you."));
+	if (!isset($ban)) {
+		error(_("That ban doesn't exist or is not for you."));
+	}
+
+
+
+	switch($ban['appeal_state']){
+		
+		case 0:
+			Bans::set_appeal($ban['id'],  $_POST['appeal']);
+			/*error(_("Success."));*/
+			displayBan($ban);
+			break;
+		case 1:
+			error(_("There is already a pending appeal for this ban."));
+			break;
+		case 2:
+			error(_("Appeal is denied."));
+			break;
+		
+		default:
+			error(_("Unkhown appeal state: {$ban['appeal_state']}"));
+			break;
+		
+		
+	}
+	
 
 }
 elseif (isset($_POST['user_edit']))
