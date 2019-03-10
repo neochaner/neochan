@@ -15,7 +15,8 @@ var csmiles = {
 		'madoka_dumb', 'mayoi', 'sleep', 'aihara', 'ibiza', 'kanna', 'ruiko', 'tamako', 'araragi', 
 		'souseiseki', 'suiseiseki', 'DESU', 'hitagi', 'karen', 'kobayashi', 'kyoko', 'kotori', 'nonon', 
 		'oshino', 'reiji', 'rena', 'riko_blood', 'ruyko', 'sakura_cc', 'smugface', 'suruga', 'tsumugi', 
-		'umaru', 'umaru_smug', 'yui', 'asuka', 'chito', 'kakyoin', 'mari', 'nanachi', 'rei', 'shinji', 'shion'
+		'umaru', 'umaru_smug', 'yui', 'asuka', 'chito', 'kakyoin', 'mari', 'nanachi', 'rei', 'shinji', 'shion',
+		'nozomi_yes'
 	]}, 
 
 
@@ -25,7 +26,7 @@ var csmiles = {
 		'jp_hug', 'emp_bed', 'suss', 'jp_dude','jp_dude2', 'atsuko_scorn', 'chicchi_smug', 'bis_pand', 
 		'jp_coolstory', 'best_work', 'aina_drink', 'aina_smile', 'aina_smile2', 'hospade_kakya_nyasha', 
 		'run', 'komi_blood', 'bloodyeye', 'juon', 'mitoll', 'drochesh', 'hage_tyan','daoko_gun', 'bite', 
-		'tongue', 'jpgun'
+		'pikarin_devil', 'tongue', 'jpgun'
 	]},
 
 
