@@ -60,10 +60,10 @@ CREATE TABLE IF NOT EXISTS `playlist` (
 --
 -- Table structure for table `bans`
 --
-
 CREATE TABLE IF NOT EXISTS `bans` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `iphash` varchar(32) NOT NULL,
+  `ipstart` varbinary(37) NOT NULL,
+  `ipend` varbinary(16) DEFAULT NULL,
   `created` int(10) unsigned NOT NULL,
   `expires` int(10) unsigned DEFAULT NULL,
   `board` varchar(58) DEFAULT NULL,
@@ -71,10 +71,20 @@ CREATE TABLE IF NOT EXISTS `bans` (
   `reason` text,
   `seen` tinyint(1) NOT NULL,
   `post` blob,
+  
+  
+  `appeal_state` tinyint(1) DEFAULT 0, /* 0-none,  1-requested, 2-denied  */
+  `appeal_text` text DEFAULT NULL,
+  `appeal_time` int(10) unsigned DEFAULT 0,
+
+  
   PRIMARY KEY (`id`),
   KEY `expires` (`expires`),
-  KEY `iphash` (`iphash`)
+  KEY `appeal_state` (`appeal_state`),
+  KEY `ipstart` (`ipstart`,`ipend`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+
+
 
 
 
@@ -89,11 +99,9 @@ CREATE TABLE IF NOT EXISTS `nbans` (
   `seen` tinyint(1) NOT NULL,
   `post` blob,
 
-  `appeal_state` tinyint(1) NOT NULL, /* 0-disabled,  1-request appeal, 2-appeal denied  */
+  `appeal_state` tinyint(1) NOT NULL, /* 0-none,  1-requested, 2-denied  */
   `appeal_text` text,
   `appeal_time` int(10) unsigned NOT NULL,
-
-
 
   PRIMARY KEY (`id`),
   KEY `expires` (`expires`),
@@ -431,6 +439,7 @@ CREATE TABLE IF NOT EXISTS `dnsbl_bypass` (
 
 CREATE TABLE IF NOT EXISTS `filters` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `board` varchar(58) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `reason` text,
   `value` varchar(255) DEFAULT NULL,

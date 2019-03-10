@@ -3,19 +3,20 @@ var menuOpMod = 'modControls';
 var modSecQuestion=  true;
 var modAccess;
 
+
 $(document).ready(function(){
 
     if($('.thread_index').length != 1)
         return;
  
-    var enable_control = "<a class='control post-control post-opmod-control' title='"+_T('Модерировать тред')+"' onclick=\"enable_opmod()\"><i class='fa fa-shield'></i></a>";
+    //var enable_control = "<a class='control post-control post-opmod-control' title='"+_T('Модерировать тред')+"' onclick=\"enable_opmod()\"><i class='fa fa-shield'></i></a>";
     var enable_watch_deleted = "<a class='control post-control' id='watch_hell' title='"+_T('Просмотр удалённых постов')+"' onclick=\"show_deleted_posts()\"><i class='fa fa-minus-circle'></i></a>";
 
-    $('.post_op').find('.post-controls').append(enable_control + enable_watch_deleted);
+    $('.post_op').find('.post-controls').append(enable_watch_deleted);
 
 });
 
-
+/*
 $(document).on('new_post', function(e, post) {
  
     if(enable_opmode_state)
@@ -29,7 +30,7 @@ $(document).on('change_post', function(e, post) {
         enablePostModControls(post);
 });
 
-
+*/
 
 function enablePostModControls(post)
 {

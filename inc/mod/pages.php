@@ -10,18 +10,18 @@ function mod_page($title, $template, $args, $subtitle = false) {
 	global $config, $mod;
 	
 	echo Element('page.html', array(
-		'config' => $config,
-		'mod' => $mod,
-		'hide_dashboard_link' => $template == 'mod/dashboard.html',
-		'title' => $title,
-		'subtitle' => $subtitle,
-		'nojavascript' => false,
-		'body' => Element($template,
+			'config'              => $config,
+			'mod'                 => $mod,
+			'hide_dashboard_link' => $template == 'mod/dashboard.html',
+			'title'               => $title,
+			'subtitle'            => $subtitle,
+			'boardlist'           => createBoardlist($mod),
+			'body'                => Element($template,
 				array_merge(
-					array('config' => $config, 'mod' => $mod), 
+					array('config' => $config, 'mod' => $mod),
 					$args
 				)
-			)
+			),
 		)
 	);
 }
@@ -131,17 +131,6 @@ function mod_dashboard() {
 	
 	$args['logout_token'] = make_secure_link_token('logout');
 
-        //Count ban appeals
-        $local = ($mod['type'] < GLOBALVOLUNTEER);
-        $query_ban_appeals = prepare("SELECT *, COUNT(*) AS `total_ban_appeals` FROM ``ban_appeals``
-                LEFT JOIN ``bans`` ON `ban_id` = ``bans``.`id`
-                LEFT JOIN ``mods`` ON ``bans``.`creator` = ``mods``.`id`
-                WHERE `denied` != 1 ".($local ? " AND ``bans``.`board` = :board " : " AND ``bans``.`board` IS NULL ")." ORDER BY `time`");
-        $query_ban_appeals->bindValue(':board', $mod['boards'][0]);
-
-        //$query_ban_appeals->execute() or error_log(db_error($query));
-        $row_ban_appeals = $query_ban_appeals->fetch();
-        $args['total_ban_appeals'] = $row_ban_appeals['total_ban_appeals'];
 
 	modLog('Looked at dashboard', false);
 	
@@ -229,8 +218,9 @@ function mod_search($type, $search_query_escaped, $page_no = 1) {
 	// Build the "LIKE 'this' AND LIKE 'that'" etc. part of the SQL query
 	$sql_like = '';
 	foreach ($match as $phrase) {
-		if (!empty($sql_like))
+		if (!empty($sql_like)){
 			$sql_like .= ' AND ';
+		}
 		$phrase = preg_replace('/^\'(.+)\'$/', '\'%$1%\'', $phrase);
 		if (is_array($sql_field)) {
 			foreach ($sql_field as $field) {
@@ -247,22 +237,25 @@ function mod_search($type, $search_query_escaped, $page_no = 1) {
 	if ($type == 'posts') {
 		$query = '';
 		$boards = listBoards();
-		if (empty($boards))
+		if (empty($boards)){
 			error(_('There are no boards to search!'));
+		}
 			
 		foreach ($boards as $board) {
 			openBoard($board['uri']);
 			if (!hasPermission($config['mod']['search_posts'], $board['uri']))
 				continue;
 			
-			if (!empty($query))
+			if (!empty($query)){
 				$query .= ' UNION ALL ';
+			}
 			$query .= sprintf("SELECT *, '%s' AS `board` FROM ``posts_%s`` WHERE %s", $board['uri'], $board['uri'], $sql_like);
 		}
 		
 		// You weren't allowed to search any boards
-		if (empty($query))
+		if (empty($query)) {
 				error($config['error']['noaccess']);
+		}
 		
 		$query .= ' ORDER BY `sticky` DESC, `id` DESC';
 	}
@@ -270,22 +263,25 @@ function mod_search($type, $search_query_escaped, $page_no = 1) {
 	if ($type == 'IP_notes') {
 		$query = 'SELECT * FROM ``ip_notes`` LEFT JOIN ``mods`` ON `mod` = ``mods``.`id` WHERE ' . $sql_like . ' ORDER BY `time` DESC';
 		$sql_table = 'ip_notes';
-		if (!hasPermission($config['mod']['view_notes']) || !hasPermission($config['mod']['show_ip']))
+		if (!hasPermission($config['mod']['view_notes']) || !hasPermission($config['mod']['show_ip'])){
 			error($config['error']['noaccess']);
+		}
 	}
 	
 	if ($type == 'bans') {
 		$query = 'SELECT ``bans``.*, `username` FROM ``bans`` LEFT JOIN ``mods`` ON `creator` = ``mods``.`id` WHERE ' . $sql_like . ' ORDER BY (`expires` IS NOT NULL AND `expires` < UNIX_TIMESTAMP()), `created` DESC';
 		$sql_table = 'bans';
-		if (!hasPermission($config['mod']['view_banlist']))
+		if (!hasPermission($config['mod']['view_banlist'])) {
 			error($config['error']['noaccess']);
+		}
 	}
 	
 	if ($type == 'log') {
 		$query = 'SELECT `username`, `mod`, `ip`, `board`, `time`, `text` FROM ``modlogs`` LEFT JOIN ``mods`` ON `mod` = ``mods``.`id` WHERE ' . $sql_like . ' ORDER BY `time` DESC';
 		$sql_table = 'modlogs';
-		if (!hasPermission($config['mod']['modlog']))
+		if (!hasPermission($config['mod']['modlog'])) {
 			error($config['error']['noaccess']);
+		}
 	}
 		
 	// Execute SQL query (with pages)
@@ -303,7 +299,11 @@ function mod_search($type, $search_query_escaped, $page_no = 1) {
 	
 	if ($type == 'bans') {
 		foreach ($results as &$ban) {
-			$ban['single_addr'] = true;
+			$ban['mask'] = Bans::range_to_string(array($ban['ipstart'], $ban['ipend']));
+			if (filter_var($ban['mask'], FILTER_VALIDATE_IP) !== false) {
+				$ban['single_addr'] = true;
+			}
+
 		}
 	}
 	
@@ -316,11 +316,11 @@ function mod_search($type, $search_query_escaped, $page_no = 1) {
 	// $results now contains the search results
 		
 	mod_page(_('Search results'), 'mod/search_results.html', array(
-		'search_type' => $type,
-		'search_query' => $search_query,
+		'search_type'          => $type,
+		'search_query'         => $search_query,
 		'search_query_escaped' => $search_query_escaped,
-		'result_count' => $result_count,
-		'results' => $results
+		'result_count'         => $result_count,
+		'results'              => $results,
 	));
 }
 
@@ -720,12 +720,16 @@ function mod_board_log($board, $page_no = 1, $hide_names = false, $public = fals
 	if (empty($logs) && $page_no > 1)
 		error($config['error']['404']);
 
+
 	if (!hasPermission($config['mod']['show_ip'])) {
 		// Supports ipv4 only!
 		foreach ($logs as $i => &$log) {
-			$log['text'] = preg_replace_callback('/(?:<a href="\?\/IP\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}">)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:<\/a>)?/', function($matches) {
+			$log['text'] = preg_replace_callback(array(
+					'#(?:<a id="ip"[^>]*>)([^</]*)(/\d+)?(?:</a>)#',
+					'/(?:<a href="\?\/IP\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}">)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:<\/a>)?/'
+				), function ($matches) {
 				global $board;
-				return less_ip($matches[1], $board['uri']);
+				return less_ip($matches[1], $board['uri']) . (count($matches) > 2 ? $matches[2] : "");
 			}, $log['text']);
 		}
 	}
@@ -791,34 +795,39 @@ function mod_ip_remove_note($ip, $id) {
 	$query->bindValue(':id', $id);
 	$query->execute() or error(db_error($query));
 	
-	modLog("Removed a note for <a href=\"?/IP/{$ip}\">{$ip}</a>");
-	
+	modLog("Removed a note for " . ip_link($ip));
+
 	header('Location: ?/IP/' . $ip . '#notes', true, $config['redirect_http']);
 }
 
 function mod_page_ip($ip) {
+
 	global $config, $mod;
 
-	if (!hasPermission($config['mod']['show_ip']))
+	if (!hasPermission($config['mod']['show_ip'])) {
 		error($config['error']['noaccess']);
-	
-	if (filter_var($ip, FILTER_VALIDATE_IP) === false)
+	}
+
+	if ($ip[0] !=  '!'  && filter_var($ip, FILTER_VALIDATE_IP) === false) {
 		error("Invalid IP address.");
-	
+	}
+
 	if (isset($_POST['ban_id'], $_POST['unban'])) {
-		if (!hasPermission($config['mod']['unban']))
+		if (!hasPermission($config['mod']['unban'])) {
 			error($config['error']['noaccess']);
-		
+		}
+
 		Bans::delete($_POST['ban_id'], true, $mod['boards']);
-		
+
 		header('Location: ?/IP/' . $ip . '#bans', true, $config['redirect_http']);
 		return;
 	}
-	
+
 	if (isset($_POST['note'])) {
-		if (!hasPermission($config['mod']['create_notes']))
+		if (!hasPermission($config['mod']['create_notes'])) {
 			error($config['error']['noaccess']);
-		
+		}
+
 		$_POST['note'] = escape_markup_modifiers($_POST['note']);
 		markup($_POST['note']);
 		$query = prepare('INSERT INTO ``ip_notes`` VALUES (NULL, :ip, :mod, :time, :body)');
@@ -827,56 +836,63 @@ function mod_page_ip($ip) {
 		$query->bindValue(':time', time());
 		$query->bindValue(':body', $_POST['note']);
 		$query->execute() or error(db_error($query));
-		
-		modLog("Added a note for <a href=\"?/IP/{$ip}\">{$ip}</a>");
-		
+
+		modLog("Added a note for " . ip_link($ip));
+
 		header('Location: ?/IP/' . $ip . '#notes', true, $config['redirect_http']);
 		return;
 	}
-	
-	$args = array();
-	$args['ip'] = $ip;
+
+	$args          = array();
+	$args['ip']    = $ip;
 	$args['posts'] = array();
-	
-	if ($config['mod']['dns_lookup'])
+
+	$args['hostname'] = NULL;
+	if ($config['mod']['dns_lookup'] && $ip[0] != '!') {
 		$args['hostname'] = rDNS($ip);
+	}
+
 	$boards = listBoards();
 	foreach ($boards as $board) {
 		openBoard($board['uri']);
-		if (!hasPermission($config['mod']['show_ip'], $board['uri']))
+		if (!hasPermission($config['mod']['show_ip'], $board['uri'])) {
 			continue;
+		}
+
 		$query = prepare(sprintf('SELECT * FROM ``posts_%s`` WHERE `ip` = :ip ORDER BY `sticky` DESC, `id` DESC LIMIT :limit', $board['uri']));
 		$query->bindValue(':ip', $ip);
 		$query->bindValue(':limit', $config['mod']['ip_recentposts'], PDO::PARAM_INT);
 		$query->execute() or error(db_error($query));
-		
+
 		while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
 			if (!$post['thread']) {
 				$po = new Thread($post, '?/', $mod, false);
 			} else {
 				$po = new Post($post, '?/', $mod);
 			}
-			
-			if (!isset($args['posts'][$board['uri']]))
+
+			if (!isset($args['posts'][$board['uri']])) {
 				$args['posts'][$board['uri']] = array('board' => $board, 'posts' => array());
+			}
+
 			$args['posts'][$board['uri']]['posts'][] = $po->build(true);
 		}
 	}
-	
+
 	$args['boards'] = $boards;
-	$args['token'] = make_secure_link_token('ban');
-	
+	$args['token']  = make_secure_link_token('ban');
+
 	if (hasPermission($config['mod']['view_ban'])) {
 		$args['bans'] = Bans::find($ip, false, true);
 	}
-	
+
 	if (hasPermission($config['mod']['view_notes'])) {
 		$query = prepare("SELECT ``ip_notes``.*, `username` FROM ``ip_notes`` LEFT JOIN ``mods`` ON `mod` = ``mods``.`id` WHERE `ip` = :ip ORDER BY `time` DESC");
 		$query->bindValue(':ip', $ip);
 		$query->execute() or error(db_error($query));
 		$args['notes'] = $query->fetchAll(PDO::FETCH_ASSOC);
 	}
-	
+
 	if (hasPermission($config['mod']['modlog_ip'])) {
 		$query = prepare("SELECT `username`, `mod`, `ip`, `board`, `time`, `text` FROM ``modlogs`` LEFT JOIN ``mods`` ON `mod` = ``mods``.`id` WHERE `text` LIKE :search ORDER BY `time` DESC LIMIT 50");
 		$query->bindValue(':search', '%' . $ip . '%');
@@ -885,14 +901,18 @@ function mod_page_ip($ip) {
 	} else {
 		$args['logs'] = array();
 	}
-	
+
 	$args['security_token'] = make_secure_link_token('IP/' . $ip);
-	
-	mod_page(sprintf('%s: %s', _('IP'), $ip), 'mod/view_ip.html', $args, $args['hostname']);
+
+	mod_page(sprintf('%s: %s', _('IP'), htmlspecialchars($ip)), 'mod/view_ip.html', $args, $args['hostname']);
 }
 
 function mod_page_ip_less($b, $id) {
 	global $config, $mod;
+
+	if (!hasPermission($config['mod']['show_ip_less'], $b)) {
+		error($config['error']['noaccess']);
+	}
 
 	if (!openBoard($b))
 		error('No board.');
@@ -906,12 +926,11 @@ function mod_page_ip_less($b, $id) {
 	$iprange = false;
 	if ($result) {
 		$ip = $result['ip'];
-		$iprange = $result['range_ip_hash'];
 	} else {
 		error(_('Could not find that post.'));
 	}
 
-	if (filter_var($ip, FILTER_VALIDATE_IP) === false)
+	if ($ip[0] != '!' && filter_var($ip, FILTER_VALIDATE_IP) === false)
 		error("Invalid IP address.");
 	
 	if (isset($_POST['ban_id'], $_POST['unban'])) {
@@ -937,8 +956,8 @@ function mod_page_ip_less($b, $id) {
 		$query->bindValue(':body', $_POST['note']);
 		$query->execute() or error(db_error($query));
 		
-		modLog("Added a note for <a href=\"?/IP/{$ip}\">{$ip}</a>");
-		
+		modLog("Added a note for " . ip_link($ip));
+
 		header('Location: ?/IP_less/' . $b . '/' . $id . '#notes', true, $config['redirect_http']);
 		return;
 	}
@@ -971,7 +990,7 @@ function mod_page_ip_less($b, $id) {
 	$args['token'] = make_secure_link_token('ban');
 	
 	if (hasPermission($config['mod']['view_ban'])) {
-		$args['bans'] = Bans::find($ip, false, true, false, $iprange);
+		$args['bans'] = Bans::find($ip, false, true);
 	}
 	
 	if (hasPermission($config['mod']['view_notes'])) {
@@ -1071,70 +1090,66 @@ function mod_ban_appeals(){
 	
 	if (!hasPermission($config['mod']['view_ban_appeals']))
 		error($config['error']['noaccess']);
-	
-	// Remove stale ban appeals		
-	query("DELETE FROM `nbans` WHERE `expires`!=0 AND `expires`<" . time()) or error(db_error());
 
-	// Get All Apeals
-	$query = prepare("SELECT * FROM `nbans` WHERE `appeal_state`=1");
-	$query->execute() or error(db_error());
-	$bans = $query->fetchAll(PDO::FETCH_ASSOC);
-	$acessed_bans = array();
-	$action_ban = null;
 
-	foreach($bans as $ban){
-		if($mod['boards'][0]=='*' || in_array($ban['board'], $mod['boards'])){
-			array_push($acessed_bans, $ban);
-
-			if(isset($_POST['appeal_id']) && $_POST['appeal_id'] == $ban['id'])
-				$action_ban = $ban;
-		}
-	}
-
-	// Allow or Deny appeal action
 	if (isset($_POST['appeal_id']) && (isset($_POST['unban']) || isset($_POST['deny']))) {
-		if (!hasPermission($config['mod']['ban_appeals']))
+		if (!hasPermission($config['mod']['ban_appeals'])) {
 			error($config['error']['noaccess']);
+		}
 
-		if($action_ban == NULL)
+		$ban = Bans::get_ban($_POST['appeal_id']);
+
+		if (!$ban) {
 			error(_('Ban appeal not found!'));
+		}
+
+		if (!in_array($ban['board'], $mod['boards']) && $mod['boards'][0] != '*') {
+			error($config['error']['noaccess']);
+		}
+
+		$ban['mask'] = Bans::range_to_string(array($ban['ipstart'], $ban['ipend']));
 
 		if (isset($_POST['unban'])) {
-			modLog('Accepted ban appeal #' . $action_ban['id'] . ' for ' . $action_ban['ident']);
-			nban::delete($action_ban['id']);
-		} else { 
-			query("UPDATE `nbans` SET `appeal_state` = 2 WHERE `id` = " . $action_ban['id']) or error(db_error());
-			modLog('Denied ban appeal #' . $action_ban['id'] . ' for ' . $action_ban['ident']);
+			modLog('Accepted ban appeal #' . $ban['id'] . ' for ' . $ban['mask']);
+			Bans::delete($ban['id'], true);
+			syslog(1, json_encode($ban));
+		} else {
+			modLog('Denied ban appeal #' . $ban['id'] . ' for ' . $ban['mask']);
+			Bans::deny_appeal($ban['id']);
 		}
-		
+
 		header('Location: ?/ban-appeals', true, $config['redirect_http']);
 		return;
 	}
 
 
+	$local = ($mod['type'] < GLOBALVOLUNTEER);
 
-	// SHOW APPEALS
-	foreach ($acessed_bans as &$ban) {
-		if ($ban['post']){
-			$ban['post'] = json_decode($ban['post'], true);		
+	$ban_appeals = Bans::get_requested_appeals($local ?  $mod['boards'][0] : false);
+
+	foreach ($ban_appeals as &$ban) {
+		if ($ban['post']) {
+			$ban['post'] = json_decode($ban['post'], true);
 		}
-			
+
+		$ban['mask'] = Bans::range_to_string(array($ban['ipstart'], $ban['ipend']));
+
 		if ($ban['post'] && isset($ban['post']['board'], $ban['post']['id'])) {
 			openBoard($ban['post']['board']);
 
 			if ($ban['post']['thread']) {
-				$po = new Post($ban['post']);
+				$po          = new Post($ban['post']);
 				$ban['post'] = $po->build(true);
 			} else {
-				$po = new Thread($ban['post'], null, false, false);
+				$po          = new Thread($ban['post'], null, false, false);
 				$ban['post'] = $po->build(true);
 			}
 		}
 	}
 
 	mod_page(_('Ban appeals'), 'mod/ban_appeals.html', array(
-		'ban_appeals' => $acessed_bans,
-		'token' => make_secure_link_token('ban-appeals')
+		'ban_appeals' => $ban_appeals,
+		'token'       => make_secure_link_token('ban-appeals'),
 	));
 
 }
@@ -1542,80 +1557,60 @@ function mod_move($originBoard, $postID) {
 	mod_page(_('Move thread'), 'mod/move.html', array('post' => $postID, 'board' => $originBoard, 'boards' => $boards, 'token' => $security_token));
 }
 
-function mod_ban_post($board, $delete, $post, $token = false, $mod_trip = null) {
-	global $config, $mod;
-	$rangeban = false;
-	
-	if (!openBoard($board))
-		error($config['error']['noboard']);
-	
-	if($mod_trip == null)
-		if (!hasPermission($config['mod']['delete'], $board))
-			error($config['error']['noaccess']);
+function mod_ban_post($board, $delete, $post, $token = false) {
 
-	if($delete=='range')
-	{
-		$delete = "";
-		$rangeban = true;
-		$security_token = make_secure_link_token($board . '/banrange/' . $post);
-		$query = prepare(sprintf('SELECT ' . ($config['ban_show_post'] ? '*' : '`range_ip_hash`, `thread`') .
-		  ' FROM ``posts_%s`` WHERE `id` = :id', $board));
-	}else{
-		$security_token = make_secure_link_token($board . '/ban/' . $post);
-		$query = prepare(sprintf('SELECT ' . ($config['ban_show_post'] ? '*' : '`ip`, `thread`') .
-		  ' FROM ``posts_%s`` WHERE `id` = :id', $board));
+	global $config;
+
+	if (!openBoard($board)) {
+		error($config['error']['noboard']);
 	}
 
+	if (!hasPermission($config['mod']['delete'], $board)) {
+		error($config['error']['noaccess']);
+	}
+
+	$security_token = make_secure_link_token($board . '/ban/' . $post);
+
+	$query = prepare(sprintf('SELECT ' . ($config['ban_show_post'] ? '*' : '`ip`, `thread`') .
+		' FROM ``posts_%s`` WHERE `id` = :id', $board));
 	$query->bindValue(':id', $post);
 	$query->execute() or error(db_error($query));
-	if (!$_post = $query->fetch(PDO::FETCH_ASSOC))
+	if (!$_post = $query->fetch(PDO::FETCH_ASSOC)) {
 		error($config['error']['404']);
-	
+	}
+
 	$thread = $_post['thread'];
-
-	if($rangeban && $_post['range_ip_hash']=="")
-		error(_("No IP Range"));
-
-	$ip = ($rangeban) ? $_post['range_ip_hash'] : $_post['ip'];
-	$tor = checkDNSBL($ip);
-
+	$ip     = $_post['ip'];
+	$tor    = false;//!!! Восстановить значение - если пост отправлен из тор ноды, иначе красное предупреждение пр бане не будет работать checkDNSBL($ip);
 
 	if (isset($_POST['new_ban'], $_POST['reason'], $_POST['length'], $_POST['board'])) {
-
 		require_once 'inc/mod/ban.php';
-		
-		if (isset($_POST['ip']))
+
+		if (isset($_POST['ip'])) {
 			$ip = $_POST['ip'];
+		}
 
-		if (isset($_POST['range']))
+		if (isset($_POST['range'])) {
 			$ip = $ip . $_POST['range'];
+		}
 
-		$board_name =  $mod_trip != null ? $mod_trip :  ($_POST['board'] == '*' ? false : $_POST['board']);
-
-		$ban_id = Bans::new_ban($ip, $_POST['reason'], $_POST['length'], $board_name, false, $config['ban_show_post'] ? $_post : false, false, $mod_trip);
-
-
+		Bans::new_ban($ip, $_POST['reason'], $_POST['length'], $_POST['board'] == '*' ? false : $_POST['board'],
+			false, $config['ban_show_post'] ? $_post : false);
 
 		if (isset($_POST['public_message'], $_POST['message'])) {
 			// public ban message
-			$length_english = Bans::parse_time($_POST['length']) ? 'for ' . until(Bans::parse_time($_POST['length'])) : 'permanently';
+			$length_english   = @Bans::parse_time($_POST['length']) ? 'for ' . until(@Bans::parse_time($_POST['length'])) : 'permanently';
 			$_POST['message'] = preg_replace('/[\r\n]/', '', $_POST['message']);
 			$_POST['message'] = str_replace('%length%', $length_english, $_POST['message']);
 			$_POST['message'] = str_replace('%LENGTH%', strtoupper($length_english), $_POST['message']);
-
-			$ban_modif = $config['private_markup_ban'] ;
-			$timestr = empty($_POST['length']) ? 'Навсегда' : secondsToTime(Bans::parse_time($_POST['length']) - time());
-			$info =   "\n[$ban_modif]Бан: #$ban_id / Время: $timestr\nВыдал: {$mod['username']}\n\nПричина: ". utf8tohtml($_POST['reason']) . "[/$ban_modif]";
-
-			$query = prepare(sprintf('UPDATE ``posts_%s`` SET `body_nomarkup` = CONCAT(`body_nomarkup`, :body_nomarkup) WHERE `id` = :id', $board));
-
-			$query->bindValue(':body_nomarkup', $info );
+			$query            = prepare(sprintf('UPDATE ``posts_%s`` SET `body_nomarkup` = CONCAT(`body_nomarkup`, :body_nomarkup) WHERE `id` = :id', $board));
 			$query->bindValue(':id', $post);
- 
-
+			$query->bindValue(':body_nomarkup', sprintf("\n<tinyboard ban message>%s</tinyboard>", utf8tohtml($_POST['message'])));
 			$query->execute() or error(db_error($query));
 			rebuildPost($post);
-			modLog("Attached a public ban message to post #{$post}: " . utf8tohtml($_POST['reason']), null, $mod_trip);
+
+			modLog("Attached a public ban message to post #{$post}: " . utf8tohtml($_POST['message']));
+			buildThread($thread ? $thread : $post);
 			buildIndex();
 		} elseif (isset($_POST['delete']) && (int) $_POST['delete']) {
 			// Delete post
@@ -1627,146 +1622,23 @@ function mod_ban_post($board, $delete, $post, $token = false, $mod_trip = null) 
 			rebuildThemes('post-delete', $board);
 		}
 
-		if (isset($_POST['json_response'])) {
-			json_response(array('success'=> 1 , 'ban_success'=> 1));
-		};	
-		
 		header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
 	}
-	
+
 	$args = array(
-		'ip' => $ip,
+		'ip'      => $ip,
 		'hide_ip' => !hasPermission($config['mod']['show_ip'], $board),
-		'post' => $post,
-		'board' => $board,
-		'tor' => $tor,
-		'delete' => (bool)$delete,
-		'rangeban' => (bool)$rangeban,
-		'boards' => listBoards(),
-		'token' => $security_token
+		'post'    => $post,
+		'board'   => $board,
+		'tor'     => $tor,
+		'delete'  => (bool) $delete,
+		'boards'  => listBoards(),
+		'token'   => $security_token,
 	);
-	
-	mod_page(_(($rangeban) ? 'New range ban' : 'New ban'), 'mod/ban_form.html', $args);
+
+	mod_page(_('New ban'), 'mod/ban_form.html', $args);
 }
 
-function mod_ban_postbyip($board, $delete, $post, $global = false, $token = false) {
-  global $config, $mod;
-  $global = (bool)$global;
-
-  if (!openBoard($board))
-    error($config['error']['noboard']);
-
-  if (!$global && !hasPermission($config['mod']['bandeletebyip'], $board))
-    error($config['error']['noaccess']);
-
-  if ($global && !hasPermission($config['mod']['bandeletebyip'], $board))
-    error($config['error']['noaccess']);
-
-
-  if($global)
-    $security_token = make_secure_link_token($board . '/ban&deletebyip/' . $post . '/global');
-  else
-    $security_token = make_secure_link_token($board . '/ban&deletebyip/' . $post);
-
-   $query = prepare(sprintf('SELECT ' . ($config['ban_show_post'] ? '*' : '`ip`, `thread`') .
-     ' FROM ``posts_%s`` WHERE `id` = :id', $board));
-
-  $query->bindValue(':id', $post);
-  $query->execute() or error(db_error($query));
-  if (!$_post = $query->fetch(PDO::FETCH_ASSOC))
-    error($config['error']['404']);
-  $thread = $_post['thread'];
-  $ip = $_post['ip'];
-  $tor = checkDNSBL($ip);
-
-  if (isset($_POST['new_ban'], $_POST['reason'], $_POST['length'], $_POST['board'])) {
-    require_once 'inc/mod/ban.php';
-
-    if (isset($_POST['ip']))
-      $ip = $_POST['ip'];
-
-    if (isset($_POST['range']))
-      $ip = $ip . $_POST['range'];
-
-    if($global){
-      $query_byip = prepare(sprintf('SELECT * FROM ``posts_%s`` WHERE `ip` = :ip', $board));
-      $query_byip->bindValue(':ip', $_post['ip']);
-    }else{
-
-        // Find thread
-        $query_thread = prepare(sprintf('SELECT `thread` FROM ``posts_%s`` WHERE `id` = :id', $board));
-        $query_thread->bindValue(':id', $post);
-        $query_thread->execute() or error(db_error($query));
-        if($thread_db = $query_thread->fetchColumn()){
-          /*reply(prepare to delete post)*/
-          $posts_field = '`ip` = :ip AND (`thread` = :thread OR `id` = :id)';
-        }else{
-          /*OP and reply(prepare to delete post)*/
-          $posts_field = '`id` = :id OR `thread` = :thread';
-        }
-
-        $query_byip = prepare(sprintf('SELECT * FROM ``posts_%s`` WHERE '.$posts_field, $board));
-        $query_byip->bindValue(':thread', $_post['thread']);
-        $query_byip->bindValue(':id', $post);
-
-        if(isset($thread_db)){
-          $query_byip->bindValue(':thread', $thread_db);
-          $query_byip->bindValue(':ip', $ip);
-          $query_byip->bindValue(':id', $thread_db);
-        }else{
-          $query_byip->bindValue(':id', $post);
-          $query_byip->bindValue(':thread', $post);
-        }
-
-    }
-
-    $query_byip->execute() or error(db_error($query_byip));
-
-    $deleted = 0;
-    while ($_postbyip = $query_byip->fetch(PDO::FETCH_ASSOC)) {
-
-      if($post == $_postbyip['id']){
-        Bans::new_ban($ip, $_POST['reason'], $_POST['length'], $_POST['board'] == '*' ? false : $_POST['board'],
-          false, $config['ban_show_post'] ? $_postbyip : false, true);
-      }
-
-      if (isset($_POST['delete']) && (int) $_POST['delete']) {
-        deletePost($_postbyip['id'],false);
-	$deleted = 1;
-      }
-
-    }////end while
-	  
-    if ($deleted === 1){
-      // Rebuild board
-      buildIndex();
-      // Rebuild themes
-      rebuildThemes('post-delete', $board);
-    }
-	  
-    if($global){
-      modLog("Deleted all posts by IP address: <a href=\"?/IP/$ip\">$ip</a>");
-    }else{
-      modLog("Deleted all posts by IP address in a thread: <a href=\"?/IP/$ip\">$ip</a>");
-    }
-    header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
-  }
-
-  $args = array(
-    'ip' => $ip,
-    'hide_ip' => !hasPermission($config['mod']['show_ip'], $board),
-    'post' => $post,
-    'board' => $board,
-    'tor' => $tor,
-    'bandeletetype' => ($global)?1:0,
-    'delete' => (bool)$delete,
-    'boards' => listBoards(),
-    'token' => $security_token
-  );
-
-  mod_page(_(($global)?"New ban: delete all posts by this IP on this board":'New ban: delete all posts by this IP in this thread'), 'mod/ban_form.html', $args);
-}
-	    
 function mod_edit_post($board, $edit_raw_html, $postID) {
 	global $config, $mod;
 
@@ -1797,6 +1669,9 @@ function mod_edit_post($board, $edit_raw_html, $postID) {
 		// Add back modifiers in the original post
 		$modifiers = extract_modifiers($post['body_nomarkup']);
 		foreach ($modifiers as $key => $value) {
+			if($key == 'raw html' && !hasPermission($config['mod']['rawhtml'], $board)) {
+				continue;
+			}
 			$_POST['body'] .= "<tinyboard $key>$value</tinyboard>";
 		}
 
@@ -1808,9 +1683,9 @@ function mod_edit_post($board, $edit_raw_html, $postID) {
 		}
 
 		if ($edit_raw_html)
-			$query = prepare(sprintf('UPDATE ``posts_%s`` SET `name` = :name,'. $trip .' `email` = :email, `subject` = :subject, `body` = :body, `body_nomarkup` = :body_nomarkup, `embed` = :embed `edited_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = :id', $board));
+			$query = prepare(sprintf('UPDATE ``posts_%s`` SET `name` = :name,' . $trip . ' `email` = :email, `subject` = :subject, `body` = :body, `body_nomarkup` = :body_nomarkup, `embed` = :embed, `edited_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = :id', $board));
 		else
-			$query = prepare(sprintf('UPDATE ``posts_%s`` SET `name` = :name,'. $trip .' `email` = :email, `subject` = :subject, `body_nomarkup` = :body, `embed` = :embed, `edited_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = :id', $board));
+			$query = prepare(sprintf('UPDATE ``posts_%s`` SET `name` = :name,' . $trip . ' `email` = :email, `subject` = :subject, `body_nomarkup` = :body, `embed` = :embed, `edited_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = :id', $board));
 		$query->bindValue(':id', $postID);
 		$query->bindValue(':name', $_POST['name'] ? $_POST['name'] : $config['anonymous']);
 		$query->bindValue(':email', $_POST['email']);
@@ -1827,7 +1702,7 @@ function mod_edit_post($board, $edit_raw_html, $postID) {
 		}
 		$query->execute() or error(db_error($query));
 		
-		if( $config['clean']['edits_remove_local'] || $config['clean']['edits_remove_global'] ) {
+		if($config['clean']['edits_remove_local'] || $config['clean']['edits_remove_global'] ) {
 			
 			$query_global     = "`clean_global` = :clean";
 			$query_global_mod = "`clean_global_mod_id` = :mod";
@@ -1890,37 +1765,27 @@ function mod_edit_post($board, $edit_raw_html, $postID) {
 	}
 }
 
-function mod_delete($board, $post, $trip = null) 
+function mod_delete($board, $post) 
 {
 	global $config, $mod;
 	
 	if (!openBoard($board))
 		error($config['error']['noboard']);
 
-	if($trip == null)
-		if (!hasPermission($config['mod']['delete'], $board))
-			error($config['error']['noaccess']);
+	if (!hasPermission($config['mod']['delete'], $board))
+		error($config['error']['noaccess']);
 	
 	// Delete post
 	deletePost($post);
 	// Record the action
-	modLog("Deleted post #{$post}", null, $trip);
+	modLog("Deleted post #{$post}");
 	// Rebuild board
 	buildIndex();
 	// Rebuild themes
 	rebuildThemes('post-delete', $board);
 	// Redirect
 
-	if (isset($_POST['json_response'])) {
-		json_response(array('success'=> 1 , 'post_delete_success'=> 1));
-	};
-
-
-	if (isset($_SERVER["HTTP_REFERER"])) {
-		header('Location: ?/reports');
-	} else {
-		header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
-	}	
+	header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);	
 }
 
 function mod_deletefile($board, $post, $file) {
@@ -1946,154 +1811,50 @@ function mod_deletefile($board, $post, $file) {
 	header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
 }
 
-function mod_deletefilebyip($board, $post, $file) {
-        global $config, $mod;
+function mod_banhashfile($board, $post, $file) {
 
-        if (!openBoard($board))
-                error($config['error']['noboard']);
+	global $config;
 
-        if (!hasPermission($config['mod']['deletefilebyip'], $board))
-                error($config['error']['noaccess']);
+	if (!openBoard($board)) {
+		error($config['error']['noboard']);
+	}
 
+	if (!hasPermission($config['mod']['deletefile'], $board)) {
+		error($config['error']['noaccess']);
+	}
 
-        // Find IP address
-        $query = prepare(sprintf('SELECT `ip` FROM ``posts_%s`` WHERE `id` = :id', $board));
-        $query->bindValue(':id', $post);
-        $query->execute() or error(db_error($query));
-        if (!$ip = $query->fetchColumn())
-                error($config['error']['invalidpost']);
+	// Delete file thumbnail
+	$query = prepare(sprintf("SELECT `files`, `thread` FROM ``posts_%s`` WHERE id = :id", $board));
+	$query->bindValue(':id', $post, PDO::PARAM_INT);
+	$query->execute() or error(db_error($query));
+	$result = $query->fetch(PDO::FETCH_ASSOC);
+	$files  = json_decode($result['files']);
 
-        $boards = array(array('uri' => $board));
+	if(!isset($files[$file])) {
+		error(_('Banhash: File not exists'));
+	}
 
-        $query = '';
-        foreach ($boards as $_board) {
-                $query .= sprintf("SELECT `num_files`, `files`, `thread`, `id`, '%s' AS `board` FROM ``posts_%s`` WHERE `ip` = :ip UNION ALL ", $_board['uri'], $_board['uri']);
-        }
-        $query = preg_replace('/UNION ALL $/', '', $query);
+	$hash = $files[$file]->hash;
+	$type_hash = 'md5';
+	if($files[$file]->is_an_image) {
+		include_once 'inc/lib/imagehash/imagehash.php';
+		$hasher = new Jenssegers\ImageHash\ImageHash;
+		$hash = $hasher->hash($files[$file]->file_path);
+		$type_hash = 'imagehash';
+	}
 
-        $query = prepare($query);
-        $query->bindValue(':ip', $ip);
-        $query->execute() or error(db_error($query));
+	$query = prepare('INSERT INTO ``filters`` VALUES (NULL, :board, :type, :reason, :value)');
+	$query->bindValue(':board', $board);
+	$query->bindValue(':type', $type_hash);
+	$query->bindValue(':reason', "Add to filter hash file from post #{$post}");
+	$query->bindValue(':value', $hash);
+	$query->execute() or error(db_error($query));
+	
+	// Record the action
+	modLog("Add to filter hash file from post #{$post}");
 
-        if ($query->rowCount() < 1)
-                error($config['error']['invalidpost']);
-
-        @set_time_limit($config['mod']['rebuild_timelimit']);
-        while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
-                $files = json_decode($post['files']);
-                if($post["files"]!=NULL){
-                        for($file_ctr=0;$file_ctr<$post['num_files'];$file_ctr++){
-                                if(isset($files[$file]->file) && $files[$file]->file != "deleted"){
-                                        // Record the action
-                                        #modLog("Deleted file from post #{$post["id"]}");
-                                        // Delete file
-                                        deleteFile($post["id"], TRUE, $file_ctr);
-
-                                        // Rebuild board
-                                        buildIndex();
-                                        // Rebuild themes
-                                        rebuildThemes('post-delete', $board);
-                                }
-                        }
-                        $file_ctr=0;
-                }
-        }
-
-        modLog("Deleted all files by IP address: <a href=\"?/IP/$ip\">$ip</a>");
-
-        // Redirect
-        /*redirect back to report queue after deleting, or else redirect to index*/
-        if (isset($_SERVER["HTTP_REFERER"])) {
-                $ref = explode("?",$_SERVER["HTTP_REFERER"]);
-                $redirect_from = "?".$ref[count($ref)-1];
-                header('Location: '.$redirect_from);
-        } else {
-                header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
-        }
-}
-
-function mod_deletefilebyip_thread($board, $post, $file) {
-        global $config, $mod;
-
-        if (!openBoard($board))
-                error($config['error']['noboard']);
-
-        if (!hasPermission($config['mod']['deletefilebyip_thread'], $board))
-                error($config['error']['noaccess']);
-
-        // Find IP address
-        $query = prepare(sprintf('SELECT `ip` FROM ``posts_%s`` WHERE `id` = :id', $board));
-        $query->bindValue(':id', $post);
-        $query->execute() or error(db_error($query));
-        if (!$ip = $query->fetchColumn())
-                error($config['error']['invalidpost']);
-
-        $boards = array(array('uri' => $board));
-
-        // Find thread
-        $query_thread = prepare(sprintf('SELECT `thread` FROM ``posts_%s`` WHERE `id` = :id', $board));
-        $query_thread->bindValue(':id', $post);
-        $query_thread->execute() or error(db_error($query));
-        if($thread_db = $query_thread->fetchColumn()){
-                /*reply(prepare to delete post)*/
-                $posts_field = '`ip` = :ip AND (`thread` = :thread OR `id` = :id)';
-        }
-        else{
-                /*OP and reply(prepare to delete post)*/
-                $posts_field = '`id` = :id OR `thread` = :thread';
-        }
-
-        $query = '';
-        foreach ($boards as $_board) {
-                $query .= sprintf("SELECT `num_files`, `ip`, `files`, `thread`, `id`, '%s' AS `board` FROM ``posts_%s`` WHERE $posts_field UNION ALL ", $_board['uri'], $_board['uri']);
-        }
-        $query = preg_replace('/UNION ALL $/', '', $query);
-        $query = prepare($query);
-        if($thread_db){
-                $query->bindValue(':thread', $thread_db);
-                $query->bindValue(':ip', $ip);
-                $query->bindValue(':id', $thread_db);
-        }else{
-                $query->bindValue(':id', $post);
-                $query->bindValue(':thread', $post);
-        }
-        $query->execute() or error(db_error($query));
-
-        if ($query->rowCount() < 1)
-                error($config['error']['invalidpost']);
-
-        @set_time_limit($config['mod']['rebuild_timelimit']);
-        while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
-                $files = json_decode($post['files']);
-                if($post["files"]!=NULL && $ip==$post['ip']){
-                        for($file_ctr=0;$file_ctr<$post['num_files'];$file_ctr++){
-                                if(isset($files[$file]->file) && $files[$file]->file != "deleted"){
-                                        // Record the action
-                                        //modLog("Deleted file from post #{$post['id']}");
-                                        // Delete file
-                                        deleteFile($post['id'], TRUE, $file_ctr);
-
-                                        // Rebuild board
-                                        buildIndex();
-                                        // Rebuild themes
-                                        rebuildThemes('post-delete', $board);
-                                }
-                        }
-                        $file_ctr=0;
-                }
-        }
-
-        modLog("Deleted all files by IP address in a thread: <a href=\"?/IP/$ip\">$ip</a>");
-
-        // Redirect
-        /*redirect back to report queue after deleting, or else redirect to index*/
-        if (isset($_SERVER["HTTP_REFERER"])) {
-                $ref = explode("?",$_SERVER["HTTP_REFERER"]);
-                $redirect_from = "?".$ref[count($ref)-1];
-                header('Location: '.$redirect_from);
-        } else {
-                header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
-        }
+	// Redirect
+	header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
 }
 
 function mod_spoiler_image($board, $post, $file) {
@@ -2156,13 +1917,17 @@ function mod_spoiler_images($board, $post) {
 	$result = $query->fetch(PDO::FETCH_ASSOC);
 	$files = json_decode($result['files']);
 	
+	if(!count($files)) {
+		error(_('That post has no files.'));
+	}
+
 	foreach ($files as $file => $name) {
 		$size_spoiler_image = @getimagesize($config['spoiler_image']);
 		file_unlink($config['dir']['img_root'] . $board . '/' . $config['dir']['thumb'] . $files[$file]->thumb);
 		$files[$file]->thumb = 'spoiler';
 		$files[$file]->thumbwidth = $size_spoiler_image[0];
 		$files[$file]->thumbheight = $size_spoiler_image[1];
-	};
+	}
 	// Make thumbnail spoiler
 	$query = prepare(sprintf("UPDATE ``posts_%s`` SET `files` = :files WHERE `id` = :id", $board));
 	$query->bindValue(':files', json_encode($files));
@@ -2233,6 +1998,8 @@ function mod_deletebyip($boardName, $post, $global = false)
 
 		rebuildThemes('post-delete', $board['uri']);
 
+		buildIndex();
+
 		if ($post['thread'])
 			$threads_to_rebuild[$post['board']][$post['thread']] = true;
 		else
@@ -2247,14 +2014,10 @@ function mod_deletebyip($boardName, $post, $global = false)
 		}
 		buildIndex();
 	}
-	
-	if ($global) {
-		$board = false;
-	}
-	
+
 	// Record the action
-	modLog("Deleted all posts by IP address: <a href=\"?/IP/$ip\">$ip</a>");
-	
+	modLog("Deleted all posts by IP address: " . ip_link($ip));
+
 	// Redirect
 	header('Location: ?/' . sprintf($config['board_path'], $boardName) . $config['file_index'], true, $config['redirect_http']);
 }
@@ -2369,12 +2132,12 @@ function mod_user($uid) {
 			if (!preg_match('/^[a-zA-Z0-9._]{1,30}$/', $_POST['username']))
 				error(_('Invalid username'));
 			
-			$query = prepare('SELECT `username` FROM ``mods``');
+			$query = prepare('SELECT `username`,`id` FROM ``mods``');
 			$query->execute() or error(db_error($query));
 			$users = $query->fetchAll(PDO::FETCH_ASSOC);
 
 			foreach ($users as $i => $v) {
-				if (strtolower($_POST['username']) == strtolower($v['username'])) {
+				if (strtolower($_POST['username']) == strtolower($v['username']) && $v['id'] !== $uid) {
 					error(_('Refusing to change your username because another user is already using it.'));
 				}
 			}
@@ -2436,6 +2199,7 @@ function mod_user($uid) {
 	));
 }
 
+
 function mod_user_new() {
 	global $pdo, $config;
 	
@@ -2464,8 +2228,17 @@ function mod_user_new() {
 		}
 		
 		$type = (int)$_POST['type'];
-		if (!isset($config['mod']['groups'][$type]) )
+		if (!isset($config['mod']['groups'][$type]) || $type == DISABLED) {
 			error(sprintf($config['error']['invalidfield'], 'type'));
+		}
+
+		$query = prepare('SELECT ``username``,``id`` FROM ``mods`` WHERE ``username`` = :username');
+		$query->bindValue(':username', $_POST['username']);
+		$query->execute() or error(db_error($query));
+
+		if (($users = $query->fetch(PDO::FETCH_ASSOC))) {
+			error(sprintf(_($config['error']['modexists']), $config['file_mod'] . '?/users/' . $users['id']));
+		}
 		
 		$salt = generate_salt();
 		$password = hash('sha256', $salt . sha1($_POST['password']));
@@ -2489,7 +2262,6 @@ function mod_user_new() {
 		
 	mod_page(_('New user'), 'mod/user.html', array('new' => true, 'boards' => listBoards(), 'token' => make_secure_link_token('users/new')));
 }
-
 
 function mod_users() {
 	global $config;
@@ -2518,6 +2290,7 @@ function mod_users() {
 	
 	mod_page(sprintf('%s (%d)', _('Manage users'), count($users)), 'mod/users.html', array('users' => $users));
 }
+
 
 function mod_user_promote($uid, $action) {
 	global $config;
@@ -2548,8 +2321,9 @@ function mod_user_promote($uid, $action) {
 		}
 	}
 	
-	if ($new_group === false )
+	if ($new_group === false || $new_group == DISABLED) {
 		error(_('Impossible to promote/demote user.'));
+	}
 	
 	$query = prepare("UPDATE ``mods`` SET `type` = :group_value WHERE `id` = :id");
 	$query->bindValue(':id', $uid);
@@ -2755,6 +2529,9 @@ function mod_rebuild() {
 			buildJavascript();
 			$rebuilt_scripts[] = $config['file_script'];
 		}
+
+		//Save conig
+		$_config = $config;
 		
 		foreach ($boards as $board) {
 			if (!(isset($_POST['boards_all']) || isset($_POST['board_' . $board['uri']])))
@@ -2773,6 +2550,14 @@ function mod_rebuild() {
 				buildJavascript();
 				$rebuilt_scripts[] = $config['file_script'];
 			}
+
+			if (isset($_POST['rebuild_posts'])) {
+				$query = query(sprintf("SELECT `id` FROM ``posts_%s``", $board['uri'])) or error(db_error());
+				while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
+					$log[] = '<strong>' . sprintf($config['board_abbreviation'], $board['uri']) . '</strong>: Rebuilding post #' . $post['id'];
+					rebuildPost($post['id']);
+				}
+			}
 			
 			if (isset($_POST['rebuild_thread'])) {
 				$query = query(sprintf("SELECT `id` FROM ``posts_%s`` WHERE `thread` IS NULL", $board['uri'])) or error(db_error());
@@ -2781,8 +2566,11 @@ function mod_rebuild() {
 					buildThread($post['id']);
 				}
 			}
+
+	
 		}
 		
+		$config = $_config;
 		mod_page(_('Rebuild'), 'mod/rebuilt.html', array('logs' => $log));
 		return;
 	}
@@ -3161,11 +2949,9 @@ function mod_report_dismiss() {
 				$query = prepare("DELETE FROM `reports` WHERE `local` = FALSE AND `global` = FALSE");
 				$query->execute() or error(db_error($query));
 				
-				
-				if( $all ) {
-					modLog("Dismissed all reports by <a href=\"?/IP/{$ip}\">{$ip}</a>");
-				}
-				else {
+				if ($all) {
+					modLog("Dismissed all reports by " . ip_link($ip));
+				} else {
 					modLog("Dismissed a report for post #{$post}", $board);
 				}
 			}
@@ -3543,6 +3329,485 @@ function mod_report_clean( $global_reports, $board, $unclean, $post, $global, $l
 		header('Location: ?/reports', true, $config['redirect_http']);
 	}
 }
+
+
+function mod_config($board_config = false) {
+	global $config, $mod, $board;
+	
+	if ($board_config && !openBoard($board_config))
+		error($config['error']['noboard']);
+	
+	if (!hasPermission($config['mod']['edit_config'], $board_config))
+		error($config['error']['noaccess']);
+	
+	$config_file = $board_config ? $board['dir'] . 'config.php' : 'inc/instance-config.php';
+	
+	if ($config['mod']['config_editor_php']) {
+		$readonly = !(is_file($config_file) ? is_writable($config_file) : is_writable(dirname($config_file)));
+		
+		if (!$readonly && isset($_POST['code'])) {
+			$code = $_POST['code'];
+			// Save previous instance_config if php_check_syntax fails
+			$old_code = file_get_contents($config_file);
+			file_put_contents($config_file, $code);
+			$resp = shell_exec_error('php -l ' . $config_file);
+			if (preg_match('/No syntax errors detected/', $resp)) {
+				header('Location: ?/config' . ($board_config ? '/' . $board_config : ''), true, $config['redirect_http']);
+				return;
+			}
+			else {
+				file_put_contents($config_file, $old_code);
+				error($config['error']['badsyntax'] . $resp);
+			}	
+		}
+		
+		$instance_config = @file_get_contents($config_file);
+		if ($instance_config === false) {
+			$instance_config = "<?php\n\n// This file does not exist yet. You are creating it.";
+		}
+		$instance_config = str_replace("\n", '&#010;', utf8tohtml($instance_config));
+		
+		mod_page(_('Config editor'), 'mod/config-editor-php.html', array(
+			'php' => $instance_config,
+			'readonly' => $readonly,
+			'boards' => listBoards(),
+			'board' => $board_config,
+			'file' => $config_file,
+			'token' => make_secure_link_token('config' . ($board_config ? '/' . $board_config : ''))
+		));
+		return;
+	}
+	
+	require_once 'inc/mod/config-editor.php';
+	
+	$conf = config_vars();
+	
+	foreach ($conf as &$var) {
+		if (is_array($var['name'])) {
+			$c = &$config;
+			foreach ($var['name'] as $n)
+				$c = &$c[$n];
+		} else {
+			$c = @$config[$var['name']];
+		}
+		
+		$var['value'] = $c;
+	}
+	unset($var);
+	
+	if (isset($_POST['save'])) {
+		$config_append = '';
+		
+		foreach ($conf as $var) {
+			$field_name = 'cf_' . (is_array($var['name']) ? implode('/', $var['name']) : $var['name']);
+			
+			if ($var['type'] == 'boolean')
+				$value = isset($_POST[$field_name]);
+			elseif (isset($_POST[$field_name]))
+				$value = $_POST[$field_name];
+			else
+				continue; // ???
+			
+			if (!settype($value, $var['type']))
+				continue; // invalid
+			
+			if ($value != $var['value']) {
+				// This value has been changed.
+				
+				$config_append .= '$config';
+				
+				if (is_array($var['name'])) {
+					foreach ($var['name'] as $name)
+						$config_append .= '[' . var_export($name, true) . ']';
+				} else {
+					$config_append .= '[' . var_export($var['name'], true) . ']';
+				}
+				
+				
+				$config_append .= ' = ';
+				if (@$var['permissions'] && isset($config['mod']['groups'][$value])) {
+					$config_append .= $config['mod']['groups'][$value];
+				} else {
+					$config_append .= var_export($value, true);
+				}
+				$config_append .= ";\n";
+			}
+		}
+		
+		if (!empty($config_append)) {
+			$config_append = "\n// Changes made via web editor by \"" . $mod['username'] . "\" @ " . date('r') . ":\n" . $config_append . "\n";
+			if (!is_file($config_file))
+				$config_append = "<?php\n\n$config_append";
+			if (!@file_put_contents($config_file, $config_append, FILE_APPEND)) {
+				$config_append = htmlentities($config_append);
+				
+				if ($config['minify_html']) {
+					$config_append = str_replace("\n", '&#010;', $config_append);
+				}
+				$page = array();
+				$page['title'] = 'Cannot write to file!';
+				$page['config'] = $config;
+				$page['body'] = '
+					<p style="text-align:center">Tinyboard could not write to <strong>' . $config_file . '</strong> with the ammended configuration, probably due to a permissions error.</p>
+					<p style="text-align:center">You may proceed with these changes manually by copying and pasting the following code to the end of <strong>' . $config_file . '</strong>:</p>
+					<textarea style="width:700px;height:370px;margin:auto;display:block;background:white;color:black" readonly>' . $config_append . '</textarea>
+				';
+				echo Element('page.html', $page);
+				exit;
+			}
+		}
+		
+		header('Location: ?/config' . ($board_config ? '/' . $board_config : ''), true, $config['redirect_http']);
+		
+		exit;
+	}
+
+	mod_page(_('Config editor') . ($board_config ? ': ' . sprintf($config['board_abbreviation'], $board_config) : ''),
+		'mod/config-editor.html', array(
+			'boards' => listBoards(),
+			'board' => $board_config,
+			'conf' => $conf,
+			'file' => $config_file,
+			'token' => make_secure_link_token('config' . ($board_config ? '/' . $board_config : ''))
+	));
+}
+
+function mod_themes_list() {
+	global $config;
+
+	if (!hasPermission($config['mod']['themes']))
+		error($config['error']['noaccess']);
+
+	if (!is_dir($config['dir']['themes']))
+		error(_('Themes directory doesn\'t exist!'));
+	if (!$dir = opendir($config['dir']['themes']))
+		error(_('Cannot open themes directory; check permissions.'));
+
+	$query = query('SELECT `theme` FROM ``theme_settings`` WHERE `name` IS NULL AND `value` IS NULL') or error(db_error());
+	$themes_in_use = $query->fetchAll(PDO::FETCH_COLUMN);
+
+	// Scan directory for themes
+	$themes = array();
+	while ($file = readdir($dir)) {
+		if ($file[0] != '.' && is_dir($config['dir']['themes'] . '/' . $file)) {
+			$themes[$file] = loadThemeConfig($file);
+		}
+	}
+	closedir($dir);
+	
+	foreach ($themes as $theme_name => &$theme) {
+		$theme['rebuild_token'] = make_secure_link_token('themes/' . $theme_name . '/rebuild');
+		$theme['uninstall_token'] = make_secure_link_token('themes/' . $theme_name . '/uninstall');
+	}
+
+	mod_page(_('Manage themes'), 'mod/themes.html', array(
+		'themes' => $themes,
+		'themes_in_use' => $themes_in_use,
+	));
+}
+
+function mod_theme_configure($theme_name) {
+	global $config;
+
+	if (!hasPermission($config['mod']['themes']))
+		error($config['error']['noaccess']);
+
+	if (!$theme = loadThemeConfig($theme_name)) {
+		error($config['error']['invalidtheme']);
+	}
+
+	if (isset($_POST['install'])) {
+		// Check if everything is submitted
+		foreach ($theme['config'] as &$conf) {
+			if (!isset($_POST[$conf['name']]) && $conf['type'] != 'checkbox')
+				error(sprintf($config['error']['required'], $c['title']));
+		}
+		
+		// Clear previous settings
+		$query = prepare("DELETE FROM ``theme_settings`` WHERE `theme` = :theme");
+		$query->bindValue(':theme', $theme_name);
+		$query->execute() or error(db_error($query));
+		
+		foreach ($theme['config'] as &$conf) {
+			$query = prepare("INSERT INTO ``theme_settings`` VALUES(:theme, :name, :value)");
+			$query->bindValue(':theme', $theme_name);
+			$query->bindValue(':name', $conf['name']);
+			if ($conf['type'] == 'checkbox')
+				$query->bindValue(':value', isset($_POST[$conf['name']]) ? 1 : 0);
+			else
+				$query->bindValue(':value', $_POST[$conf['name']]);
+			$query->execute() or error(db_error($query));
+		}
+
+		$query = prepare("INSERT INTO ``theme_settings`` VALUES(:theme, NULL, NULL)");
+		$query->bindValue(':theme', $theme_name);
+		$query->execute() or error(db_error($query));
+
+		// Clean cache
+		Cache::delete("themes");
+		Cache::delete("theme_settings_".$theme_name);
+		
+		$result = true;
+		$message = false;
+		if (isset($theme['install_callback'])) {
+			$ret = $theme['install_callback'](themeSettings($theme_name));
+			if ($ret && !empty($ret)) {
+				if (is_array($ret) && count($ret) == 2) {
+					$result = $ret[0];
+					$message = $ret[1];
+				}
+			}
+		}
+		
+		if (!$result) {
+			// Install failed
+			$query = prepare("DELETE FROM ``theme_settings`` WHERE `theme` = :theme");
+			$query->bindValue(':theme', $theme_name);
+			$query->execute() or error(db_error($query));
+		}
+		
+		// Build themes
+		rebuildThemes('all');
+		
+		mod_page(sprintf(_($result ? 'Installed theme: %s' : 'Installation failed: %s'), $theme['name']), 'mod/theme_installed.html', array(
+			'theme_name' => $theme_name,
+			'theme' => $theme,
+			'result' => $result,
+			'message' => $message
+		));
+		return;
+	}
+
+	$settings = themeSettings($theme_name);
+
+	mod_page(sprintf(_('Configuring theme: %s'), $theme['name']), 'mod/theme_config.html', array(
+		'theme_name' => $theme_name,
+		'theme' => $theme,
+		'settings' => $settings,
+		'token' => make_secure_link_token('themes/' . $theme_name)
+	));
+}
+
+function mod_theme_uninstall($theme_name) {
+	global $config;
+
+	if (!hasPermission($config['mod']['themes']))
+		error($config['error']['noaccess']);
+
+	$query = prepare("DELETE FROM ``theme_settings`` WHERE `theme` = :theme");
+	$query->bindValue(':theme', $theme_name);
+	$query->execute() or error(db_error($query));
+
+	// Clean cache
+	Cache::delete("themes");
+	Cache::delete("theme_settings_".$theme);
+
+	header('Location: ?/themes', true, $config['redirect_http']);
+}
+
+function mod_theme_rebuild($theme_name) {
+	global $config;
+
+	if (!hasPermission($config['mod']['themes']))
+		error($config['error']['noaccess']);
+	
+	rebuildTheme($theme_name, 'all');
+
+	mod_page(sprintf(_('Rebuilt theme: %s'), $theme_name), 'mod/theme_rebuilt.html', array(
+		'theme_name' => $theme_name,
+	));
+}
+
+
+
+
+
+
+
+
+// 
+
+
+
+
+
+// This needs to be done for `secure` CSRF prevention compatibility, otherwise the $board will be read in as the token if editing global pages.
+function delete_page_base($page = '', $board = false) {
+	global $config, $mod;
+
+	if (empty($board))
+		$board = false;
+
+	if (!$board && $mod['boards'][0] !== '*')
+		error($config['error']['noaccess']);
+
+	if (!hasPermission($config['mod']['edit_pages'], $board))
+		error($config['error']['noaccess']);
+
+	if ($board !== FALSE && !openBoard($board))
+		error($config['error']['noboard']);
+
+	if (preg_match('/^[a-z0-9]{1,255}$/', $page) && !preg_match('/^(index|catalog|index\+50)|(\d+)$/', $page)) {
+		if ($board) {
+			$query = prepare('DELETE FROM ``pages`` WHERE `board` = :board AND `name` = :name');
+			$query->bindValue(':board', ($board ? $board : NULL));
+		} else {
+			$query = prepare('DELETE FROM ``pages`` WHERE `board` IS NULL AND `name` = :name');
+		}
+		$query->bindValue(':name', $page);
+		$query->execute() or error(db_error($query));
+
+		@file_unlink(($board ? ($board . '/') : '') . $page . '.html');
+	}
+
+	header('Location: ?/settings/edit_pages' . ($board ? ('/' . $board) : ''), true, $config['redirect_http']);
+}
+
+function mod_delete_page($page = '') {
+	delete_page_base($page);
+}
+
+function mod_delete_page_board($page = '', $board = false) {
+	delete_page_base($page, $board);
+}
+
+function mod_edit_page($id) {
+	global $config, $mod, $board;
+
+	$query = prepare('SELECT * FROM ``pages`` WHERE `id` = :id');
+	$query->bindValue(':id', $id);
+	$query->execute() or error(db_error($query));
+	$page = $query->fetch();
+	
+	if (!$page)
+		error(_('Could not find the page you are trying to edit.'));
+
+	if (!$page['board'] && $mod['boards'][0] !== '*')
+		error($config['error']['noaccess']);
+
+	if (!hasPermission($config['mod']['edit_pages'], $page['board']))
+		error($config['error']['noaccess']);
+
+	if ($page['board'] && !openBoard($page['board']))
+		error($config['error']['noboard']);
+
+	if (isset($_POST['method'], $_POST['content'])) {
+		$content = $_POST['content'];
+		$method = $_POST['method'];
+		$page['type'] = $method;
+			
+		if (!in_array($method, array('markdown', 'html', 'infinity')))
+			error(_('Unrecognized page markup method.'));
+	
+		switch ($method) {
+			case 'markdown': 
+				$write = purify_html(markdown($content));
+				break;
+			case 'html':
+				if (hasPermission($config['mod']['rawhtml'])) {
+					$write = $content;
+				} else {
+					$write = purify_html($content);
+				}
+				break;
+			case 'infinity':
+				$c = $content;
+				$config['max_links'] = PHP_INT_MAX;
+				markup($content);
+				$write = $content;
+				$content = $c;
+		}
+
+		if (!isset($write) or !$write)
+			error(_('Failed to mark up your input for some reason...'));
+
+		$query = prepare('UPDATE ``pages`` SET `type` = :method, `content` = :content WHERE `id` = :id');
+		$query->bindValue(':method', $method);
+		$query->bindValue(':content', $content);
+		$query->bindValue(':id', $id);
+		$query->execute() or error(db_error($query));
+
+		$fn = ($board['uri'] ? ($board['uri'] . '/') : '') . $page['name'] . '.html';
+		$body = "<div class='ban'>$write</div>";
+		$html = Element('page.html', array('config' => $config, 'body' => $body, 'title' => utf8tohtml($page['title'])));
+		file_write($fn, $html);
+
+		modLog("Edited page {$page['name']} <span class='unimportant'>(#{$page['id']})</span>");
+	}
+
+	if (!isset($content)) {
+		$query = prepare('SELECT `content` FROM ``pages`` WHERE `id` = :id');
+		$query->bindValue(':id', $id);
+		$query->execute() or error(db_error($query));
+		$content = $query->fetchColumn();
+	}
+	
+	mod_page(sprintf(_('Editing static page: %s'), $page['name']), 'mod/settings/edit_page.html', array('page' => $page, 'token' => make_secure_link_token("settings/edit_page/$id"), 'content' => prettify_textarea($content), 'board' => $board));
+}
+
+function mod_pages($board = false) {
+	global $config, $mod, $pdo;
+
+	if (empty($board))
+		$board = false;
+
+	if (!$board && $mod['boards'][0] !== '*')
+		error($config['error']['noaccess']);
+
+	if (!hasPermission($config['mod']['edit_pages'], $board))
+		error($config['error']['noaccess']);
+
+	if ($board !== FALSE && !openBoard($board))
+		error($config['error']['noboard']);
+
+	if ($board) {
+		$query = prepare('SELECT * FROM ``pages`` WHERE `board` = :board');
+		$query->bindValue(':board', $board);
+	} else {
+		$query = query('SELECT * FROM ``pages`` WHERE `board` IS NULL');
+	}
+	$query->execute() or error(db_error($query));
+	$pages = $query->fetchAll(PDO::FETCH_ASSOC);
+
+	if (isset($_POST['page'])) {
+		if ($board and sizeof($pages) > $config['pages_max'])
+			error(sprintf(_('Sorry, this site only allows %d pages per board.'), $config['pages_max']));
+
+		if (!preg_match('/^[a-z0-9]{1,255}$/', $_POST['page']))
+			error(_('Page names must be < 255 chars and may only contain lowercase letters A-Z and digits 1-9.'));
+
+		if (preg_match('/^(index|catalog|index\+50)|(\d+)$/', $_POST['page']))
+			error(_('Nope.'));
+
+		foreach ($pages as $i => $p) {
+			if ($_POST['page'] === $p['name'])
+				error(_('Refusing to create a new page with the same name as an existing one.'));
+		}
+
+		$title = ($_POST['title'] ? $_POST['title'] : NULL);
+
+		$query = prepare('INSERT INTO ``pages``(board, title, name) VALUES(:board, :title, :name)');
+		$query->bindValue(':board', ($board ? $board : NULL));
+		$query->bindValue(':title', $title);
+		$query->bindValue(':name', $_POST['page']);
+		$query->execute() or error(db_error($query));
+
+		$pages[] = array('id' => $pdo->lastInsertId(), 'name' => $_POST['page'], 'board' => $board, 'title' => $title);
+	}
+
+	foreach ($pages as $i => &$p) {
+		$p['delete_token'] = make_secure_link_token('settings/edit_pages/delete/' . $p['name'] . ($board ? ('/' . $board) : ''));
+	}
+
+	mod_page(_('Pages'), 'mod/settings/pages.html', array('pages' => $pages, 'token' => make_secure_link_token('settings/edit_pages' . ($board ? ('/' . $board) : '')), 'board' => $board));
+}
+
+
+
+
+
+
+
 
 
 
@@ -4432,484 +4697,6 @@ FLAGS;
 	$banners = array_diff(scandir($dir), array('..', '.'));
 	mod_page(_('Edit flags'), 'mod/settings/flags.html', array('board'=>$board,'banners'=>$banners,'token'=>make_secure_link_token('banners/'.$board['uri'])));
 }
-
-
-
-
-
-// 
-
-
-
-
-
-function mod_config($board_config = false) {
-	global $config, $mod, $board;
-	
-	if ($board_config && !openBoard($board_config))
-		error($config['error']['noboard']);
-	
-	if (!hasPermission($config['mod']['edit_config'], $board_config))
-		error($config['error']['noaccess']);
-	
-	$config_file = $board_config ? $board['dir'] . 'config.php' : 'inc/instance-config.php';
-	
-	if ($config['mod']['config_editor_php']) {
-		$readonly = !(is_file($config_file) ? is_writable($config_file) : is_writable(dirname($config_file)));
-		
-		if (!$readonly && isset($_POST['code'])) {
-			$code = $_POST['code'];
-			// Save previous instance_config if php_check_syntax fails
-			$old_code = file_get_contents($config_file);
-			file_put_contents($config_file, $code);
-			$resp = shell_exec_error('php -l ' . $config_file);
-			if (preg_match('/No syntax errors detected/', $resp)) {
-				header('Location: ?/config' . ($board_config ? '/' . $board_config : ''), true, $config['redirect_http']);
-				return;
-			}
-			else {
-				file_put_contents($config_file, $old_code);
-				error($config['error']['badsyntax'] . $resp);
-			}	
-		}
-		
-		$instance_config = @file_get_contents($config_file);
-		if ($instance_config === false) {
-			$instance_config = "<?php\n\n// This file does not exist yet. You are creating it.";
-		}
-		$instance_config = str_replace("\n", '&#010;', utf8tohtml($instance_config));
-		
-		mod_page(_('Config editor'), 'mod/config-editor-php.html', array(
-			'php' => $instance_config,
-			'readonly' => $readonly,
-			'boards' => listBoards(),
-			'board' => $board_config,
-			'file' => $config_file,
-			'token' => make_secure_link_token('config' . ($board_config ? '/' . $board_config : ''))
-		));
-		return;
-	}
-	
-	require_once 'inc/mod/config-editor.php';
-	
-	$conf = config_vars();
-	
-	foreach ($conf as &$var) {
-		if (is_array($var['name'])) {
-			$c = &$config;
-			foreach ($var['name'] as $n)
-				$c = &$c[$n];
-		} else {
-			$c = @$config[$var['name']];
-		}
-		
-		$var['value'] = $c;
-	}
-	unset($var);
-	
-	if (isset($_POST['save'])) {
-		$config_append = '';
-		
-		foreach ($conf as $var) {
-			$field_name = 'cf_' . (is_array($var['name']) ? implode('/', $var['name']) : $var['name']);
-			
-			if ($var['type'] == 'boolean')
-				$value = isset($_POST[$field_name]);
-			elseif (isset($_POST[$field_name]))
-				$value = $_POST[$field_name];
-			else
-				continue; // ???
-			
-			if (!settype($value, $var['type']))
-				continue; // invalid
-			
-			if ($value != $var['value']) {
-				// This value has been changed.
-				
-				$config_append .= '$config';
-				
-				if (is_array($var['name'])) {
-					foreach ($var['name'] as $name)
-						$config_append .= '[' . var_export($name, true) . ']';
-				} else {
-					$config_append .= '[' . var_export($var['name'], true) . ']';
-				}
-				
-				
-				$config_append .= ' = ';
-				if (@$var['permissions'] && isset($config['mod']['groups'][$value])) {
-					$config_append .= $config['mod']['groups'][$value];
-				} else {
-					$config_append .= var_export($value, true);
-				}
-				$config_append .= ";\n";
-			}
-		}
-		
-		if (!empty($config_append)) {
-			$config_append = "\n// Changes made via web editor by \"" . $mod['username'] . "\" @ " . date('r') . ":\n" . $config_append . "\n";
-			if (!is_file($config_file))
-				$config_append = "<?php\n\n$config_append";
-			if (!@file_put_contents($config_file, $config_append, FILE_APPEND)) {
-				$config_append = htmlentities($config_append);
-				
-				if ($config['minify_html'])
-					$config_append = str_replace("\n", '&#010;', $config_append);
-				$page = array();
-				$page['title'] = 'Cannot write to file!';
-				$page['config'] = $config;
-				$page['body'] = '
-					<p style="text-align:center">Tinyboard could not write to <strong>' . $config_file . '</strong> with the ammended configuration, probably due to a permissions error.</p>
-					<p style="text-align:center">You may proceed with these changes manually by copying and pasting the following code to the end of <strong>' . $config_file . '</strong>:</p>
-					<textarea style="width:700px;height:370px;margin:auto;display:block;background:white;color:black" readonly>' . $config_append . '</textarea>
-				';
-				echo Element('page.html', $page);
-				exit;
-			}
-		}
-		
-		header('Location: ?/config' . ($board_config ? '/' . $board_config : ''), true, $config['redirect_http']);
-		
-		exit;
-	}
-
-	mod_page(_('Config editor') . ($board_config ? ': ' . sprintf($config['board_abbreviation'], $board_config) : ''),
-		'mod/config-editor.html', array(
-			'boards' => listBoards(),
-			'board' => $board_config,
-			'conf' => $conf,
-			'file' => $config_file,
-			'token' => make_secure_link_token('config' . ($board_config ? '/' . $board_config : ''))
-	));
-}
-
-function mod_themes_list() {
-	global $config;
-
-	if (!hasPermission($config['mod']['themes']))
-		error($config['error']['noaccess']);
-
-	if (!is_dir($config['dir']['themes']))
-		error(_('Themes directory doesn\'t exist!'));
-	if (!$dir = opendir($config['dir']['themes']))
-		error(_('Cannot open themes directory; check permissions.'));
-
-	$query = query('SELECT `theme` FROM ``theme_settings`` WHERE `name` IS NULL AND `value` IS NULL') or error(db_error());
-	$themes_in_use = $query->fetchAll(PDO::FETCH_COLUMN);
-
-	// Scan directory for themes
-	$themes = array();
-	while ($file = readdir($dir)) {
-		if ($file[0] != '.' && is_dir($config['dir']['themes'] . '/' . $file)) {
-			$themes[$file] = loadThemeConfig($file);
-		}
-	}
-	closedir($dir);
-	
-	foreach ($themes as $theme_name => &$theme) {
-		$theme['rebuild_token'] = make_secure_link_token('themes/' . $theme_name . '/rebuild');
-		$theme['uninstall_token'] = make_secure_link_token('themes/' . $theme_name . '/uninstall');
-	}
-
-	mod_page(_('Manage themes'), 'mod/themes.html', array(
-		'themes' => $themes,
-		'themes_in_use' => $themes_in_use,
-	));
-}
-
-function mod_theme_configure($theme_name) {
-	global $config;
-
-	if (!hasPermission($config['mod']['themes']))
-		error($config['error']['noaccess']);
-
-	if (!$theme = loadThemeConfig($theme_name)) {
-		error($config['error']['invalidtheme']);
-	}
-
-	if (isset($_POST['install'])) {
-		// Check if everything is submitted
-		foreach ($theme['config'] as &$conf) {
-			if (!isset($_POST[$conf['name']]) && $conf['type'] != 'checkbox')
-				error(sprintf($config['error']['required'], $c['title']));
-		}
-		
-		// Clear previous settings
-		$query = prepare("DELETE FROM ``theme_settings`` WHERE `theme` = :theme");
-		$query->bindValue(':theme', $theme_name);
-		$query->execute() or error(db_error($query));
-		
-		foreach ($theme['config'] as &$conf) {
-			$query = prepare("INSERT INTO ``theme_settings`` VALUES(:theme, :name, :value)");
-			$query->bindValue(':theme', $theme_name);
-			$query->bindValue(':name', $conf['name']);
-			if ($conf['type'] == 'checkbox')
-				$query->bindValue(':value', isset($_POST[$conf['name']]) ? 1 : 0);
-			else
-				$query->bindValue(':value', $_POST[$conf['name']]);
-			$query->execute() or error(db_error($query));
-		}
-
-		$query = prepare("INSERT INTO ``theme_settings`` VALUES(:theme, NULL, NULL)");
-		$query->bindValue(':theme', $theme_name);
-		$query->execute() or error(db_error($query));
-
-		// Clean cache
-		Cache::delete("themes");
-		Cache::delete("theme_settings_".$theme_name);
-		
-		$result = true;
-		$message = false;
-		if (isset($theme['install_callback'])) {
-			$ret = $theme['install_callback'](themeSettings($theme_name));
-			if ($ret && !empty($ret)) {
-				if (is_array($ret) && count($ret) == 2) {
-					$result = $ret[0];
-					$message = $ret[1];
-				}
-			}
-		}
-		
-		if (!$result) {
-			// Install failed
-			$query = prepare("DELETE FROM ``theme_settings`` WHERE `theme` = :theme");
-			$query->bindValue(':theme', $theme_name);
-			$query->execute() or error(db_error($query));
-		}
-		
-		// Build themes
-		rebuildThemes('all');
-		
-		mod_page(sprintf(_($result ? 'Installed theme: %s' : 'Installation failed: %s'), $theme['name']), 'mod/theme_installed.html', array(
-			'theme_name' => $theme_name,
-			'theme' => $theme,
-			'result' => $result,
-			'message' => $message
-		));
-		return;
-	}
-
-	$settings = themeSettings($theme_name);
-
-	mod_page(sprintf(_('Configuring theme: %s'), $theme['name']), 'mod/theme_config.html', array(
-		'theme_name' => $theme_name,
-		'theme' => $theme,
-		'settings' => $settings,
-		'token' => make_secure_link_token('themes/' . $theme_name)
-	));
-}
-
-function mod_theme_uninstall($theme_name) {
-	global $config;
-
-	if (!hasPermission($config['mod']['themes']))
-		error($config['error']['noaccess']);
-
-	$query = prepare("DELETE FROM ``theme_settings`` WHERE `theme` = :theme");
-	$query->bindValue(':theme', $theme_name);
-	$query->execute() or error(db_error($query));
-
-	// Clean cache
-	Cache::delete("themes");
-	Cache::delete("theme_settings_".$theme);
-
-	header('Location: ?/themes', true, $config['redirect_http']);
-}
-
-function mod_theme_rebuild($theme_name) {
-	global $config;
-
-	if (!hasPermission($config['mod']['themes']))
-		error($config['error']['noaccess']);
-	
-	rebuildTheme($theme_name, 'all');
-
-	mod_page(sprintf(_('Rebuilt theme: %s'), $theme_name), 'mod/theme_rebuilt.html', array(
-		'theme_name' => $theme_name,
-	));
-}
-
-// This needs to be done for `secure` CSRF prevention compatibility, otherwise the $board will be read in as the token if editing global pages.
-function delete_page_base($page = '', $board = false) {
-	global $config, $mod;
-
-	if (empty($board))
-		$board = false;
-
-	if (!$board && $mod['boards'][0] !== '*')
-		error($config['error']['noaccess']);
-
-	if (!hasPermission($config['mod']['edit_pages'], $board))
-		error($config['error']['noaccess']);
-
-	if ($board !== FALSE && !openBoard($board))
-		error($config['error']['noboard']);
-
-	if (preg_match('/^[a-z0-9]{1,255}$/', $page) && !preg_match('/^(index|catalog|index\+50)|(\d+)$/', $page)) {
-		if ($board) {
-			$query = prepare('DELETE FROM ``pages`` WHERE `board` = :board AND `name` = :name');
-			$query->bindValue(':board', ($board ? $board : NULL));
-		} else {
-			$query = prepare('DELETE FROM ``pages`` WHERE `board` IS NULL AND `name` = :name');
-		}
-		$query->bindValue(':name', $page);
-		$query->execute() or error(db_error($query));
-
-		@file_unlink(($board ? ($board . '/') : '') . $page . '.html');
-	}
-
-	header('Location: ?/settings/edit_pages' . ($board ? ('/' . $board) : ''), true, $config['redirect_http']);
-}
-
-function mod_delete_page($page = '') {
-	delete_page_base($page);
-}
-
-function mod_delete_page_board($page = '', $board = false) {
-	delete_page_base($page, $board);
-}
-
-function mod_edit_page($id) {
-	global $config, $mod, $board;
-
-	$query = prepare('SELECT * FROM ``pages`` WHERE `id` = :id');
-	$query->bindValue(':id', $id);
-	$query->execute() or error(db_error($query));
-	$page = $query->fetch();
-	
-	if (!$page)
-		error(_('Could not find the page you are trying to edit.'));
-
-	if (!$page['board'] && $mod['boards'][0] !== '*')
-		error($config['error']['noaccess']);
-
-	if (!hasPermission($config['mod']['edit_pages'], $page['board']))
-		error($config['error']['noaccess']);
-
-	if ($page['board'] && !openBoard($page['board']))
-		error($config['error']['noboard']);
-
-	if (isset($_POST['method'], $_POST['content'])) {
-		$content = $_POST['content'];
-		$method = $_POST['method'];
-		$page['type'] = $method;
-			
-		if (!in_array($method, array('markdown', 'html', 'infinity')))
-			error(_('Unrecognized page markup method.'));
-	
-		switch ($method) {
-			case 'markdown': 
-				$write = purify_html(markdown($content));
-				break;
-			case 'html':
-				if (hasPermission($config['mod']['rawhtml'])) {
-					$write = $content;
-				} else {
-					$write = purify_html($content);
-				}
-				break;
-			case 'infinity':
-				$c = $content;
-				$config['max_links'] = PHP_INT_MAX;
-				markup($content);
-				$write = $content;
-				$content = $c;
-		}
-
-		if (!isset($write) or !$write)
-			error(_('Failed to mark up your input for some reason...'));
-
-		$query = prepare('UPDATE ``pages`` SET `type` = :method, `content` = :content WHERE `id` = :id');
-		$query->bindValue(':method', $method);
-		$query->bindValue(':content', $content);
-		$query->bindValue(':id', $id);
-		$query->execute() or error(db_error($query));
-
-		$fn = ($board['uri'] ? ($board['uri'] . '/') : '') . $page['name'] . '.html';
-		$body = "<div class='ban'>$write</div>";
-		$html = Element('page.html', array('config' => $config, 'body' => $body, 'title' => utf8tohtml($page['title'])));
-		file_write($fn, $html);
-
-		modLog("Edited page {$page['name']} <span class='unimportant'>(#{$page['id']})</span>");
-	}
-
-	if (!isset($content)) {
-		$query = prepare('SELECT `content` FROM ``pages`` WHERE `id` = :id');
-		$query->bindValue(':id', $id);
-		$query->execute() or error(db_error($query));
-		$content = $query->fetchColumn();
-	}
-	
-	mod_page(sprintf(_('Editing static page: %s'), $page['name']), 'mod/settings/edit_page.html', array('page' => $page, 'token' => make_secure_link_token("settings/edit_page/$id"), 'content' => prettify_textarea($content), 'board' => $board));
-}
-
-function mod_pages($board = false) {
-	global $config, $mod, $pdo;
-
-	if (empty($board))
-		$board = false;
-
-	if (!$board && $mod['boards'][0] !== '*')
-		error($config['error']['noaccess']);
-
-	if (!hasPermission($config['mod']['edit_pages'], $board))
-		error($config['error']['noaccess']);
-
-	if ($board !== FALSE && !openBoard($board))
-		error($config['error']['noboard']);
-
-	if ($board) {
-		$query = prepare('SELECT * FROM ``pages`` WHERE `board` = :board');
-		$query->bindValue(':board', $board);
-	} else {
-		$query = query('SELECT * FROM ``pages`` WHERE `board` IS NULL');
-	}
-	$query->execute() or error(db_error($query));
-	$pages = $query->fetchAll(PDO::FETCH_ASSOC);
-
-	if (isset($_POST['page'])) {
-		if ($board and sizeof($pages) > $config['pages_max'])
-			error(sprintf(_('Sorry, this site only allows %d pages per board.'), $config['pages_max']));
-
-		if (!preg_match('/^[a-z0-9]{1,255}$/', $_POST['page']))
-			error(_('Page names must be < 255 chars and may only contain lowercase letters A-Z and digits 1-9.'));
-
-		if (preg_match('/^(index|catalog|index\+50)|(\d+)$/', $_POST['page']))
-			error(_('Nope.'));
-
-		foreach ($pages as $i => $p) {
-			if ($_POST['page'] === $p['name'])
-				error(_('Refusing to create a new page with the same name as an existing one.'));
-		}
-
-		$title = ($_POST['title'] ? $_POST['title'] : NULL);
-
-		$query = prepare('INSERT INTO ``pages``(board, title, name) VALUES(:board, :title, :name)');
-		$query->bindValue(':board', ($board ? $board : NULL));
-		$query->bindValue(':title', $title);
-		$query->bindValue(':name', $_POST['page']);
-		$query->execute() or error(db_error($query));
-
-		$pages[] = array('id' => $pdo->lastInsertId(), 'name' => $_POST['page'], 'board' => $board, 'title' => $title);
-	}
-
-	foreach ($pages as $i => &$p) {
-		$p['delete_token'] = make_secure_link_token('settings/edit_pages/delete/' . $p['name'] . ($board ? ('/' . $board) : ''));
-	}
-
-	mod_page(_('Pages'), 'mod/settings/pages.html', array('pages' => $pages, 'token' => make_secure_link_token('settings/edit_pages' . ($board ? ('/' . $board) : '')), 'board' => $board));
-}
-
-
-
-
-
-
-
-
-
-
-
 
 
 

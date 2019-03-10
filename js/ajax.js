@@ -12,6 +12,7 @@
  *
  */
 var PREVENT_CLOSE_REPLY = false;
+var do_not_ajax = false;
 
 $(window).bind('load', function()
 {
@@ -29,6 +30,7 @@ function strip_tags(html)
 }
 
 function replybox_submit(form) {
+
 
 	// save trip
 	if (form.elements['neoname']) {
@@ -81,6 +83,20 @@ function replybox_submit(form) {
 		processData: false,
 		dataType: 'json'
 	}).done(function(response) {
+
+		if (response.banned) {
+			// You are banned. Must post the form normally so the user can see the ban message.
+			$('<input />').attr('type', 'hidden')
+          .attr('name', "post")
+          .attr('value', "Send")
+          .appendTo('#replybox_form');
+
+			var frm = document.getElementById('replybox_form');
+			frm.action = '/post.php';
+			frm.onsubmit = '';
+
+			$(form).submit();
+		} 
 	  
 		$(document).trigger('ajax_after_post', response);
 	 

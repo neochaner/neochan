@@ -344,6 +344,7 @@ $config['neotube']['enable'] = true;
  * ====================
  */
 $config['opmod']['enable'] = true;
+$config['opmod']['public_bans'] = true;
 
 
 $config['tippy_tooltips'] = true;
@@ -1640,6 +1641,7 @@ srand(time());
 	$config['file_page'] = '%d.html';
 	$config['file_page50'] = '%d+50.html';
 	$config['file_mod'] = 'mod.php';
+	$config['file_usermod'] = 'usermod.php';
 	$config['file_post'] = 'post.php?neo23';
 	$config['file_script'] = 'main.js';
 

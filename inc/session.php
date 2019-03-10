@@ -19,6 +19,7 @@ class session {
 	public static $is_onion; 
 	public static $is_i2p;
 	public static $is_darknet;
+	public static $is_exit_node;
 	public static $initialized = false;
 
 
@@ -268,9 +269,9 @@ class session {
 		switch($config['security_mode'])
 		{
 			case 1:
-				return 'ci1!' . self::Encrypt(self::$ip, $config['security_salt']);
+				return '!s1' . self::Encrypt(self::$ip, $config['security_salt']);
 			case 2:
-				return 'ci2!' . self::Encrypt(self::$ip);
+				return '!s2' . self::Encrypt(self::$ip);
 			default:
 				return self::$ip;
 		}
@@ -290,9 +291,9 @@ class session {
 		switch($config['security_mode'])
 		{
 			case 1:
-				return 'cr1!' . self::Encrypt(self::$ip_range, $config['security_salt']);
+				return '!r1' . self::Encrypt(self::$ip_range, $config['security_salt']);
 			case 2:
-				return 'cr2!' . self::Encrypt(self::$ip_range);
+				return '!r2' . self::Encrypt(self::$ip_range);
 			default:
 				return self::$ip_range;
 		}
@@ -351,8 +352,6 @@ class session {
 
 
 }
-
-
 
 
 
