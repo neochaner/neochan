@@ -85,17 +85,8 @@ function replybox_submit(form) {
 	}).done(function(response) {
 
 		if (response.banned) {
-			// You are banned. Must post the form normally so the user can see the ban message.
-			$('<input />').attr('type', 'hidden')
-          .attr('name', "post")
-          .attr('value', "Send")
-          .appendTo('#replybox_form');
-
-			var frm = document.getElementById('replybox_form');
-			frm.action = '/post.php';
-			frm.onsubmit = '';
-
-			$(form).submit();
+			let $page = $(response.page);
+			$('body').html($page.find('body'));
 		} 
 	  
 		$(document).trigger('ajax_after_post', response);

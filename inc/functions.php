@@ -1023,8 +1023,7 @@ function displayBan($ban) {
 	
 	
 	// Show banned page and exit
-	die(
-		Element('page.html', array(
+	$page = Element('page.html', array(
 			'title' => _('Banned!'),
 			'config' => $config,
 			'nojavascript' => true,
@@ -1035,7 +1034,13 @@ function displayBan($ban) {
 				'post' => isset($post) ? $post->build(true) : false,
 			)
 		))
-	));
+	);
+
+	if(isset($_POST['json_response'])){
+		json_response(['banned' => true, 'page'=> $page]);
+	}
+
+	die($page);
 }
 
 
