@@ -1,7 +1,7 @@
 NEOBOARD 
 ========================================================
 ![alt text](docs/img/attention.png "Warning")
-Project not ready yet, please wait release.
+Currently the project is not completed.
 
 [Demo : neochan](https://neochan.net/test "Demo")
 
