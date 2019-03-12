@@ -1039,38 +1039,6 @@ function displayBan($ban) {
 }
 
 
-function displayNBan($bans) {
-
-
-	global $config, $board;
-
-	$body = "";
-
-	foreach($bans as $ban){
-
-		$body = $body . Element('nban.html', array(
-			'config' => $config,
-			'ban' => $ban,
-			'expires_data' => date('r', $ban['expires']),
-			'board' => $board,
-		)) . "<br><br><br>" ;
-
-	}
-	
-	$page = Element('page.html', array(
-		'title' => _('Banned!'),
-		'config' => $config,
-		'body' => $body
-	));
-
-
-	if (isset($_POST['json_response']))
-		json_response(array('success' => true, 'replace_main'=>$body ));
-	else 
-		die($page);
-
-}
-
 
 
 function checkBan($board = false) {
