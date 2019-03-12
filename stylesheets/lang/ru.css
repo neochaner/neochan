@@ -22,7 +22,10 @@
 }
 
 
- 
+.l_btn_Submit::before{
+    content:'Отправить';
+}
+
 
 
 .l_board_control::before{

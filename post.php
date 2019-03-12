@@ -1309,8 +1309,7 @@ elseif (isset($_POST['appeal'])) {
 		
 		case 0:
 			Bans::set_appeal($ban['id'],  $_POST['appeal']);
-			/*error(_("Success."));*/
-			displayBan($ban);
+			error(_("Success."));
 			break;
 		case 1:
 			error(_("There is already a pending appeal for this ban."));
