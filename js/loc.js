@@ -143,7 +143,7 @@ function reload()
 	}
 
 	$('.reply-subject[name=subject]').attr('placeholder', _T('тема')) 
-	$('.reply-subject[name=name]').attr('placeholder', _T('имя'))
+	$('.reply-subject[name=neoname]').attr('placeholder', _T('имя'))
 	$('.reply-send-button').attr('value', _T('Отправить'));
 
 
