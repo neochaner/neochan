@@ -60,7 +60,7 @@
 <div class="omit-info" data-posts='{{ post.omitted }}' data-files='{{ post.omitted_images }}'></div>
 {% endif %}
 {% if index %}
-<a class="omit-link l_view_thread" href="/{{ board.uri }}/res/{{ post.id }}.html"></a>
+<a class="omit-link l_view_thread" href="{% if mod %}?{% endif %}/{{ board.uri }}/res/{{ post.id }}.html"></a>
 {% endif %}
 </div>
 

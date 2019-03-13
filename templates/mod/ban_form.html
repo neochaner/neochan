@@ -7,10 +7,10 @@
 <form action="{{ action }}" method="post">
 	<input type="hidden" name="token" value="{{ token }}">
 	{% if redirect %}
-		<input type="hidden" name="redirect" value="{{ redirect|e }}">
+		<input class="theme-textbox" type="hidden" name="redirect" value="{{ redirect|e }}">
 	{% endif %}
 	{% if post and board %}
-		<input type="hidden" name="delete" value="{% if delete %}1{% else %}0{% endif %}">
+		<input class="theme-textbox" type="hidden" name="delete" value="{% if delete %}1{% else %}0{% endif %}">
 	{% endif %}
 	{% if tor %}
 		<p style="color:red;font-size:2em">{% trans("Warning! This IP is a Tor exit node. Tor is a global network that allows for truly anonymous posting by obfuscating the user's real IP address. Please do not ban it, all bans on Tor exit nodes are globally undone every week. On 8chan, Tor users are allowed to post five times per CAPTCHA they complete, and image uploads are not allowed.") %}<em>{% trans("If the global restrictions on Tor users are not enough and you would really like to stop Tor users, there is a setting in your board options. Please think carefully before enabling it.") %}</em></p>
@@ -24,7 +24,7 @@
 			</th>
 			<td>
 				{% if not hide_ip %}
-					<input type="text" name="ip" id="ip" size="30" maxlength="40" value="{{ ip|e }}">
+					<input class="theme-textbox" type="text" name="ip" id="ip" size="29" maxlength="40" value="{{ ip|e }}">
 				{% else %}
 					{{ ip|less_ip(board) }}&nbsp;
 					<select name="range">
@@ -51,9 +51,18 @@
 					<label for="reason">{% trans("Message") %}</label>
 				</th>
 				<td>
-					<input type="checkbox" id="public_message" name="public_message"{% if config.mod.check_ban_message %} checked{% endif %}> 
-					<input type="text" name="message" id="message" size="35" maxlength="200" value="{{ config.mod.default_ban_message|e }}"> 
-					<span class="unimportant">({% trans("public; attached to post") %})</span>
+			 
+			
+					<input class="theme-textbox" type="text" name="message" id="message" size="29" maxlength="200" value="{{ config.mod.default_ban_message|e }}"> 
+					<label class="checktainer_xs" style="vertical-align: middle;">
+							({% trans("public; attached to post") %})
+					<input type="checkbox" id="public_message" name="public_message" {% if config.mod.check_ban_message %} checked{% endif %}><span class="checkmark_xs"></span>
+					</label>
+
+
+					
+					
+					
 					<script type="text/javascript">
 						document.getElementById('message').disabled = !document.getElementById('public_message').checked;
 						document.getElementById('public_message').onchange = function() {
@@ -68,7 +77,7 @@
 				<label for="length">{% trans("Length") %}</label>
 			</th>
 			<td>
-				<input type="text" name="length" id="length" size="20" maxlength="40"> 
+				<input class="theme-textbox" type="text" name="length" id="length" size="29" maxlength="40"> 
 					<span class="unimportant">({% trans('eg. "2d1h30m" or "2 days"') %})</span></td>
 			</tr>
 		<tr>
@@ -107,12 +116,12 @@
 		<tr>
 			<th><label>Автозаполнение</label></th>
 			<td>
-			<div class="btn-group"  style="width:100%">
-				<button onclick="autoCompleteBanForm(event, 'Spam / Wipe', [3,5,7,10,30]);">Спам / Вайп</button>
-				<button onclick="autoCompleteBanForm(event, 'CP or CP links', [3,5,7,10,30])"> ЦП </button>
-				<button onclick="autoCompleteBanForm(event,'Пиар параши', [3,5,7,10,30])">Пиар</button>
-				<button onclick="autoCompleteBanForm(event, 'Обход бана', [7,10,30])">Обход бана</button>
-				<button onclick="autoCompleteBanForm(event, 'Призыв к нанесению вреда сайту', [7,10,30])">Вред</button>
+			<div class="btn-group" style="float: none; z-index: 1;">
+				<label class="button" onclick="autoCompleteBanForm(event, 'Spam / Wipe', [3,5,7,10,30]);">Спам / Вайп</label>
+				<label class="button" onclick="autoCompleteBanForm(event, 'CP or CP links', [3,5,7,10,30])"> ЦП </label>
+				<label class="button" onclick="autoCompleteBanForm(event,'Пиар параши', [3,5,7,10,30])">Пиар</label>
+				<label class="button" onclick="autoCompleteBanForm(event, 'Обход бана', [7,10,30])">Обход бана</label>
+				<label class="button" onclick="autoCompleteBanForm(event, 'Призыв к нанесению вреда сайту', [7,10,30])">Вред</label>
 			</div>
 			</td>
 			<br>
@@ -120,7 +129,7 @@
 
 		<tr>
 			<td></td>
-			<td><br><input name="new_ban" type="submit" value="{% trans("New Ban") %}"></td>
+			<td><br><input class="button" name="new_ban" type="submit" value="{% trans("New Ban") %}"></td>
 		</tr>
 
 		{% else %}
@@ -128,7 +137,7 @@
 
 		<tr>
 			<td></td>
-			<td><input name="new_ban" type="submit" value="{% trans("New Ban") %}"></td>
+			<td><input class="button" name="new_ban" type="submit" value="{% trans("New Ban") %}"></td>
 		</tr>
 
 		{% endif %}

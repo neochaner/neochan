@@ -146,7 +146,7 @@ function post_menu(event)
 	var trip = $post.find('.post-trip').text();
 	var hidden_post = $post.find('.post-body').css('display') == 'none';
 	var is_oppost = post.classList.contains('post_op');
-	var menu ="<div class='post-menu' id='post-menu'><ul>";
+	var menu ="<div class='post-menu' id='post-menu' style='z-index: 2'><ul>";
 	var hiddenByThread = !is_oppost && isThreadHidden(post.dataset.board, post.dataset.thread);
 	var hiddenByTrip = trip.length < 2 ? false : isThreadHiddenByTrip(trip);
 	

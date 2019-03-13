@@ -397,7 +397,7 @@ form table tr th {
 }
 
 form table tr th {
-  background:  rgb(112, 23, 23);
+  background:  var(--post-background-color);
 }
 
 form table tr td div.center {
