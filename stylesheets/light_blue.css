@@ -1232,7 +1232,7 @@ hr{
 
 
 .button:not(:disabled):hover{
-    color: #f3f3f3;
+    color: #f3f3f3!important;
     background:#52709e!important;
     border:1px solid #52709e;
     text-decoration:none;
