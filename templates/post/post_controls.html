@@ -13,10 +13,11 @@
 
 
 
-
+{# TEMPORARY DISABLED
 {% if post.files and mod|hasPermission(config.mod.spoilerimage, board.uri) %}
 	{{ secure_link_confirm(config.mod.link_spoilerimages, 'Spoiler All'|trans, 'Are you sure you want to spoiler all images on this post?'|trans, board.dir ~ 'spoiler_all/' ~ post.id, 'class=\"button btn-sm\"') }}
 {% endif %}
+#}
 
 {% if mod|hasPermission(config.mod.delete, board.uri) %}
 	{{ secure_link_confirm(config.mod.link_delete, 'Delete'|trans, 'Are you sure you want to delete this?'|trans, board.dir ~ 'delete/' ~ post.id, 'class=\"button btn-sm\"') }}

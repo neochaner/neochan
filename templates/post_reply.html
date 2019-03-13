@@ -13,11 +13,9 @@
 
 			{% if post.trip %}<span class="post-trip">{{ post.trip }}</span>{% endif %}
 		</div>
+		<div class="view-inline-pc">{% include 'post/post_controls.html' %}</div> 
 
-
-		{% include 'post/post_controls.html' %}
-
-
+	
 		<time class="post-header-item post-time" unixtime={{ post.time }} edit='{% if post.edited_at %}{{ post.edited_at }}{% else %}{{ post.time }}{% endif %}' datetime="{{ post.time|date('%Y-%m-%dT%H:%M:%S') }}{{ timezone() }}" onclick="hideReply({{ post.id }})">{{ post.time|date(config.post_date) }}</time>
 	</header>
 	<section class="post-body">
@@ -27,6 +25,7 @@
 		<blockquote class="post-message">{{ post.body }}{% include 'post/poll.html' %}</blockquote>
 	</section>
 	<footer class="post-footer">
+		<div class="view-inline-mobile">{% include 'post/post_controls.html' %}</div> 
 		<div class="post-backlinks">
 {% if post.backlinks is defined %}
 {% for b_id in post.backlinks %}
@@ -42,6 +41,7 @@
 			{% endif %}
 			<a class="control post-quote-control" onclick="cite(event)"><i class="fa fa-reply"></i></a>
 		</div>
+
 	</footer>
 </article>
 

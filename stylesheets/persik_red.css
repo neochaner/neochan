@@ -140,6 +140,7 @@
     --neon-color:#db9570;
     --neon-a:#fdeae0;
 
+    --post-background-color: #E8C2B7;
 
     --menu-background-color:#E4B6A9;
     --menu-color:#5f2c11;
@@ -149,8 +150,7 @@
     --button-color-hover:#c0734a;
 
     --placeholder-color:#EAB4A8;
-    --post-background-color:#EAB4A8;
-     
+
     --alert-background-color:rgb(230, 214, 205);;
     --alert-fog-color:black;
     --alert-fog-opacity:0.2;
@@ -1792,7 +1792,7 @@ hr{
 .post_notice{
     box-shadow:1px 1px 12px 2px #ab552975 !important;
 }
-.post {
+.post{
     box-sizing: border-box;
     margin: 0 0 10px;
     padding: 4px 10px;
@@ -1800,7 +1800,7 @@ hr{
     max-width: 1000px;
     border-radius: 4px;
     border: none;
-    background: #E8C2B7;
+    background-color:var(--post-background-color);
     box-shadow: 1px 1px 2px 0 #ab552975;
     word-wrap: break-word;
     word-break: break-word;

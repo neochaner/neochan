@@ -61,7 +61,7 @@
 
 
 
-    --post-background-color:#DDDDDD;
+    --post-background-color:#2b2b2b;
     --post-border-color:#CCCCCC;
     --post-marker-color:#7b68ee;
 
@@ -1842,7 +1842,8 @@ hr{
     padding: 4px;
     margin-top: 9px;
     border: solid 1px #2e8b57;
-    background-color: #2b2b2b;
+    background-color: var(--post-background-color);
+ 
 }
 
 @media (max-width: 992px) and (min-width: 320px) {

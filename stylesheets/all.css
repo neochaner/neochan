@@ -2,12 +2,16 @@
 /* MENU */
 @media (max-width:480px){
 .view-mobile{display: block;} 
+.view-inline-mobile{display: inline-block;}  
 .view-pc{display: none;}
+.view-inline-pc{display: none;}
 }
 
 @media (min-width:480px)  {
 .view-mobile{display: none;} 
+.view-inline-mobile{display: none;} 
 .view-pc{display: block;}
+.view-inline-pc{display: inline-block;}
 }
 
 .mobile-menu select {

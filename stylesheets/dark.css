@@ -3,6 +3,8 @@
     --neon-color:rgb(71, 71, 71); 
     --neon-a:#797979; 
 
+    --post-background-color:#333036;
+    
     --menu-background-color:rgba(65, 54, 80, 0.91);;
     --menu-color:#a5a5a5;
     --menu-item-color:#a5a5a5;
@@ -1668,7 +1670,7 @@ hr{
     max-width:1000px;
     border-radius:4px;
     border:none;
-    background:#333036;
+    background-color: var(--post-background-color);
     box-shadow:1px 1px 9px 0 rgba(0,0,0,.7);
     word-wrap:break-word;
     word-break:break-word

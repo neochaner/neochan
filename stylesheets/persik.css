@@ -141,6 +141,8 @@
     --neon-color:#cca996;
     --neon-a:rgb(241, 232, 227); 
 
+    --post-background-color: #d9c3b5;
+    
     --menu-background-color:#cca996;
     --menu-color:#5f2c11;
     --menu-item-color:#5f2c11;
@@ -149,8 +151,6 @@
     --button-color-hover:#c0734a;
 
     --placeholder-color:#D9B39F;
-    --post-background-color:#D9B39F;
-
 
     --alert-background-color:rgb(236, 226, 220);;
     --alert-fog-color:black;
@@ -1788,7 +1788,7 @@ hr{
 .post_notice{
     box-shadow:1px 1px 12px 2px #964d2796 !important;
 }
-.post {
+.post{
     box-sizing: border-box;
     margin: 0 0 10px;
     padding: 4px 10px;
@@ -1796,7 +1796,7 @@ hr{
     max-width: 1000px;
     border-radius: 4px;
     border: none;
-    background: #d9c3b5;
+    background:var(--post-background-color);
     box-shadow: 1px 1px 2px 0 #964d2796;
     word-wrap: break-word;
     word-break: break-word;

@@ -25,7 +25,7 @@
     --a-off: #CA927B;
 
     --quote-color: #577018;
-    --reply-background-color: #E6CBC0;
+    --post-background-color: #E6CBC0;
     --replyborder-color: #D9AF9E;
     --replyhighlighted-color: #d8c3ba;
     --other-color: #CA927B;
@@ -136,7 +136,7 @@ table {
     box-shadow: inset 0px 0px 2px 1px rgba(41, 63, 99, 0.42);
 }
 .tbl-content{
-    background-color: var(--reply-background-color);
+    background-color: var(--post-background-color);
     border: 1px solid var(--replyborder-color);
 }
 table thead th {
@@ -1050,7 +1050,7 @@ hr{
     -ms-user-select:none;
     user-select:none;
     padding: 0px 3px;
-    background: var(--reply-background-color);
+    background: var(--post-background-color);
     margin: 5px 5px;
     border-radius: 5px;
 }
@@ -1724,7 +1724,7 @@ hr{
     word-wrap:break-word;
     word-break:break-word;
 
-    background: var(--reply-background-color);
+    background: var(--post-background-color);
     border-color: var(--replyborder-color);
     border-style: none solid solid none;
     border-width: 1px;
@@ -2195,7 +2195,7 @@ html.work-mode .post-file-info:hover~.post-file-link{
     overflow: auto;
     min-width: 328px;
     min-height: 180px;
-    background-color: var(--reply-background-color);
+    background-color: var(--post-background-color);
     border: 1px solid var(--replyborder-color);
 }
 .reply_float{

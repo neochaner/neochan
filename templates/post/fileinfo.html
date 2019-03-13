@@ -26,6 +26,8 @@
 
 			{% else %}
 			<figure class="post-file">
+			{% include "post/file_controls.html" %}
+			
 			<figcaption class="post-file-info">	
 				{% if file.video_title %}
 				<span class="file-info-button fa fa-info-circle" onclick='alert("{{ file.video_title }}")'></span>
@@ -36,11 +38,8 @@
 				{% endif %}
 				<span class="post-file-info-item post-file-dims">{{ file.width}}x{{ file.height }}</span>
 				<span class="post-file-info-item post-file-size">{{ file_size_str }}</span>
-			</figcaption>
-
-			{% include "post/file_controls.html" %}
-
-
+			</figcaption> 
+			 
 			{% include "post/image.html" with {'post':file} %}
 
 			{% endif %}

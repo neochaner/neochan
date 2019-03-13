@@ -141,6 +141,8 @@
     --neon-color:rgba(240, 98, 145, 0.425);
     --neon-a:#fff; 
 
+    --post-background-color:#FFFFFF;
+
     --general-darkest:#b62455;
     --general-dark:#d12e64;
     --general-black:#fd4d87;
@@ -1257,7 +1259,7 @@ hr{
 
 
 .button:not(:disabled):hover{
-    background:var(--general-hover);
+    background:var(--general-hover)!important;
     text-decoration:none;
 }
 .button:disabled{
@@ -1893,7 +1895,7 @@ hr{
     min-width:200px;
     max-width:1000px;
     border-radius:3px;
-    background:#FFFFFF;
+    background-color:var(--post-background-color);
     border:1px solid var(--border-color);
     word-wrap:break-word;
     word-break:break-word;
