@@ -2271,19 +2271,16 @@ html.work-mode .post-file-info:hover~.post-file-link{
 .post_op .post-quote-control{
     float:none
 }
-
 .post_op .post-footer{
     padding-top:12px;
 }
-
-.post_op .post-controls{
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-    padding: 3px 0 3px 8px;
-}
- 
 .post_op .post-backlinks{
     padding-left: 16px;
+}
+.post_op .post-controls{
+    border-top: 1px solid #cfb8c0;
+    border-bottom: 1px solid #cfb8c0;
+    padding: 3px 0 3px 8px;
 }
 
 .catalog{

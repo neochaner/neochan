@@ -2032,6 +2032,11 @@ html.pos-notstaff, html.pos-notstaff {
 .post_op .post-quote-control{
     float:none
 }
+.post_op .post-controls{
+    border-top: 1px solid var(--post-border-color);
+    border-bottom: 1px solid var(--post-border-color);
+    padding: 3px 0 3px 8px;
+}
 .catalog{
     display:-webkit-box;
     display:flex;

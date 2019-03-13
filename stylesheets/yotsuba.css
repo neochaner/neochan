@@ -2167,6 +2167,11 @@ html.work-mode .post-file-info:hover~.post-file-link{
 .post_op .post-quote-control{
     float:none
 }
+.post_op .post-controls{
+    border-top: 1px solid #d0ada3;
+    border-bottom: 1px solid #d0ada3;
+    padding: 3px 0 3px 8px;
+}
 .catalog{
     display:-webkit-box;
     display:flex;
