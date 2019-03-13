@@ -220,7 +220,7 @@ function AddQuote(obj)
 	if(citateText == '')
 		citateText='>';
 
-	$id(obj).value = ( $id(obj).value  + citateText );
+	document.getElementById(obj).value += citateText;
 }
 
 
@@ -228,7 +228,7 @@ function AddTag(tag1,tag2,obj)
 {
 
 	var is_smile = tag1[0] == ':';
-	ToolbarTextarea = $id(obj);
+	ToolbarTextarea =	document.getElementById(obj);
 
 
 	if (document.selection)

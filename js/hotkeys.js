@@ -10,34 +10,13 @@ $(document).ready(function(){
 
         if((e.keyCode == 37 || e.keyCode == 39) && !document.activeElement.className.startsWith('reply-body'))
         {
-
-            if(getKey('testKey', false)){
-
                 player.playNext(e.keyCode == 37);
-
-
-            } 
-            else {
-
-                var container = $('#fullscreen-container');
-
-                if(container.length == 1 && container.css('display') != 'none' && container.html() != '')
-                {
-                    next_image(e.keyCode == 37);
-                    return false;
-                }
-            }
         }
 
         if(e.keyCode == 27)
         {
-            if($('#fullscreen-container').css('display') != 'none')
-                fullscreenExpand(active, active, 0, 0, 0, 0);
-
-            if(getKey('testKey', false)){
-                if(player.is_active)
-                    player.stopAll();
-            }
+            if(player.is_active)
+                player.stopAll();
         }
 
             

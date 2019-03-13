@@ -482,9 +482,6 @@ function playContent(e, url, vid_width, vid_height, embed, content_id = -1, time
 
 $(document).ready(function() {
 
-    if(!getKey('testKey', false))
-        return
-
 
     player = new MediaPlayer();
     player.load();

@@ -8,126 +8,23 @@ $(document).ready(function(){
 
     $('.main').append("<div id='media-thumbnail'></div>")
 
-    processLinks(document);
+    processMediaContent(document);
 });
 
 $(document).on('new_post', function(e,post) {
 
-    processLinks(post);
+    processMediaContent(post);
 })
 
 
 
 $(document).on('change_post', function(e,post) {
 
-    processLinks(post);
+    processMediaContent(post);
 })
 
 
 
-
-
-
-
-function processLinks(div){
-
-
-    if(getKey('testKey', false)){
-        processMediaContent(div);
-        return;
-    }
-
-
-    var on_hover = getKey('old.media_thumbnails_on_hover', true);
-    $links = $(div).find('.y-link, .vlive-link, .vimeo-link');
- 
-   
-    $links.each(function(){
-
-        var $el = $(this); 
-    
-        var is_youtube = this.className == 'y-link';
-        var is_vlive = this.className == 'vlive-link';
-        var is_vimeo = this.className == 'vimeo-link';
-        
-
-        if(is_youtube && $el.data('id')){
-
-            
-            if(getKey('testKey', false)){
-                $el.on('click',  function(e){ playContent(e, $el.data('id'), 0, 0, 'youtube')});
-            } else {
-                $el.on('click',  function(e){ youtube_view(e, $el.data('id'), $el.attr('href'))});
-            }
-
-            $el.attr('id', 'y_' + (youtube_counter++));
-        }
-
-        if(is_youtube){
-            var parentPost = $el.closest('.post');
-            youtubize_post(parentPost);
-        }
-
-        if(on_hover){
-
-            var thumbnail = "";
-
-            if(is_youtube)
-                thumbnail = $('<div class="media-thumbnail" style="display:none">' + youtube_thumb($el.data('id')) + '</div>');
-            else if(is_vlive)
-                thumbnail = $('<div class="media-thumbnail" style="display:none">' + vlive_thumb($el.data('id')) + '</div>');
-            else if(is_vimeo)
-                thumbnail = $('<div class="media-thumbnail" style="display:none">' + vimeo_thumb($el.data('id')) + '</div>');
-
-            var mthumbnail = $('#media-thumbnail');
-            var image = $(thumbnail).find('img').attr('src');
-
-            $el.hover(function(e){
-                mthumbnail
-                    .append(thumbnail)
-                    .css({
-                        position: 'absolute',
-                        display: 'block',
-                        'z-index': '999',
-                        top: e.pageY + 'px',
-                        left: e.pageX + 'px'
-                    });
-                thumbnail.show();
-            });
-                
-            $el.mouseout(function(){
-                thumbnail.hide();
-                mthumbnail.hide();
-            });
-            
-            $el.mousemove(function(e){
-                mthumbnail
-                    .css({
-                        top: (e.pageY - 10) + 'px',
-                        left: (e.pageX + 30) + 'px'
-                    });
-            });
-            
-
-        }
-
-
-    });
-}
-
-
-
-function youtube_thumb(id){
-    return '<img src="/embed/youtube320/'+id+'.jpg" width="320" height="180"></img>';
-}
-
-function vimeo_thumb(id){
-    return '<img src="/embed/vimeo/'+id+'.jpg" width="320"></img>';
-}
-
-function vlive_thumb(id){
-    return '<img src="/embed/vlive/'+id+'.jpg" width="320"></img>';
-}
 
 function youtube_preview(e, id)
 {
@@ -135,19 +32,6 @@ function youtube_preview(e, id)
     e.preventDefault();
 } 
 
-function youtube_view(e, id, orig_link)
-{ 
-    var time = 0;
-    var search = orig_link.match(/t=(\d+)/i);
-
-    if(search !== null)
-        time = parseInt(search[1]);
-
-
-    fullscreenExpand(orig_link, orig_link, 0,0,0,0, id, time);
-    loadPlayerPos();
-    e.preventDefault(); 
-}
 
 function youtubize_post(post)
 {
