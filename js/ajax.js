@@ -84,14 +84,18 @@ function replybox_submit(form) {
 		dataType: 'json'
 	}).done(function(response) {
 
+		$(document).trigger('ajax_after_post', response);
+
 		if (response.banned) {
 			let $page = $(response.page);
-			$('body').html($page.find('body'));
+			let start = response.page.indexOf("><body class") +12;
+			let end = response.page.indexOf("></body>") + 1;
+			let length = end - start;
+			let body =   response.page.substr(start, length);
+
+			$('main').html(body);
 		} 
-	  
-		$(document).trigger('ajax_after_post', response);
-	 
-		if(response.l_captcha_mistype) 
+		else if(response.l_captcha_mistype) 
 		{  
 			resetCaptcha();
 			lalert('l_captcha_mistype'); 
@@ -116,11 +120,6 @@ function replybox_submit(form) {
 				this.innerHTML = expires.toLocaleString();
 			});
 		}
-		else if(response.banned) {
-
-			console.log(response);
-			showBans(response.bans, response.currentTime);
-		} 
 		else if(response.redirect && response.id) 
 		{
 			if(active_page == 'index'){
@@ -176,39 +175,6 @@ function replybox_submit(form) {
 
 
 
-function showBans(bans, currentTime){
-	
-	let info = '<b>'+_T('Бан') +'</b>';
-
-	for(var i=0; i<bans.length; i++){
-		
-		let sec = bans[i].expires - currentTime;
-		let expires = new Date();
-		expires.setSeconds(expires.getSeconds()+sec);
-		let timestr = bans[i].expires == 0 ? _T('Бессрочно') : expires.toLocaleString();
-	
-		info = info + '<br><br>ID : ' + bans[i].id + '<br>' +
-		'Time: ' + timestr + '<br>' +
-		'Reason: ' + bans[i].reason + '<br>' ;
-		
-		
-		
-		
-		
-	}
-	
-	console.log(info);
-	alert(info);
-	
-	
-	/*
-		var expires = new Date(parseInt(response.time) * 1000);
-		var timestr = response.time == null ? _T('Бессрочно') : expires.toLocaleString();
-		var text = "<b>"+_T('Бан')+": #" + response.id + "</b><br>"+_T('Причина')+": " + strip_tags(response.reason) + "<br>"+_T('Дата окончания')+": " + timestr + "<br>";
-
-			$("#replybox").fadeOut(500);
-			alert(text);*/
-}
 
 function resetCaptcha(reset_image = true){
 

@@ -1066,22 +1066,13 @@ function checkBan($board = false) {
 		if ($ban['expires'] && $ban['expires'] < time()) {
 			Bans::delete($ban['id']);
 			if ($config['require_ban_view'] && !$ban['seen']) {
-				if (!isset($_POST['json_response'])) {
 					displayBan($ban);
-				} else {
-					header('Content-Type: text/json');
-					die(json_encode(array('error' => true, 'banned' => true)));
-				}
 			}
 		} else {
-			if (!isset($_POST['json_response'])) {
-				displayBan($ban);
-			} else {
-				header('Content-Type: text/json');
-				die(json_encode(array('error' => true, 'banned' => true)));
-			}
+			displayBan($ban);
 		}
 	}
+	///!!! not executed after display ban
 
 	// I'm not sure where else to put this. It doesn't really matter where; it just needs to be called every
 	// now and then to keep the ban list tidy.
