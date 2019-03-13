@@ -20,7 +20,7 @@
 								
 								{% if thread.force_anon==0 %}
 								{% if not config.field_disable_name or (mod and post.mod|hasPermission(config.mod.bypass_field_disable, board.uri)) %}<tr>
-								<input type="text" name="neoname" class="reply-subject" placeholder="опции">
+								<input type="text" name="neoname" class="reply-subject" placeholder="name">
 								{% endif %}
 								{% endif %}
  
