@@ -115,8 +115,8 @@ function usermod_auth($warning = ''){
     echo Element('page.html', array(
         'config'              => $config,
         'mod'                 => false,
-        'title'               => _('OP Moderation'),
-        'subtitle'            => 'Enter tripcode',
+        'title'               => '',
+        'subtitle'            => '',
         'boardlist'           => [],
         'body'                => Element('usermod/login.html', array('error'               => $warning))
     ));
