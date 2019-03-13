@@ -2467,7 +2467,8 @@ html.work-mode .post-file-info:hover~.post-file-link{
 .theme-textbox{
     border: 1px solid var(--body2-color);
     padding: 4px;
-    border-radius: 3px;
+    border-radius: 3px;    
+    background:#ffffff29;
 }
 .send-button{
     box-sizing:border-box;

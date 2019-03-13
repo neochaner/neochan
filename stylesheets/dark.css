@@ -2310,7 +2310,7 @@ html.pos-notstaff, html.pos-notstaff {
     border: 1px solid #86798a;
     padding: 4px;
     border-radius: 3px;
-    color:rgb(199, 199, 199);
+    background:#ffffff29;
 }
 .send-button{
     box-sizing:border-box;

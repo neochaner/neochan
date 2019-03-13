@@ -2317,7 +2317,8 @@ html.pos-notstaff ,html.pos-notstaff{
 .theme-textbox{
     border: 1px solid #666;
     padding: 4px;
-    border-radius: 3px;
+    border-radius: 3px;    
+    background:#ffffff29;
 }
 .send-button{
     box-sizing:border-box;

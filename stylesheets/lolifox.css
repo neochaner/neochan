@@ -1719,7 +1719,7 @@ hr{
     box-sizing:border-box;
     margin: 0.2em 4px;
     padding:4px 10px;
-    min-width:200px;
+    min-width:400px;
     max-width:1000px;
     word-wrap:break-word;
     word-break:break-word;
@@ -1747,7 +1747,7 @@ hr{
     margin-bottom:0
 }
 .post_file{
-    min-width:400px
+    min-width:450px
 }
 header nav{
     display:initial
@@ -2380,7 +2380,10 @@ html.work-mode .post-file-info:hover~.post-file-link{
     border: 1px solid var(--body2-color);
     padding: 4px;
     border-radius: 3px;
+    background:#ffffff29;
 }
+
+
 .send-button{
     box-sizing:border-box;
     width:100px;

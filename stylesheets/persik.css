@@ -2438,6 +2438,7 @@ html.work-mode .post-file-info:hover~.post-file-link{
     border: 1px solid #8a441f;
     padding: 4px;
     border-radius: 3px;
+    background:#ffffff29;
 }
 .send-button{
     box-sizing:border-box;
