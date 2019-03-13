@@ -215,8 +215,15 @@ function processMediaContent(div){
 
 
             case 'y-link':
+                let time_stamp = 0;
+                let regx = link.href.match(/&t=(\d+)/i);
+
+                if(regx != null && regx.length == 2){
+                    time_stamp = regx[1];
+                }
+
                 link.id = 'content-' + (++content_counter);
-                link.setAttribute('onclick', 'playContent(event, "'+link.dataset.id+'", 0,0,"youtube", '+ content_counter +')'); 
+                link.setAttribute('onclick', 'playContent(event, "'+link.dataset.id+'", 0,0,"youtube", '+ content_counter +', '+time_stamp+')'); 
                 var parentPost = $(link).closest('.post');
                 youtubize_post(parentPost);
             break;

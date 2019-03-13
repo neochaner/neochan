@@ -40,6 +40,7 @@ class MediaPlayer{
 
         /* temporary vars */
         this.content_num = -1;
+        this.time_stamp=0;
         this.download_link=false;
         this.multiplier=1;
         this.vid_width=0;
@@ -226,7 +227,7 @@ class MediaPlayer{
     /*
         Просмотр картинки
     */
-    playContent(e, url, vid_width, vid_height, embed_provider = false, content_num = -1){
+    playContent(e, url, vid_width, vid_height, embed_provider = false, content_num = -1, time_stamp = 0){
  
 
         e.preventDefault();
@@ -234,7 +235,8 @@ class MediaPlayer{
         this.stopAll();
         this.is_active=true;
         this.content_num = content_num;
- 
+        this.time_stamp = time_stamp;
+
         let vol = getKey('volume', 0.5);
         let muted = getKey('muted', false);
         let video_loop = getKey('loop', false);
@@ -271,8 +273,8 @@ class MediaPlayer{
                     toggleInvert: false,
                     storage: {enabled: false},
                     playsinline: true,
-                    loop: {active: video_loop},
-                    volume: vol,
+                    loop: {active: video_loop}, 
+                    volume: vol, 
                     muted: muted
                 });
 
@@ -337,13 +339,20 @@ class MediaPlayer{
                 storage: {enabled: false},
                 playsinline: true,
                 loop: {active: video_loop},
+                seekTime:time_stamp, // not woked :(
                 volume: vol,
                 muted: muted,
                 youtube : { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1 }
             });
 
             this.plyr.on('ready', () => {
-                player.plyr.play(); // youtube random-block-autoplay bug.
+ 
+
+                player.plyr.play(); // youtube random-block-autoplay bug. 
+
+                if(this.time_stamp > 0){
+                    player.plyr.currentTime = this.time_stamp;
+                }
 
                 if(embed_provider == 'youtube'){
                     $(`<button type="button" class="plyr__control" onclick="player.downloadSource()">
@@ -466,11 +475,10 @@ class MediaPlayer{
 
 var player = null;
 
-function playContent(e, url, vid_width, vid_height, embed, content_id){
-    player.playContent(e, url, vid_width, vid_height, embed, content_id);
+function playContent(e, url, vid_width, vid_height, embed, content_id = -1, time_stamp = 0){
+    player.playContent(e, url, vid_width, vid_height, embed, content_id, time_stamp);
 }
-
-
+ 
 
 $(document).ready(function() {
 
