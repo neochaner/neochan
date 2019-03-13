@@ -48,6 +48,8 @@ function mod_login($redirect = false)
 					
 			if(isset($_POST['json_response']))
 				json_response(array('error'=>  $config['error']['invalid_auth']));
+
+			mod_page('', 'mod/login.html', $args);
 				
 		} else {
 			modLog('Logged in');
@@ -69,7 +71,7 @@ function mod_login($redirect = false)
 	if (isset($_POST['username']))
 		$args['username'] = $_POST['username'];
 
-	mod_page(_('Login'), 'mod/login.html', $args);
+	mod_page('', 'mod/login.html', $args);
 }
 
 

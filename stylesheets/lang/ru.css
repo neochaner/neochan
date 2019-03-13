@@ -24,6 +24,8 @@
 
 .l_btn_Submit::before{
     content:'Отправить';
+}.l_btn_Login::before{
+    content:'Войти';
 }
 
 
@@ -33,7 +35,7 @@
 }.l_login_out::before{
     content:'Выход' 
 }.l_login_label::before{
-    content:'имя / трипкод' 
+    content:'логин' 
 }.l_passwd_label::before{
     content:'пароль' 
 }.l_option::before{

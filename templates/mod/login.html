@@ -1,26 +1,42 @@
-{% if error %}<h2 style="text-align:center">{{ error }}</h2>{% endif %}
-<form action="" method="post">
-<table style="margin-top:25px;">
-	<tr>
-		<th>
-			{% trans 'Username' %}
-		</th>
-		<td>
-			<input type="text" name="username" size="20" maxlength="30" value="{{ username|e }}">
-		</td>
-	</tr>
-	<tr>
-		<th>
-			{% trans 'Password' %}
-		</th>
-		<td>
-			<input type="password" name="password" size="20" maxlength="30" value="">
-		</td>
-	</tr>
-	<tr>
-		<td></td>
-		<td>
-			<input type="submit" name="login" value="{% trans %}Continue{% endtrans %}" />
-		</td>
-</table>
-</form>
+<div class="mod-login">
+	<h1>{% trans 'Login' %}</h1>
+	{% if error %}<h4 style="text-align:center">{{ error }}</h4>{% endif %}
+	<form action="" method="post">
+		<label for="login" class="l_login_label"></label><br>
+		<input class="theme-textbox" type="login" name="username">
+			
+		<label for="password" class="l_passwd_label"></label><br>
+		<input class="theme-textbox"  type="password" name="password">
+
+        <button type="submit" class="button l_btn_Login" name="login"></button>
+    </form>
+</div>
+
+
+<style>
+* { -webkit-box-sizing:border-box; -moz-box-sizing:border-box; -ms-box-sizing:border-box; -o-box-sizing:border-box; box-sizing:border-box; }
+
+html { width: 100%; height:100%; overflow:hidden; }
+
+.mod-login { 
+	position: absolute;
+	top: 25%;
+	left: 50%;
+	margin: -150px 0 0 -150px;
+	width:260px;
+	height:300px;
+}
+.mod-login h1 {  
+	letter-spacing:2px; 
+	text-align:center; 
+}
+.mod-login input { 
+	width: 100%; 
+	margin-bottom: 10px; 
+}
+.mod-login button { 
+	width: 100%; 
+}
+</style>
+
+

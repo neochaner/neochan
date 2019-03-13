@@ -24,6 +24,8 @@
 
 .l_btn_Submit::before{
     content:'Submit';
+}.l_btn_Login::before{
+    content:'Login';
 }
 
  
@@ -33,7 +35,7 @@
 }.l_login_out::before{
     content:'LogOut' 
 }.l_login_label::before{
-    content:'username / tripcode' 
+    content:'username' 
 }.l_passwd_label::before{
     content:'password' 
 }.l_option::before{
