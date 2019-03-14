@@ -1,4 +1,65 @@
-﻿ 
+﻿
+
+/*
+		require store.js
+
+*/
+
+class MenuManager {
+	
+	constructor(){	
+		this.options={};	 
+	}
+
+	addCheckBox(key, default_bool, text, tooltip, callback=false, add_div='')
+	{
+	
+		var rValue  = getKey(key, default_bool);
+		var state = rValue ? 'checked' : '';
+		
+		var div = `<div class='options-item'>
+		<label class='checktainer_xs'><input type='checkbox' `+state+` id='`+key+`' onclick='Menu.toggle("`+key+`")'>
+		<span class='checkmark_xs'></span>`+text+`</label>`+add_div+`</div>`;
+		
+		let box = document.getElementsByClassName('options-tab')[0];
+		box.innerHTML+=div;
+
+		this.options[key] = {
+			'callback':callback,
+			'something.... ' :''
+		};
+
+		
+		return rValue;
+	
+	}	
+	
+	toggle(key){
+
+		let value = document.getElementById(key).checked;
+		
+		setKey(key, value);
+		
+		if(this.options[key].callback){
+			this.options[key].callback(value);
+		}
+		
+	}
+	
+}
+
+var Menu = new MenuManager();
+
+
+
+
+
+
+
+
+
+
+/* OLD CODE, WILL BE REMOVE */
 
 function menu_add_checkbox(key, default_bool, l_class, tooltip)
 {
@@ -31,3 +92,32 @@ function menu_add_raw(raw)
 	$("<div class='options-item'>" +raw+"</div>").appendTo('.options-tab');
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
