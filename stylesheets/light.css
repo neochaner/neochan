@@ -43,13 +43,18 @@ body{
     background-color:#ebeaeb;
 }
 
-h1,h2{
-    color:#5b2d69
+h1,h2{color:#5b2d69}
+h2{text-shadow:#5b2d69 1px 1px 0}
+
+
+.win{ 
+    background: #efeef0;
+    border: 1px solid rgba(59, 26, 84, 0.70);
+    border-radius: 6px;
+}.win-head{ 
+    background: #ddd9e1;
 }
 
-h2{
-    text-shadow:#5b2d69 1px 1px 0
-}
 
 .a-off{color:var(--a-off)!important;}
 .post-link{padding-right: 4px;}

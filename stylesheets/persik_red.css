@@ -180,6 +180,7 @@ h2{text-shadow:#6d3a20 1px 1px 0}
 .win{ 
     background: #E4B6A9;
     border: 1px solid #956a44;
+    border-radius: 6px;
 }.win-head{ 
     background: #E4B6A9;
 }

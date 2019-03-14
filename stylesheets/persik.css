@@ -182,6 +182,7 @@ h2{text-shadow:#6d3a20 1px 1px 0}
 .win{ 
     background: #ddc0a7;
     border: 1px solid #956a44;
+    border-radius: 6px;
 }.win-head{ 
     background: #ceb59f;
 }
