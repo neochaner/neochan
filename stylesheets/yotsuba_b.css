@@ -134,20 +134,16 @@ a:hover {color: var(--a-color-hover);}
 .post-header a {color: var(--a1-color) !important;font-weight: 13px;}
 
 
-h1,h2{color: var(--a1-color);
-}
+h1,h2{color: var(--a1-color);text-align:center}
+h2{text-shadow:#333 1px 1px 0;}
+h3{display:inline;font-size:16px;margin:0;}
 
-h2{
-    text-shadow:#333 1px 1px 0
-}
 
-h1,h2{
-    text-align:center
-}
-h3{
-    display:inline;
-    font-size:16px;
-    margin:0;
+.win{ 
+    background: var(--modal-backgound-color);
+    border: 1px solid var(--modal-border-color); 
+}.win-head{ 
+    background: #bcc1dd;
 }
 
 

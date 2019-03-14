@@ -38,18 +38,22 @@ body{
     margin:0
 }
 
-h1{
-    font-size:30px;
-    letter-spacing:1px
+h1{font-size:30px;letter-spacing:1px}
+h1,h2{color:#5b2d69}
+h2{text-shadow:#5b2d69 1px 1px 0}
+
+
+.win{
+    background: #222222;
+    border: 2px solid var(--border-color);
+}.win-head{ 
+    background: #5d5d5d;
+}.win-body textarea{
+    background: #080808;
 }
 
-h1,h2{
-    color:#5b2d69
-}
 
-h2{
-    text-shadow:#5b2d69 1px 1px 0
-}
+
 
 .a-off{ color:var(--a-off)!important; }
 

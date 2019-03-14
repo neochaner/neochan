@@ -38,12 +38,18 @@ body{
     margin:0
 }
 
-h1,h2{
-    color:#b32407
+h1,h2{color:#b32407}
+h2{text-shadow:#8e3523 1px 1px 0}
+
+
+.win{ 
+    background: #dddddd;
+    border: 1px solid #ccc;
+}.win-head{ 
+    background: #d0d0d0;
 }
-h2{
-    text-shadow:#8e3523 1px 1px 0
-}
+
+
 
 .a-off{ color:var(--a-off)!important; }
 

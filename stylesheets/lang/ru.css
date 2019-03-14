@@ -26,6 +26,10 @@
     content:'Отправить';
 }.l_btn_Login::before{
     content:'Войти';
+}.l_btn_Save::before{
+    content:'Сохранить';
+}.l_btn_Cancel::before{
+    content:'Отмена';
 }
 
 

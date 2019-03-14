@@ -1,4 +1,39 @@
 
+/* WINDOWS */
+.win{
+    position: fixed;
+    padding: 2px;
+    z-index: 500;
+    text-align: left;
+    font-size: 0.9em;
+}
+
+.win-head{
+    margin-bottom: 1px;
+    padding: 2px;
+    cursor: move;
+    font-size: 14px;
+    text-align: center;
+}
+
+.win-body{
+    display: flex;
+}
+
+.win-footer{
+    padding: 10px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.win-footer .button{
+    margin: 0px 2px;
+}
+
+
+
+
+
 /* MENU */
 @media (max-width:480px){
 .view-mobile{display: block;} 

@@ -198,13 +198,17 @@ body{
 }
 
 
-h1,h2{
-    color: #333;
+h1,h2{color: #333;}
+h2{text-shadow:#333 1px 1px 0}
+
+
+.win{ 
+    background: #f5f5f5;
+    border: 1px solid var(--border-color)
+}.win-head{ 
+    background: #dddddd;
 }
 
-h2{
-    text-shadow:#333 1px 1px 0
-}
 
 .a-off{color:var(--a-off)!important;}
 .post-link{

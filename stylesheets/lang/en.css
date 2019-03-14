@@ -26,6 +26,10 @@
     content:'Submit';
 }.l_btn_Login::before{
     content:'Login';
+}.l_btn_Save::before{
+    content:'Save';
+}.l_btn_Cancel::before{
+    content:'Cancel';
 }
 
  
