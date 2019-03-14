@@ -81,3 +81,12 @@ function set_draggable(elem_id, clickEvent = false, excludeElements = []) {
   }
 
 }
+
+function win_size(){
+
+  let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+  let height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+  return {'width': width, 'height': height };
+
+}
