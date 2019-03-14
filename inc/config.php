@@ -1101,6 +1101,7 @@ srand(time());
 	$config['additional_javascript'][] = 'js/vendor/tippy.all.js';
 	$config['additional_javascript'][] = 'js/tooltips.js';
 	$config['additional_javascript'][] = 'js/tripcode-mask.js';
+	$config['additional_javascript'][] = 'js/user_jscss.js'; 
 	
 	$config['additional_javascript'][] = 'js/webm-settings.js'; 
 	$config['additional_javascript'][] = 'js/auth.js';
@@ -1114,6 +1115,9 @@ srand(time());
 	$config['additional_javascript'][] = 'js/audio.js'; 
 
 	$config['additional_javascript'][] = 'js/neotube.js'; 
+
+
+ 
 
 	// Method to use for determing the max filesize. 
 	// "split" means that your max filesize is split between the images. For example, if your max filesize
