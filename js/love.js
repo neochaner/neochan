@@ -18,48 +18,18 @@ $(window).bind('load', function(){
 		selectedTheme='light_blue';
 	}
 
-	$("#theme").val(selectedTheme);
-		
-	$('#theme').change(function(){	
+	let theme = document.getElementById('theme');
+	theme.value = selectedTheme;
+
+	theme.addEventListener("change", function(){	
 		localStorage.setItem('theme-css', this.value);
 		document.getElementById("theme-css").href = "/stylesheets/" + this.value+ ".css?neo23" + new Date().getTime();
 	});
+
+
 		
 	// меню
 	$('#btn-options').click(function(){toggleModal('options');});
-	
-	
- 	$('.tab-login').click(function(){
-		
-		if($(this).hasClass('tab-sel'))
-			return false;
-		
-		$('#login').find('form').each(function(){
-			$(this).css('display') == 'none' ? $(this).show() : $(this).hide();
-		});		
-		
-		$('#login').find('.tab-link').each(function(){
-			$(this).hasClass('tab-sel') ? $(this).removeClass('tab-sel') : $(this).addClass('tab-sel');
-		});		
-	});
-	
-	$('#checkbox_create').click(function(){	
-		$(this).prop('checked') ?	$('#create_board').show() : $('#create_board').hide();	
-	});
-
-	
-	$("#register-form").submit(function(e){
-		if($('#register-form').find('.g-recaptcha').length == 0)
-		{
-			e.preventDefault();
-		    $("#register-form").find('.button').fadeOut('500');
-			setTimeout(function(){$("#register-form").find('.button').fadeIn('500')}, 3000);
-			
-			$('#register-captcha').html("<script src='https://www.google.com/recaptcha/api.js'></script><div class='g-recaptcha' data-sitekey='"+$('#r').data('key')+"'></div>");
-			
-			return false;
-		}
-	});
 
 
 
@@ -376,9 +346,6 @@ function makePollAjax(div){
 }
 
 function pollVote(href, orig_link){
-
-	console.log('pollVote');
-	console.log(href);
 
 
 	$.ajax({

@@ -551,3 +551,64 @@ $(document).ready(function() {
 
 
 });
+
+
+
+
+
+
+/*
+
+
+
+
+function loadPlayerPos()
+{
+
+	var iframe = $('#fullscreen-container').find('iframe');
+
+	if(iframe.length != 0)
+	{
+		var window_width = $(window).width();
+		var window_height = $(window).height();
+		var coords = getKey('youtube_player_pos', null); 
+
+		if(coords != null && coords.length == 7 && coords[0] == window_width && coords[1] == window_height)
+		{
+
+			img_width=coords[2];
+			img_width=coords[3];
+			multiplier=coords[6];
+
+	
+			iframe.width(coords[2]);
+			iframe.height(coords[3]);
+			$("#fullscreen-container").width(coords[2]).height(coords[3]).css({top: coords[4], left: coords[5]});
+		}
+	}
+
+
+}
+
+function savePlayerPos()
+{
+	var iframe = $('#fullscreen-container').find('iframe');
+
+	if(iframe.length != 0)
+	{	
+		var fpos = $('#fullscreen-container').position();
+
+		var window_width = $(window).width();
+		var window_height = $(window).height();
+		var iframe_width = iframe.width();
+		var iframe_height = iframe.height();
+	 
+		setKey('youtube_player_pos', [window_width , window_height , iframe_width , iframe_height, fpos.top, fpos.left, multiplier]);
+	}
+
+}
+
+
+
+
+*/
