@@ -6,24 +6,22 @@ var optionNSFMSmileOpacity = 0.1;
 	
 $(document).ready(function(){
 
-	optionNSFMValue = menu_add_checkbox(optionNSFMKey, false, 'l_nsfm');
+	optionNSFMValue = Menu.addCheckBox(optionNSFMKey, false, 'l_nsfm', '', toggleNSFM);
 
 	if(optionNSFMValue)
-		enableNSFM();
-
+        enableNSFM();
 });
 
-	 
-$(document).on(optionNSFMKey, function(e, value) {	
-    
+
+function toggleNSFM(value)
+{  
     optionNSFMValue = value;
 
-	if(optionNSFMValue)
+	if(value)
 		enableNSFM();
 	else
 		disableNSFM();
-})
-    
+}
 
 function enableNSFM()
 {

@@ -11,18 +11,21 @@ class MenuManager {
 		this.options={};	 
 	}
 
-	addCheckBox(key, default_bool, text, tooltip, callback=false, add_div='')
+	addCheckBox(key, default_bool, l_text, tooltip, callback=false, add_div='')
 	{
 	
 		var rValue  = getKey(key, default_bool);
 		var state = rValue ? 'checked' : '';
 		
 		var div = `<div class='options-item'>
-		<label class='checktainer_xs'><input type='checkbox' `+state+` id='`+key+`' onclick='Menu.toggle("`+key+`")'>
-		<span class='checkmark_xs'></span>`+text+`</label>`+add_div+`</div>`;
+		<label class='checktainer_xs `+l_text+`'><input type='checkbox' `+state+` id='`+key+`' onclick='Menu.toggle("`+key+`")'>
+		<span class='checkmark_xs'></span></label>`+add_div+`</div>`;
 		
-		let box = document.getElementsByClassName('options-tab')[0];
-		box.innerHTML+=div;
+		//let box = document.getElementsByClassName('options-tab')[0];
+
+		$( ".options-tab" ).append(div);
+
+		//box.innerHTML+=div;
 
 		this.options[key] = {
 			'callback':callback,

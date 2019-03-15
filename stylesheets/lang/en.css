@@ -21,6 +21,13 @@
     content:'Search';
 }
 
+.l_custom_js::before{
+    content:'Custom JS';
+}.l_custom_css::before{
+    content:'Custom CSS';
+}
+ 
+
 
 .l_btn_Submit::before{
     content:'Submit';

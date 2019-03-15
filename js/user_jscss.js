@@ -6,8 +6,8 @@ var optKeyCustomCSS = 'custom_css';
 
 $(document).ready(function(){
 
-	let jsOpt = `<a onclick='openJSCSSBox("Custom JavaScript", "`+optKeyCustomJs+`")' style="cursor: pointer;"><i class="fa fa-pencil"></i></a>`;
-	let cssOpt = `<a onclick='openJSCSSBox("Custom CSS", "`+optKeyCustomCSS+`")' style="cursor: pointer;"><i class="fa fa-pencil"></i></a>`;
+	let jsOpt = `<a onclick='openJSCSSBox("l_custom_js", "`+optKeyCustomJs+`")' style="cursor: pointer;"><i class="fa fa-pencil"></i></a>`;
+	let cssOpt = `<a onclick='openJSCSSBox("l_custom_css", "`+optKeyCustomCSS+`")' style="cursor: pointer;"><i class="fa fa-pencil"></i></a>`;
 	
 	let enableJS = Menu.addCheckBox('optCustomJs', false, 'Enable Custom JS', '', false, jsOpt); 
 	let enableCSS = Menu.addCheckBox('optCustomCss', false, 'Enable Custom CSS', '', false, cssOpt); 
