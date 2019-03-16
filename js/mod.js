@@ -14,7 +14,27 @@ $(document).ready(function(){
 
     $('.post_op').find('.post-controls').append(enable_watch_deleted);
 
+
+
+    $('.post-opmod-control').click( function(e) {
+        
+        e.preventDefault();
+
+        var om = document.getElementsByClassName('post-opmod-control');
+        var name = localStorage.getItem('name');
+
+        $(`<form action="`+ om[0].href+`" method="post">'
+            <input type="text" name="trip" value="` + name + `">
+            <input type="text" name="disable_error" value="true">
+            <button type="submit" class="button">submit</button>
+            </form>`).appendTo(document.body).submit();
+    });
+
+
 });
+
+
+
 
 /*
 $(document).on('new_post', function(e, post) {

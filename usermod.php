@@ -111,6 +111,10 @@ function usermod_get_token($board_name, $thread, $trip){
 function usermod_auth($warning = ''){
    
     global $config, $board;
+
+    if(isset($_POST['disable_error'])){
+        $warning = '';
+    }
   
     echo Element('page.html', array(
         'config'              => $config,
