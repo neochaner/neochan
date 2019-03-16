@@ -2,7 +2,7 @@
 
 
 
-///////////////  БАЗА ДАННЫХ  ///////////////
+///////////////  MYSQL DATABASE  ///////////////
 $config['db']['server'] = 'localhost';
 $config['db']['database'] = 'neochan';
 $config['db']['prefix'] = '';
@@ -11,7 +11,7 @@ $config['db']['password'] = 'pass';
 
 
 
-///////////////  ЗАГРУЗКА БОЛЬШИХ ФАЙЛОВ НА 'storage'-хостин  ///////////////
+///////////////  DEDICATED STORAGE SYSTEM  ///////////////
 $config['fat_system'] = false;                  // активация
 $config['fat_size'] = 10 * 1024 * 1024;         // файлы больше этого размера будут загружатся в хранилище
 $config['fat_server'] = 'http://s.site.ru';     // домен для обращения к хранилищу (!заменить на https в будущем при принудительном https)
@@ -20,10 +20,10 @@ $config['fat_ftpuser'] = 'ftpuser';             // ftp пользователь
 $config['fat_ftppass'] = 'ftppass';             // ftp пароль
 $config['fat_ftp_timeout'] = 5;
 
-
-
+// defaul timezone
 $config['timezone'] = 'UTC';
-$config['cache']['enabled'] = 'apc';
+// defaul cache
+$config['cache']['enabled'] = 'memcached';
 
 
 
