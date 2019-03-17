@@ -2270,26 +2270,21 @@ function mod_users() {
 	
 	if (!hasPermission($config['mod']['manageusers']))
 		error($config['error']['noaccess']);
-	
-	$query = query("SELECT ``m``.`id`, ``m``.`username`, ``m``.`boards`, ``m``.`type`, ``m``.`email`, 
-	``ml``.`time` last, ``ml``.`text` action
-	FROM ``mods`` AS m
-	LEFT JOIN (
-	    SELECT ml1.* 
-	    FROM ``modlogs`` AS ml1 
-	    JOIN (
-	        SELECT `mod`, MAX(time) AS time
-	        FROM ``modlogs``
-	        GROUP BY `mod`   
-	    ) AS ml2 USING (`mod`, time)
-	) AS ml ON m.id = ml.`mod` GROUP BY ``m``.`id` ORDER BY ``m``.`type` DESC;") or error(db_error());
-	$users = $query->fetchAll(PDO::FETCH_ASSOC);
-	
+
+	$usertable = [];
+
+	$users = query("SELECT `id`, `username`, `type`, `boards`, `email` FROM `mods`")->fetchAll(PDO::FETCH_ASSOC);
+
 	foreach ($users as &$user) {
+
+		$res = query("SELECT `time`, `text` FROM `modlogs` WHERE `mod`={$user['id']}  ORDER BY `time` DESC LIMIT 1")->fetch();
+
+		$user['last'] =  $res['time'];
+		//$user['text'] =  $res['text'];
 		$user['promote_token'] = make_secure_link_token("users/{$user['id']}/promote");
 		$user['demote_token'] = make_secure_link_token("users/{$user['id']}/demote");
 	}
-	
+
 	mod_page(sprintf('%s (%d)', _('Manage users'), count($users)), 'mod/users.html', array('users' => $users));
 }
 
