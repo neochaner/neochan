@@ -2273,7 +2273,7 @@ function mod_users() {
 
 	$usertable = [];
 
-	$users = query("SELECT `id`, `username`, `type`, `boards`, `email` FROM `mods`")->fetchAll(PDO::FETCH_ASSOC);
+	$users = query("SELECT `id`, `username`, `type`, `boards`, `email` FROM `mods` ORDER BY `type` DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 	foreach ($users as &$user) {
 
