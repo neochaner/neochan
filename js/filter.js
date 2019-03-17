@@ -76,11 +76,10 @@ function RemHidden(post){
 function filter_post(post, reload = false)
 {
  
-
-	var $post = $(post);
-	var div_trip = $post.find('.post-trip');
-	var trip = div_trip.text();
-	var is_anonymous = div_trip.length == 0;
+ 
+	var div_trip = post.querySelector('.post-trip');
+	var trip = div_trip != null ? div_trip.innerHTML : '';
+	var is_anonymous = div_trip == null;
 	var is_oppost = post.classList.contains('post_op'); 
 	var need_hide = is_oppost ? store.isThread(post.dataset.thread) : store.hideCheck(post.dataset.board, post.dataset.thread, post.dataset.post, is_anonymous, trip);
 
@@ -91,11 +90,11 @@ function filter_post(post, reload = false)
 	else if(need_hide)
 	{
 		if(!is_oppost && deleteHiddenPostsConfig.value)
-			$post.hide();
+			post.style.display = 'none';
 		else
 		{
-			$post.find('.post-body').hide();
-			$post.find('.post-footer').hide();
+			$(post).find('.post-body').hide();
+			$(post).find('.post-footer').hide();
 		}
 
 		AddHidden(post.dataset.board + post.dataset.post);
@@ -106,10 +105,13 @@ function filter_post(post, reload = false)
 		
 		if(reload)
 		{
-			var is_hidden = $post.find('.post-body').css('display') =='none' || $post.css('display') =='none';
+	 
+			let body = post.querySelector('.post-body');
+			var is_hidden = post.style.display == 'none' || body.style.display =='none';
 
 			if(is_hidden)
 			{
+				var $post = $(post);
 				$post.show();
 				$post.find('.post-body').show();
 				$post.find('.post-footer').show();
@@ -225,12 +227,12 @@ function post_menu(event)
 
 function filter_reload()
 { 
-	
+	console.time("filter_reload");
 	$('.a-off').removeClass('a-off');
 
 	hiddenPosts = [];
 
-	var posts = $('.post');
+	var posts = document.getElementsByClassName('post');
 
 	var separators = $('hr');
 	var separator_index=0;
@@ -319,7 +321,10 @@ function filter_reload()
 
 	}
 
+	console.timeEnd("filter_reload");
+	console.time("reloadBacklinks");
 	reloadBacklinks();
+	console.timeEnd("reloadBacklinks");
 
 	
 	
