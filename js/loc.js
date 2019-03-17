@@ -4,7 +4,7 @@ $(document).ready(function(){
 
 
 	// язык
-	$("#language").val(selected_language);
+	$("#language").val(config.language);
   
 
 	var t0 = performance.now();
@@ -19,7 +19,8 @@ $(document).ready(function(){
 	$('#language').change(function()
 	{	 
 		localStorage.setItem('language', this.value);
-		selected_language = this.value;
+		config.language = this.value;
+
 		document.getElementById("language-css").href = "/stylesheets/lang/" + this.value + ".css";
 		reload();
 	
@@ -47,7 +48,7 @@ function jsLocalization(){
 		'en': {'l_latest_threads' : 'Recent Threads '},
 	}
 
-	if(!jsLocal.hasOwnProperty(selected_language))
+	if(!jsLocal.hasOwnProperty(config.language))
 		return;
 
 
@@ -59,8 +60,8 @@ function jsLocalization(){
 			if(lclass.startsWith('l_')){
 
 				if(el[i].tag = 'option'){
-					 jsLocal[selected_language].hasOwnProperty(lclass);
-					 el[i].text = jsLocal[selected_language][lclass];
+					 jsLocal[config.language].hasOwnProperty(lclass);
+					 el[i].text = jsLocal[config.language][lclass];
 				}
 
 
@@ -152,7 +153,7 @@ function reload()
 
 function omit_text(posts, files)
 {
-	switch(selected_language)
+	switch(config.language)
 	{
 		case 'ru':
 			return posts + ' постов и ' + files + ' файлов пропущено';
@@ -169,9 +170,9 @@ function _T(ru_text)
 		return _E(ru_text);
 	return ru_text;*/
 
-	if(omaeva.hasOwnProperty(selected_language))
+	if(omaeva.hasOwnProperty(config.language))
 	{
-		var la = omaeva[selected_language];
+		var la = omaeva[config.language];
 		return la[ru_text];
 	}
 

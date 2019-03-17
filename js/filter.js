@@ -371,7 +371,7 @@ function send_report(board, thread, post)
  
 
     $.ajax({
-		url: configRoot+'post.php?neo23',
+		url: config.root+'post.php?neo23',
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,

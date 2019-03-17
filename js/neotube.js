@@ -31,7 +31,7 @@ var neotubeAccess=false;
 
 $(document).ready(function() {
 
-    if(!neotube)
+    if(!config.neotube)
         return;
 
     savedCss[0] = $('.board').css('padding');
@@ -80,7 +80,7 @@ function neotubeSetup(){
     fdata.append( 'json_response', true);
     
     $.ajax({
-        url: configRoot+'opmod.php',
+        url: config.root+'opmod.php',
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,
@@ -355,7 +355,7 @@ function searchTubes(){
     fdata.append( 'board', board_name);
 
     $.ajax({
-        url: configRoot+'api.php',
+        url: config.root+'api.php',
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,
@@ -407,7 +407,7 @@ function neotubeAddYoutubeVideo(){
     
     
     $.ajax({
-        url: configRoot+'opmod.php',
+        url: config.root+'opmod.php',
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,
@@ -455,7 +455,7 @@ function neotubePlayOrPause(){
     fdata.append( 'json_response', true);
 
     $.ajax({
-        url: configRoot+'opmod.php',
+        url: config.root+'opmod.php',
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,
@@ -669,7 +669,7 @@ function neotubeUploadFile(form){
 	};
 
 	$.ajax({
-		url: configRoot + 'opmod.php',
+		url: config.root + 'opmod.php',
 		type: 'POST',
 		/*xhr: function() {
 			var xhr = $.ajaxSettings.xhr();
@@ -848,7 +848,7 @@ function neotubeRemoveTrack(id){
 
  
     $.ajax({
-        url: configRoot+'opmod.php',
+        url: config.root+'opmod.php',
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,

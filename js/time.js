@@ -172,7 +172,7 @@ function do_time(elem)
 
 function do_localtime(elem)
 {
-	if(selected_language == 'ru')
+	if(config.language == 'ru')
 		do_localtime_ru(elem);
 	else
 		do_localtime_eu(elem);
@@ -180,7 +180,7 @@ function do_localtime(elem)
 
 function do_absolutetime(elem)
 {
-	if(selected_language == 'ru')
+	if(config.language == 'ru')
 		do_absolutetime_ru(elem);
 	else
 		do_absolutetime_eu(elem);

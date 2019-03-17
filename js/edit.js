@@ -108,7 +108,7 @@ function edit_request(action, board, thread_id , post_id, text, skip_do_confirm 
     fdata.append( 'json_response',   0);
 
     $.ajax({
-		url: configRoot+'post.php?neo23',
+		url: config.root+'post.php?neo23',
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,

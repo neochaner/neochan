@@ -114,7 +114,7 @@ function checkNeoTube(){
 	fdata.append( 'json_response', true);
 
 	$.ajax({
-		url: configRoot+'api.php',
+		url: config.root+'api.php',
 		type: 'POST',
 		contentType: 'multipart/form-data', 
 		data: fdata,

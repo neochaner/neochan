@@ -251,7 +251,7 @@ function opmod_request(action, board, thread, post_id, confirm_text, param1, par
     gm_remove(menuOpMod);
 
     $.ajax({
-		url: configRoot+'opmod.php',
+		url: config.root+'opmod.php',
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,

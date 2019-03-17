@@ -67,7 +67,7 @@ function replybox_submit(form) {
 	};
 
 	$.ajax({
-		url: configRoot + 'post.php?neo23',
+		url: config.root + 'post.php?neo23',
 		type: 'POST',
 		xhr: function() {
 			var xhr = $.ajaxSettings.xhr();
