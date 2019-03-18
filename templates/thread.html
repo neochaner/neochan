@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <head>
+{% set js_config = { 'active_page': 'thread', 'board_uri': board.uri } %}
 {% include 'head.html' %}
 {% set meta_subject %}{% if config.thread_subject_in_title and thread.subject %}{{ thread.subject|e }}{% else %}{{ thread.body_nomarkup[:256]|remove_modifiers|e }}{% endif %}{% endset %}
 <meta name="description" content="/{{ board.uri }}/ - {{ board.title|e }} - {{ meta_subject }}" />
@@ -8,26 +9,13 @@
 <meta property="og:title" content="{{ meta_subject }}" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/{{ board.uri }}/{{ config.dir.res }}{{ thread.id }}.html" />
-
-<script type="text/javascript">
-	var active_page = "thread";
-	var board_name="{{ board.uri }}";
-	var allow_online="{{ config.allow_online }}";
-
-	{% if config.neotube.enable %}
-	var tube_name="{% if config.neotube.redirect %}{{ config.neotube.redirect }}{% else %}{{ board.uri }}{% endif %}";
-	{% endif %}
-</script>
 <title>{{ meta_subject }}</title>
 </head>
 <body>
 {% include 'header.html' %}
  
- 
-  
- 
-<main class="main">
 
+<main class="main">
 <section class="board" id="threads">
 <h1 class="page-title"><a href="{{ board.url }}" style="text-decoration: none;">{{ thread.subject }}</a></h1>
 {% if config.global_message %}

@@ -70,7 +70,7 @@ $(document).on(noticeConfig.key, function(e, value)
 
 
 $(document).on('new_post', function(e,post) {	
-	if(!is_my_reply(board_name, post.dataset.post))
+	if(!is_my_reply(config.board_uri, post.dataset.post))
 		notice_new_reply(post, false);
 });
 

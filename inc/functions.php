@@ -3283,7 +3283,7 @@ function to_fat_storage($local_path, $remote_path)
 	
 	if(!ftp_login($conn_id, $config['fat_ftpuser'], $config['fat_ftppass'])){
 		ftp_close($conn_id);
-			error('to_fat_storage 2');
+		error('to_fat_storage 2');
 	}
 	
 	if(!ftp_put($conn_id, $remote_path, $local_path, FTP_BINARY)){
@@ -3308,7 +3308,7 @@ function delete_from_ftp($remote_path)
 	
 	if(!ftp_login($conn_id, $config['fat_ftpuser'], $config['fat_ftppass'])){
 		ftp_close($conn_id);
-			error('delete_from_ftp 2');
+		error('delete_from_ftp 2');
 	}
 	
 	if (!ftp_delete($conn_id, $remote_path)){
@@ -3322,6 +3322,12 @@ function delete_from_ftp($remote_path)
 
 function delete_fat_file($file)
 {
+
+	global $config;
+
+	if(!$config['fat_system']){
+		return true;
+	}
 
     $matches;
 	$patt = '/https?:\/\/[^\/]+\/([^$]+)/';

@@ -28,7 +28,7 @@ var uStore={
 $(document).ready(function(){
 
 
-	if(active_page != 'thread')
+	if(config.active_page != 'thread')
 		return;
 	
 
@@ -130,11 +130,11 @@ function autoLoad(fullReloadPage=false)
 	}
 	
 	var uripath = window.location.origin + '/recent_v2.php?'+
-	'board=' + board_name + 
+	'board=' + config.board_uri + 
 	'&thread=' + $('#thread_id').data('id') + 
 	'&post=' + argLastIds + 
 	'&time=' + argLastTimes+
-	'&active_page=' + active_page +
+	'&active_page=' + config.active_page +
 	'&neotube=' + NTUBE_STATE;
 
 	if(getKey('disableModPosts', false))

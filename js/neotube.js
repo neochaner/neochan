@@ -38,7 +38,7 @@ $(document).ready(function() {
     savedCss[1] = $('hr').css('margin');
 
 
-    if(active_page == 'thread'){
+    if(config.active_page == 'thread'){
 
         if(document.location.href.includes('#neotube'))  
             neotubeSetup();
@@ -73,7 +73,7 @@ function neotubeSetup(){
 
     var fdata = new FormData();        
     fdata.append( 'action',  'neotube_rights');
-    fdata.append( 'board', board_name);
+    fdata.append( 'board', config.board_uri);
     fdata.append( 'thread_id', thread_id);
     fdata.append( 'posts_id',  thread_id);
     fdata.append( 'trip',   localStorage.name);
@@ -334,7 +334,7 @@ function resizeNeotubePlayer(){
 
 function toggleNeoTube() {
 
-    if( active_page == 'thread'){
+    if(config.active_page == 'thread'){
         switch(NTUBE_STATE){
             case NSTATE_NOT_LOADED:
                 neotubeSetup();
@@ -352,7 +352,7 @@ function searchTubes(){
 
     var fdata = new FormData();        
     fdata.append( 'get_playlists',  '');
-    fdata.append( 'board', board_name);
+    fdata.append( 'board', config.board_uri);
 
     $.ajax({
         url: config.root+'api.php',
@@ -398,7 +398,7 @@ function neotubeAddYoutubeVideo(){
 
     var fdata = new FormData();        
     fdata.append( 'action',  'add_playlist');
-    fdata.append( 'board', board_name);
+    fdata.append( 'board', config.board_uri);
     fdata.append( 'thread_id', thread_id);
     fdata.append( 'posts_id',  thread_id);
     fdata.append( 'trip',   localStorage.name);
@@ -448,7 +448,7 @@ function neotubePlayOrPause(){
 
     var fdata = new FormData();        
     fdata.append( 'action',  'pause_track');
-    fdata.append( 'board', board_name);
+    fdata.append( 'board', config.board_uri);
     fdata.append( 'thread_id', thread_id);
     fdata.append( 'posts_id',  thread_id);
     fdata.append( 'trip',   localStorage.name);
@@ -648,7 +648,7 @@ function neotubeUploadFile(form){
 
     let thread_id = $('#thread_id').data('id');
     fdata.append( 'action',  'upload_track');
-    fdata.append( 'board', board_name);
+    fdata.append( 'board', config.board_uri);
     fdata.append( 'thread_id', thread_id);
     fdata.append( 'posts_id',  thread_id);
     fdata.append( 'trip',   localStorage.name);
@@ -839,7 +839,7 @@ function neotubeRemoveTrack(id){
 
     var fdata = new FormData();  
     fdata.append( 'action',  'remove_track');
-    fdata.append( 'board', board_name);
+    fdata.append( 'board', config.board_uri);
     fdata.append( 'thread_id', thread_id);
     fdata.append( 'posts_id',  thread_id);
     fdata.append( 'trip',   localStorage.name);

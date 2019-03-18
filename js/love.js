@@ -63,7 +63,7 @@ $(document).ready(function() {
 	rememberStuff();
 	makePollAjax(document);
 
-	if(typeof tube_name !== 'undefined'){
+	if(config.active_page == 'thread'){
 		checkNeoTube();
 		setInterval(checkNeoTube, 15000);
 	}
@@ -88,7 +88,7 @@ $(document).on('new_post', function(e,post) {
 function checkBumpLimit()
 {
 	
-	if(active_page == 'thread' && document.getElementById('bump-limit-info') == null)
+	if(config.active_page == 'thread' && document.getElementById('bump-limit-info') == null)
 	{
 		var posts = document.getElementsByClassName('post');
 
@@ -109,7 +109,7 @@ function checkNeoTube(){
 
 
 	var fdata = new FormData();    
-	fdata.append( 'board', tube_name);
+	fdata.append( 'board', config.board_uri);
 	fdata.append( 'getPlaylist', 1);
 	fdata.append( 'json_response', true);
 
@@ -264,7 +264,7 @@ function dopost(form)
 			localStorage.userflags = '{}';
 			userflags = {};
 		}
-		userflags[board_name] = form.elements['user_flag'].value;
+		userflags[config.board_uri] = form.elements['user_flag'].value;
 		localStorage.userflags = JSON.stringify(userflags);
 	}
 	if (form.elements['email'] && form.elements['email'].value != 'sage') {

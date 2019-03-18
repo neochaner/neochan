@@ -6,8 +6,9 @@ var edit_sec = 120;
 
 $(document).on('new_own_post', function(e, post, board, post_id) {
 
-    if(active_page == 'index')
+    if(config.active_page == 'index'){
         return true;
+    }
 
     
 	var $post = $(post);

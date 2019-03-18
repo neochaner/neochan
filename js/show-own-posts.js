@@ -89,10 +89,6 @@ var update_own = function()
   
   $(document).on('ajax_after_post', function(e, r) 
   {
-
-    if(active_page == 'mega')
-      board = mega_last_board;
-
     var posts = JSON.parse(localStorage.own_posts || '{}');
     posts[board] = posts[board] || [];
     posts[board].push(r.id);

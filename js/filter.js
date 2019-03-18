@@ -163,7 +163,7 @@ function post_menu(event)
 	}
 	
 	// Скрытие по треду
-	if(is_oppost || active_page == 'mega' || hiddenByThread)
+	if(is_oppost || config.active_page == 'mega' || hiddenByThread)
 	{
 		if(isThreadHidden(post.dataset.board, post.dataset.thread))
 			menu += "<li class='post-menu-item l_show_thread' onclick=\"showThread('"+post.dataset.board+"', '"+post.dataset.thread+"')\"></li>"
@@ -236,7 +236,7 @@ function filter_reload()
 	var separators = $('hr');
 	var separator_index=0;
  
-	if(active_page == 'index')
+	if(config.active_page == 'index')
 	{
 
 		var hideThreads = [];

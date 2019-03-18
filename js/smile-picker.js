@@ -199,6 +199,18 @@ function loadSmilePicker(){
 
 function showSmilePicker(){
 
+
+	let box = document.getElementById('smile-box');
+
+	if(config.active_page == 'thread'){
+		if(document.getElementById('replybox').style.position == 'fixed'){
+			box.style.position = 'fixed';
+		} else {
+			box.style.position = 'absolute';
+		}
+	}
+
+
 	smilePickerState = 1;
 	
 	var button = $('.reply-smile-control');

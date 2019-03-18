@@ -15,7 +15,7 @@ var mStore={};
 $(document).ready(function(){
 
 
-	if(active_page != 'thread')
+	if(config.active_page != 'thread')
 		return;
 	
 

@@ -121,7 +121,7 @@ function replybox_submit(form) {
 		}
 		else if(response.redirect && response.id) 
 		{
-			if(active_page == 'index'){
+			if(config.active_page == 'index'){
 				document.location = response.redirect;
 			}
 			else if(response.template && response.creation_time)

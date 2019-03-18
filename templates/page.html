@@ -1,18 +1,14 @@
 <!doctype html>
 <html>
 <head>
+
+{% set js_config = { 'active_page': 'other', 'board_uri': board.uri } %}
 {% include 'head.html' %}
 <title>{{ title }}</title>
-<script type="text/javascript">
-	var active_page = "page";
-	{% if config.neotube.enable %}
-	var tube_name="{% if config.neotube.redirect %}{{ config.neotube.redirect }}{% else %}{{ board.uri }}{% endif %}";
-	{% endif %}
-</script>
 </head>
 {% include 'header.html' %}
 {% if mod %}{% include 'mod/header.html' %}{% endif %}
-<body class="8chan {% if mod %}is-moderator{% else %}is-not-moderator{% endif %} stylesheet-{% if config.default_stylesheet.1 != '' and not mod %}{{ config.default_stylesheet.1 }}{% else %}default{% endif %} active-page">
+<body>
 
 <main class="main">
 <section class="board" id="threads">

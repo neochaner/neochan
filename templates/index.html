@@ -1,20 +1,15 @@
 <!doctype html>
 <html>
 <head>
+{% if not no_post_form %}
+{% set js_config = { 'active_page': 'index', 'board_uri': board.uri } %}
+{% else %}
+{% set js_config = { 'active_page': 'ukko', 'board_uri': board.uri } %}
+{% endif %}
 {% include 'head.html' %}
-<title>/{{ board.uri }}/ - {{ board.subtitle }}</title>
-<script type="text/javascript">
-	{% if not no_post_form %}
-		var active_page = "index";
-	{% else %}
-		var active_page = "ukko";
-	{% endif %}
-		var board_name="{{ board.uri }}";
 
-	{% if config.neotube.enable %}
-		var tube_name="{% if config.neotube.redirect %}{{ config.neotube.redirect }}{% else %}{{ board.uri }}{% endif %}";
-	{% endif %}
-	</script>
+<title>/{{ board.uri }}/ - {{ board.subtitle }}</title>
+
 {% if config.url_favicon %}<link rel="shortcut icon" href="{{ config.root }}{{ config.url_favicon }}">{% endif %}
 </head>
 <body> 

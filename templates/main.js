@@ -1,6 +1,17 @@
 {% raw %}
 
 
+if (typeof config.board_uri === "undefined") {
+	var matches = document.URL.match({% endraw %}/\/([0-9a-zA-Z\+$_\u0080-\uFFFF]{1,58})\/($|{{ config.dir.res|replace({'/': '\\/'}) }}{{ config.file_page|replace({'%d': '\\d+', '.': '\\.'}) }}|{{ config.file_index|replace({'.': '\\.'}) }}|{{ config.dir.res|replace({'/': '\\/'}) }}{{ config.file_page50|replace({'+': '\\+', '%d': '\\d+', '.': '\\.'}) }}|{{ config.file_page|replace({'%d': '\\d+', '.': '\\.'}) }}|{{ config.catalog_link|replace({'.': '\\.'}) }})/{% raw %});
+	config['board_uri'] = (matches ? matches[1] : false);
+}
+
+if (typeof config.active_page === "undefined") {
+	config['active_page'] = "other";
+}
+
+
+
 
 
 var is_test_mode = localStorage.testKey == 'true';
@@ -303,10 +314,6 @@ function alert(a, do_confirm, confirm_ok_action, confirm_cancel_action) {
 
 var saved = {};
 
-if (typeof board_name === "undefined") {
-	var matches = document.URL.match({% endraw %}/\/([0-9a-zA-Z\+$_\u0080-\uFFFF]{1,58})\/($|{{ config.dir.res|replace({'/': '\\/'}) }}{{ config.file_page|replace({'%d': '\\d+', '.': '\\.'}) }}|{{ config.file_index|replace({'.': '\\.'}) }}|{{ config.dir.res|replace({'/': '\\/'}) }}{{ config.file_page50|replace({'+': '\\+', '%d': '\\d+', '.': '\\.'}) }}|{{ config.file_page|replace({'%d': '\\d+', '.': '\\.'}) }}|{{ config.catalog_link|replace({'.': '\\.'}) }})/{% raw %});
-	var board_name = (matches ? matches[1] : false);
-}
 
 function get_cookie(cookie_name) {
 	var results = document.cookie.match ( '(^|;) ?' + cookie_name + '=([^;]*)(;|$)');
@@ -319,11 +326,23 @@ function get_cookie(cookie_name) {
 	}
 }
 
-function highlightReply(id, event) {
+function highlightReply(id, event, self=false) {
 	
 
 	if(is_mobile) {
 		return false;
+	}
+
+	if(self==true){
+		let el = get_reply(id)[0]
+		el.classList.add('post_notice');
+
+		setTimeout(function(){
+			el.classList.remove('post_notice');
+		}, 5000);
+	
+		event.preventDefault();
+		return;
 	}
 
 	$('.highlighted').removeClass('highlighted');
@@ -342,14 +361,9 @@ function highlightReply(id, event) {
 	}, 3000);
 
 
-	/*
-	if (history.pushState) {
-		history.pushState(null, null, window.document.location.protocol + "//" + window.document.location.host + window.document.location.pathname + window.document.location.search + '#' + id); 
-	} else {
-		window.location.hash = id;
-	}	*/
 
-	if (active_page == 'thread' && typeof event.preventDefault != "undefined")
+
+	if (config.active_page == 'thread' && typeof event.preventDefault != "undefined")
 		event.preventDefault();
 
 	var reply_top = reply.getBoundingClientRect().top;
@@ -364,68 +378,6 @@ function highlightReply(id, event) {
 	window.scrollTo(0, offset);
 
 
-
-/*
-	// check if external post
-	var post_list, arr, i;
-	id = id.toString();
-
-	post_list = document.querySelectorAll('a.post_anchor');
-	for (i = 0, arr = []; i<post_list.length; i++) {
-		arr.push(post_list[i]);
-	}
-	arr = arr.filter(function (ele) {
-		if (ele.hasAttribute('id') || ((' '+ ele.parentElement.parentElement.className +' ').indexOf(' hidden ') > -1)) {
-			return false;
-		} else {
-			return true;
-		}
-	});
-	for (i = 0, post_list = []; i < arr.length; i++) {
-		post_list.push(arr[i].innerHTML);
-	}
-
-	if (post_list.indexOf(id) == -1)
-		return true;
-	
-	// don't highlight on middle click
-	var e = event || window.event;
-	if (typeof e != "undefined") {
-		if (e.which == 2) return true;
-		if (active_page == 'thread' && typeof e.preventDefault != "undefined") e.preventDefault();
-	}
-	
-	var divs = document.getElementsByTagName('div');
-	for (var i = 0; i < divs.length; i++)
-	{
-		if (divs[i].className.indexOf('post') != -1)
-			divs[i].className = divs[i].className.replace(/highlighted/, '');
-	}
-	if (id) {
-		var post = document.getElementById('reply_'+id);
-		// No reply? Try OP.
-		if (!post) {
-			var post = document.getElementById('op_'+id);
-		}
-
-		if (post) {
-			post.className += ' highlighted';
-
-			if (history.pushState) {
-				history.pushState(null, null, window.document.location.protocol + "//" + window.document.location.host + window.document.location.pathname + window.document.location.search + '#' + id); 
-			} else {
-				window.location.hash = id;
-			}			
-
-			// Better offset to keep in mind new hovering boardlist
-			var post_top = post.getBoundingClientRect().top;
-			var body_top = document.body.getBoundingClientRect().top;
-			var boardlist_height = document.getElementsByClassName('boardlist')[0].getBoundingClientRect().height;
-			var offset = (post_top - body_top) - boardlist_height;
-
-			window.scrollTo(0, offset);
-		}
-	}*/
 	return true;
 }
 
@@ -446,11 +398,9 @@ function generatePassword() {
 function lastReply()
 {
  
-
-	var box = $("#replybox");
- 
-	if(box.length == 0)
+	if(config.active_page == 'index')
 	{
+		
 		$("#createbox").show();
 			
 		// apply trip
@@ -460,7 +410,8 @@ function lastReply()
 		$("#createbox").fadeIn(300);
 		return;
 	}
- 
+
+	var box = $("#replybox");
 	var id = $('.post').length-1;
 	box.hide();
 
@@ -530,12 +481,6 @@ function cite(event)
 	}
  
 
-	if(active_page == 'mega')
-	{
-		$( "input[name$='board']" ).val( post.dataset.board );
-		$( "input[name$='thread']" ).val( post.dataset.thread );
-	} 
- 
 	$("#replybox").hide();
 
 
@@ -575,7 +520,7 @@ function rememberStuff()
 
 		if (localStorage.userflags && document.forms.post.elements['user_flag']) {
 			var userflags = JSON.parse(localStorage.userflags);
-			document.forms.post.elements['user_flag'].value = userflags[board_name];
+			document.forms.post.elements['user_flag'].value = userflags[config.board_uri];
 		}
 		
 		if (sessionStorage.body) {
@@ -668,9 +613,7 @@ function ready() {
 {% endraw %}
 
 var post_date = "{{ config.post_date }}";
-if (typeof active_page === "undefined") {
-	active_page = "page";
-}
+
 
 
 {% if config.statcounter_project and config.statcounter_security %}

@@ -1,5 +1,6 @@
 {%set npref = 'neo23' %}
 {%set style_time = filemtime('stylesheets/light.css')%}
+
 {%set all_time = filemtime('stylesheets/all.css')%}
 {%set url_javascript_time = filemtime(config.url_javascript)%}
 
@@ -28,13 +29,39 @@
 
 
 <script type="text/javascript">
-	var config = { max_images : {{ config.max_images }}, test : 0} ;
-	var style_time = '{{ npref }}{{ style_time }}';
-	var all_time = '{{ npref }}{{ all_time }}';
-	var theme = localStorage.getItem('theme-css');
-	var neotube = {% if config.neotube.enable %}true;{% else %}false;{% endif %}
-	var lang = navigator.language || navigator.userLanguage;
+ 
+	var config = { 
+		root : "{{ config.root }}",
+		max_images : {{ config.max_images }}, 
+		theme : "{{ config.default_theme }}",  
+		language : "{{ config.default_language }}",
+		neotube : {% if config.neotube.enable %}true{% else %}false{% endif %},
+		watch_deleted : {% if config.allow_watch_deleted %}true{% else %}false{% endif %},
+		mod : {% if mod %}true{% else %}false{% endif %},
+		mod_root : "{{ config.root }}mod.php?/",
+		test : 0,
+{% if js_config is defined %}
+{% for key, value in js_config %}
+{{ key }}:{% if value is same as(true) %}true{% elseif value is same as(false) %}false{% else %}'{{value}}'{% endif %},
+{% endfor %}
+{% endif %}
+	};	
 
+	if (!config.hasOwnProperty('active_page') ) {
+		config['active_page'] = 'other';
+	}
+
+	/* load and check selected language */
+	var selected_language = localStorage.getItem('language');
+
+	if(selected_language === null){
+		selected_language = (navigator.language || navigator.userLanguage).substr(0, 2);
+		
+		if(['ua', 'be', 'kz'].includes(selected_language))
+		{
+			selected_language='ru';
+		}
+	}
 
 	{% raw %}
 	var sup_languages = [
@@ -44,62 +71,31 @@
 	];
 	{% endraw %}
 
-
-	var set_language = true;
-	var selected_language = localStorage.getItem('language');
-	var browser_language = (navigator.language || navigator.userLanguage).substr(0, 2);
-
-	if(browser_language == 'ua' || browser_language == 'be' ||browser_language == 'kz')
-	{
-		browser_language='ru';
+	if(sup_languages.includes(selected_language)){
+		config.language = selected_language;
 	}
 
-	if(selected_language == null){
-		selected_language = browser_language;
+	/* load and check selected theme */
+	var selected_theme = localStorage.getItem('theme-css');
+
+	if(selected_theme !== null){
+		config.theme = selected_theme;
 	}
 
-	for(var i=0; i<sup_languages.length; i++){
-		if(sup_languages[i] == selected_language){
-			set_language = false;
-		}
-	}
+	
 
-	if(set_language){
-		selected_language = 'en';
-	}
-
-
-	var css_theme 	 = "<link rel='stylesheet' id='theme-css' type='text/css' href='/stylesheets/"+ (theme === null ? "light_blue" : theme) +".css?" + style_time + "'>";
-	var css_language = "<link rel='stylesheet' id='language-css' type='text/css' href='/stylesheets/lang/"+ selected_language +".css?" + style_time + "'>";
+	var css_theme 	 = "<link rel='stylesheet' id='theme-css' type='text/css' href='/stylesheets/"+ config.theme +".css?{{style_time}}'>";
+	var css_language = "<link rel='stylesheet' id='language-css' type='text/css' href='/stylesheets/lang/"+ config.language +".css?{{style_time}}'>";
 
 	document.write(css_theme);
 	document.write(css_language);
-	document.close();
-
-	var configRoot="{{ config.root }}";
-	var inMod = {% if mod %}true{% else %}false{% endif %};
-	var modRoot="{{ config.root }}"+(inMod ? "mod.php?/" : "");
-	var max_images={{ config.max_images }};
-	var allow_watch_deleted = {% if config.allow_watch_deleted %}true{% else %}false{% endif %};
-
-	
-	{% raw %}
-	var styles = {
-		{% endraw %}
-		{% for name, uri in config.stylesheets %}{% raw %}'{% endraw %}{{ name|addslashes }}{% raw %}' : '{% endraw %}/stylesheets/{{ uri|addslashes }}{% raw %}',
-		{% endraw %}{% endfor %}{% raw %}
-	};
-	{% endraw %}
-
-
- 
-	
+	document.close();	
 </script> 
 
 
 <link rel="stylesheet" id="overall_theme" type="text/css" href='/stylesheets/all.css?{{ all_time }}'>
 <noscript>
-<link rel="stylesheet" href="/stylesheets/light_blue.css?{{ style_time }}">
+<link rel="stylesheet" href="/stylesheets/{{ config.default_theme }}.css?{{ style_time }}">
 <link rel='stylesheet' id='language-css' type='text/css' href='/stylesheets/lang/en.css'>
 </noscript>
 

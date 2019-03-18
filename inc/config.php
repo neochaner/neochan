@@ -1085,6 +1085,7 @@ srand(time());
 	$config['additional_javascript'][] = 'js/mod.js';
 	$config['additional_javascript'][] = 'js/show-own-posts.js';
 	$config['additional_javascript'][] = 'js/show-op.js';
+	//$config['additional_javascript'][] = 'js/replybox.js';
 	
 	$config['additional_javascript'][] = 'js/media.js'; 
 	$config['additional_javascript'][] = 'js/notice.js';
@@ -1349,6 +1350,7 @@ srand(time());
 	$config['locale'] = 'en'; // (en, ru_RU.UTF-8, fi_FI.UTF-8, pl_PL.UTF-8)
 
 	// Supported languages
+	$config['default_language'] = 'en';
 	$config['sup_languages']['ru'] = 'Русский';
 	$config['sup_languages']['en'] = 'English';
 	//$config['sup_languages']['de'] = 'Deutsch';
@@ -1396,6 +1398,8 @@ srand(time());
 	// Custom stylesheets available for the user to choose. See the "stylesheets/" folder for a list of
 	// available stylesheets (or create your own).
 
+	$config['default_theme'] = 'light_blue';
+
 	$config['stylesheets']['Brchan']	= 'brchan.css';
 	$config['stylesheets']['BrchanSimple']	= 'brchansimple.css';
 	$config['stylesheets']['Cuber']		= 'cuber.css';
@@ -1410,6 +1414,7 @@ srand(time());
 	$config['stylesheets']['Rose']= 'rose.css'; 
 	$config['stylesheets']['Yotsuba']	= 'yotsuba.css';
 	$config['stylesheets']['Yotsuba B']	= 'yotsuba_b.css'; 
+	//$config['stylesheets']['Native Lolifox']	= 'native-lolifox.css'; 
 
 
 	 
