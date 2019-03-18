@@ -76,6 +76,10 @@ function enable_replybox_float(){
   function closeDragReply() {
       document.onmouseup = null;
       document.onmousemove = null;
+
+      if(document.getElementById('replybox').offsetLeft < 150){
+        disable_replybox_float();
+      }
   }
 
 }
@@ -102,7 +106,7 @@ function disable_replybox_float(set_bottom = false){
   
       if(posts[i].offsetTop > Top){
   
-        $(replyBox).insertAfter(posts[i]);
+        $(replyBox).insertBefore(posts[i]);
         break;
       }
     }
