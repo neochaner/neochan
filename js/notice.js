@@ -4,7 +4,7 @@ var notice_timer;
 var new_posts = 0;
 var new_you_posts = 0;
 
-var icon_new = config.root.root+"static/favicon-new.ico";
+var icon_new = config.root+"static/favicon-new.ico";
 var icon_you = config.root+"static/favicon-you.ico";
 var icon_default = config.root+"static/favicon.ico";
 

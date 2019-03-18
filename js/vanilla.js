@@ -7,10 +7,14 @@
     - (функция) вызывается если произошёл клик, а не перетаскивание
     - (массив ид) потомки на которых не распространяется действие
 */
-function set_draggable(elem_id, clickEvent = false, excludeElements = []) {
-    
-    
-  let elmnt = document.getElementById(elem_id);
+function set_draggable(elem_id, clickEvent = false, excludeElements = [], crossDragEl=false) {
+  
+  let elmnt = elem_id;
+
+  if (typeof elem_id === 'string'){
+    elmnt = document.getElementById(elem_id);
+  }
+
   let startX, startY, curX, curY, chkX, chkY;
 
   elmnt.onmousedown = dragMouseDown;

@@ -226,8 +226,7 @@ function post_menu(event)
 }
 
 function filter_reload()
-{ 
-	console.time("filter_reload");
+{  
 	$('.a-off').removeClass('a-off');
 
 	hiddenPosts = [];
@@ -321,12 +320,8 @@ function filter_reload()
 
 	}
 
-	console.timeEnd("filter_reload");
-	console.time("reloadBacklinks");
 	reloadBacklinks();
-	console.timeEnd("reloadBacklinks");
 
-	
 	
 }
 
