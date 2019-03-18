@@ -1085,7 +1085,7 @@ srand(time());
 	$config['additional_javascript'][] = 'js/mod.js';
 	$config['additional_javascript'][] = 'js/show-own-posts.js';
 	$config['additional_javascript'][] = 'js/show-op.js';
-	//$config['additional_javascript'][] = 'js/replybox.js';
+	$config['additional_javascript'][] = 'js/replybox-float.js';
 	
 	$config['additional_javascript'][] = 'js/media.js'; 
 	$config['additional_javascript'][] = 'js/notice.js';

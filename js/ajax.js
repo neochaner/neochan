@@ -11,7 +11,6 @@
  *   $config['additional_javascript'][] = 'js/ajax.js';
  *
  */
-var PREVENT_CLOSE_REPLY = false;
 var do_not_ajax = false;
 
 $(window).bind('load', function()
@@ -159,8 +158,12 @@ function replybox_submit(form) {
 			$(form).find('.files-container').empty();
 			$('#replybox_text').val('');
 
-			if(!PREVENT_CLOSE_REPLY)
+			let replbox_not_float = $('#replybox').css('position') != 'fixed';
+			let neotube_disabled = (typeof(NTUBE_STATE) !== 'undefined' || NTUBE_STATE == 0);
+
+			if(replbox_not_float && neotube_disabled){
 				$('#replybox').fadeOut(500); 
+			}
 		}
 		 
 		$(form).find('.reply-send-button').val(_T('Отправить'));

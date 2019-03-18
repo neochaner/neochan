@@ -115,8 +115,11 @@ function initializeNeoTube(size = 1){
     if(NTUBE_STATE == NSTATE_LOADED_SMALL)
         return;
 
+    if(typeof (disable_replybox_float) != 'undefined'){
+        disable_replybox_float(true);
+    }
+
     NTUBE_STATE = NSTATE_LOADED_SMALL;
-    PREVENT_CLOSE_REPLY = true;
     POST_AUTO_SCROLL = true;
     POST_AUTO_SCROLL_BOTTOM=300;
     autoLoadSec = 2;
@@ -280,7 +283,7 @@ function initializeNeoTube(size = 1){
 function removeNeoTube(){
 
     NTUBE_STATE = NSTATE_NOT_LOADED;
-    PREVENT_CLOSE_REPLY = false;
+    config.replybox_close = false;
     POST_AUTO_SCROLL = false;
     autoLoadSec = autoLoadSecDefault;
 

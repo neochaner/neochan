@@ -200,14 +200,20 @@ function loadSmilePicker(){
 function showSmilePicker(){
 
 
-	let box = document.getElementById('smile-box');
+	let box = document.getElementById('smile-box'); 
 
 	if(config.active_page == 'thread'){
-		if(document.getElementById('replybox').style.position == 'fixed'){
+
+		let replybox = document.getElementById('replybox');
+
+		if(replybox.style.position == 'fixed'){
 			box.style.position = 'fixed';
+			box.style.zIndex= parseInt(replybox.style.zIndex) + 1;
 		} else {
 			box.style.position = 'absolute';
 		}
+
+
 	}
 
 
