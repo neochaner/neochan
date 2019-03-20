@@ -746,8 +746,10 @@
 .fa-minus-circle:before{content:"\f056"}
 .fa-info-circle:before{content:"\f05a"}
 .fa-vimeo-square:before{content:"\f194"}
-
-
+.fa-lock:before {content: "\f023";}
+.fa-thumb-tack:before {content: "\f08d";}
+.fa-anchor:before {content: "\f13d";}
+.fa-refresh:before {content: "\f021";}
 /* PLYR PLAYLIST STYLE */
 
 /* Playlist  */
