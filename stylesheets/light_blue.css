@@ -141,6 +141,7 @@
     --neon-color:rgba(92, 143, 202, 0.568); 
     --neon-a:#fff; 
 
+    --gen:#52709e;
     --post-background-color:#fdfdfd;
 
     --menu-background-color:#f2f2f2;
@@ -1148,6 +1149,9 @@ hr{
 .thread-links{
     padding:.3em;
     font-size:smaller
+}
+.thread-attributes i {
+    margin-left: 6px;
 }
 .control{
     display:inline-block;

@@ -1013,6 +1013,9 @@ hr{
     padding:.3em;
     font-size:smaller
 }
+.thread-attributes i {
+    margin-left: 6px;
+}
 .control{
     display:inline-block;
     font-size:17px;

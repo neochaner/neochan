@@ -18,10 +18,14 @@
 	{% if isukko == true %}<h3 class="post-header-item post-subject"><a href="/{{ post.board }}/">/{{ post.board }}</a></h3>{% endif %}
 	{% if not index %}<a id="{{ post.id }}" name="{{ post.id }}" class="post_anchor"></a>{% endif %}
 	<a class="post-header-item post-id" href="{{ post.link }}">#{{ post.id }}</a>
+
 	<h3 class="post-header-item post-subject"><a href="/{{ board.uri }}/res/{{ post.id }}.html">{{ post_subject }}</a></h3>
 	{% if post.trip %}<span class="post-trip" style='vertical-align:unset'>{{ post.trip }}</span>{% endif %}
+	{% include 'post/mod_attributes.html' %}
+	{% include 'post/post_controls.html' %}
 	<time class="post-header-item post-time" unixtime={{ post.time }} edit='{% if post.edited_at %}{{ post.edited_at }}{% else %}{{ post.time }}{% endif %}' datetime="{{ post.time|date('%Y-%m-%dT%H:%M:%S') }}{{ timezone() }}" onclick="hideReply({{ post.id }})">{{ post.time|date(config.post_date) }}</time>
 </header>
+
 
 <section class="post-body">
 	{% set is_thread = true %}
