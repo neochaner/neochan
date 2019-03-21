@@ -100,7 +100,7 @@ function processMediaContent(div){
 
             case 'y-link':
                 let time_stamp = 0;
-                let regx = link.href.match(/&t=(\d+)/i);
+                let regx = link.href.match(/[?&]t=(\d+)/i);
 
                 if(regx != null && regx.length == 2){
                     time_stamp = regx[1];
