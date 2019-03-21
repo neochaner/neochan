@@ -233,8 +233,6 @@ elseif (isset($_POST['post']))
 
 
 	if(isset($_POST['name'], $_POST['neoname']) && strlen($_POST['name']) > 0){
-
-		file_put_contents('tmp/robot_spam_' . time() . '.json', json_encode($_POST));
 		error($config['error']['bot']);
 	}
 
