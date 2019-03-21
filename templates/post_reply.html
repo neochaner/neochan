@@ -3,17 +3,18 @@
 <article class="post{% if post.files %} post_file{% endif %}{% if post.num_files > 1 %} post_files{% endif %} post_{{ board.uri }}_{{ post.thread }}_{{ post.id }}" id="reply_{{ post.id }}" data-board="{{ board.uri }}" data-thread={{ post.thread }} data-post={{ post.id }}>
 	<header class="post-header">
 		{% if not index %}<a id="{{ post.id }}" name="{{ post.id }}" class="post_anchor"></a>{% endif %}
-		<a class="post-id" href="{{ post.link }}">#{{ post.id }}</a>
-
+		<a class="post-id-vi" onclick="post_menu(event)"></a>
+		<a class="post-id" href="{{ post.link }}" onclick="post_menu(event)">#{{ post.id }}</a>
 
 		{% include 'post/flag.html' %} 
 		{% include 'post/ip.html' %}
 		{% include 'post/name.html' %}
-
 		<div class="view-inline-pc">{% include 'post/post_controls.html' %}</div> 
 
 	
 		<time class="post-time" unixtime={{ post.time }} edit='{% if post.edited_at %}{{ post.edited_at }}{% else %}{{ post.time }}{% endif %}' datetime="{{ post.time|date('%Y-%m-%dT%H:%M:%S') }}{{ timezone() }}" onclick="hideReply({{ post.id }})">{{ post.time|date(config.post_date) }}</time>
+		<a class='post-no' onclick="cite(event)">#{{ post.id }}</a>
+		<span class='post-co'></span>
 	</header>
 	<section class="post-body">
 		{% if post.files %}

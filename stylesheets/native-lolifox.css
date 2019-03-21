@@ -47,7 +47,7 @@
     --name-color:#600000;
     --trip-color:#228854;
     
-    --post-items-margin:10px;
+    --post-items-margin:6px;
 }
 
 html
@@ -1119,7 +1119,7 @@ hr{
     -webkit-box-direction:normal;
     flex-direction:column;
     min-height:100%;
-    padding:0px 60px 0px 60px;
+    padding:0px 6px 0px 6px;
 }
 .catalog,.stickers,.threads-container{
     -webkit-box-flex:1;
@@ -1592,18 +1592,18 @@ hr{
     display:none
 }
 .page-nav{
-    position:fixed;
-    top:30px;
-    bottom:0;
-    left:0;
-    width:58px;
-    display:-webkit-box;
+    position: fixed;
+    top: 40%;
+    right: 0;
     display:flex;
     -webkit-box-orient:vertical;
     -webkit-box-direction:normal;
     flex-direction:column;
 }
 .page-nav-item{
+    margin-top: 8px;
+    padding: 6px 8px;
+    background: var(--menu-background-color);
     -webkit-box-flex:1;
     flex:1;
     text-align:center;
@@ -1624,20 +1624,6 @@ hr{
 .page-nav-item_active:hover{
     opacity:1;
     text-decoration:none;
-}
-.page-nav-top{
-    padding-top:10px
-}
-.page-nav-bottom{
-    padding-bottom:10px;
-    display:-webkit-box;
-    display:flex;
-    -webkit-box-orient:vertical;
-    -webkit-box-direction:normal;
-    flex-direction:column
-}
-.page-nav-bottom i{
-    margin-top:auto
 }
 .board-pagination{
     display:inline-block;
@@ -1760,6 +1746,10 @@ header code{
     display: flex;
     align-items: center;
 }
+
+.post-header a{
+    cursor: pointer;
+}
 .post-header-item{
     display:inline-block
 }
@@ -1789,59 +1779,86 @@ header code{
 
 
 
-
 .post-id{
-    color: var(--a2-color) !important;
-    margin-right:var(--post-items-margin);
+   display: none;
+}
+.post-id-vi{
+    order: -1;
+    margin-right:4px;
+    margin-top: -2px;
+    transition: transform 0.2s;
+}
+.post-id-vi::before{ 
+    content: '▶'; 
+}
+.post-id-open{
+    transform: rotate(90deg);
 }
 .post-subject{
+    order: 0;
     font-weight: bold;
     font-size: 16px;
-    margin: 0 10px;
-}
-.post-sage{
-    margin-right: var(--post-items-margin);
-    cursor: pointer;
-    float: right;
-    width: 3px;
-    height: 3px;
-    background: var(--sage-color);
-    filter: blur(1px);
-    border-radius: 3px;
+    margin: 0 6px;
 }
 .post-name{
-    font-size: 11px;
-    color: var(--name-color);
+    order: 1;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--name-color);     
+}
+.post-name-default{
+    order: 1;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--name-color);     
 }
 .post-trip {
+    order: 2;
     font-size: 13px;
     color: var(--trip-color);
     margin-left: 1px;
     margin-right:var(--post-items-margin);
 }
-
-.post-id::before{
-    content: "<";
+.post-time{
+    order: 4;
+    font-size: 13px;
+    cursor:pointer;
+    color: var(--body3-color);
+    margin-right:var(--post-items-margin);
 }
-.post-id::after{
-    content: ">";
+.post-sage{
+    order: 3;
+    color: red;
+    font-weight: bold;
+    margin-right: var(--post-items-margin);
+}
+.post-sage::before{
+    content: 'SAGE!';
+}
+.post-no{
+    order: 4;
+    font-size: 13px;
+    font-weight: bold;
+}
+.post-co{
+    order: 5;
+    font-size: 13px;
+}
+ 
+.post-co:after { 
+    counter-increment: postcount;
+    content: "#" counter(postcount);
+    margin-left: 0.5em;
+    margin-right: 1em;
 }
 
 .post-staff{
     font-weight:700;
     color:#d60000
 }
-.post-time{
-    font-size: 11px;
-    cursor:pointer;
-    color: var(--body3-color);
-}
 .post_op .post-time{
     font-size: 12px!important;
     margin-left: var(--post-items-margin)!important;
-}
-.post-time:hover{
-  text-decoration:dotted underline;
 }
 .post-file-info{
     font-size:smaller;
@@ -2046,6 +2063,7 @@ html.work-mode .post-file-info:hover~.post-file-link{
     word-break:break-word
 }
 .post-quote-control {
+    display: none;
     float:right;
     margin-left:5px;
 }
@@ -2490,9 +2508,10 @@ html.work-mode .post-file-info:hover~.post-file-link{
 }
 @media (max-width:768px){
     .board{
-        padding:0 10px 10px
+        padding:0 2px 2px
     }
     .page-nav {
+        top: 4%;
         left: auto;
         right: 5px;
     }

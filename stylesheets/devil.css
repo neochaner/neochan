@@ -1513,6 +1513,8 @@ hr{
 }
 .page-nav-top{
     padding-top:10px
+}.page-nav-middle{
+    display: none;
 }
 .page-nav-bottom{
     padding-bottom:10px;
@@ -1658,6 +1660,11 @@ header code{
 .post-board:hover{
     background-color:#54578c
 }
+
+.post-no{
+    display: none;
+}
+
 .post-id{
     color:#f10000
 }
@@ -1679,6 +1686,9 @@ header code{
 .post-name{
     font-size: 11px;
     color: var(--name-color);
+}
+.post-name-default{
+    display: none;
 }
 .post-trip {
     font-size: 13px;

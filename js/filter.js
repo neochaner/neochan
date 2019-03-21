@@ -1,5 +1,6 @@
 
 var lastMenuID=0;
+var POST_MENU_OPENED=false;
 var anonymous_user ='anonymous_user';
 var filter_prefix = 'filter_';
 
@@ -32,13 +33,20 @@ $(document).on(deleteHiddenPostsConfig.key, function(e, value) {
 
 
 $(document).ready(function(){
-	$('.post-id').click(function(event){post_menu(event);});
 	filter_reload();
+
+
+	document.body.addEventListener("click", function(e){
+
+		if(POST_MENU_OPENED && !e.target.classList.contains('post-id-open')){ 
+			post_menu_close();
+		}
+
+	}, false);
 });
 
 $(document).on('new_post', function(e,post) {	
 	filter_post(post);
-	$(post).find('.post-id').click(function(event){post_menu(event);});
 });
 
 $(document).on('change_post', function(e,post) {	
@@ -140,8 +148,19 @@ function filter_post(post, reload = false)
 
 function post_menu(event)
 {
+	event.preventDefault();
+	
+	let target = event.target;
 
-    event.preventDefault();
+	if(target.classList.contains('post-id-open')){
+		post_menu_close();
+		return;
+	} else {
+		post_menu_close();
+		target.classList.add('post-id-open') 
+		POST_MENU_OPENED = true;
+	}
+ 
 
 	var post = $(event.target).closest('.post')[0];
 	var $post = $(post);
@@ -204,13 +223,6 @@ function post_menu(event)
  
 	var menuID = post.dataset.board+'_'+post.dataset.thread+'_'+post.dataset.post;
 
-	if($("#post-menu").length)
-	{
-		$('#post-menu').remove();  
-
-		if(lastMenuID == menuID)
-			return;
-	}
 
 	lastMenuID = menuID;
 
@@ -222,7 +234,17 @@ function post_menu(event)
 	$( "#post-menu" ).click(function() {      
 		$('#post-menu').remove();
     });
+}
 
+function post_menu_close(){
+	let el = document.getElementsByClassName('post-id-open');
+	
+	if(el.length>0){
+		el[0].classList.remove('post-id-open');
+	}
+
+	$remove('post-menu');
+	POST_MENU_OPENED = false;
 }
 
 function filter_reload()

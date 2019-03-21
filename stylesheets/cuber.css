@@ -1741,6 +1741,8 @@ hr{
 }
 .page-nav-top{
     padding-top:10px
+}.page-nav-middle{
+    display: none;
 }
 .page-nav-bottom{
     padding-bottom:10px;
@@ -1918,6 +1920,9 @@ a.post-id:hover{
     color: var(--post-id-color-hover);
 }
 
+.post-no{
+    display: none;
+}
 
 .post-id{
     margin-right:var(--post-items-margin);
@@ -1940,6 +1945,9 @@ a.post-id:hover{
 .post-name{
     font-size: 11px;
     color: var(--name-color);
+}
+.post-name-default{
+    display: none;
 }
 .post-trip {
     font-size: 13px;

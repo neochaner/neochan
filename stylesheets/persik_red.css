@@ -1713,6 +1713,8 @@ hr{
 }
 .page-nav-top{
     padding-top:10px
+}.page-nav-middle{
+    display: none;
 }
 .page-nav-bottom{
     padding-bottom:10px;
@@ -1861,6 +1863,11 @@ header code{
     background-color:#7c3d1b
 }
 
+
+.post-no{
+    display: none;
+}
+
 .post-id{
     color:#5e2d14;
     font-size: 13px;
@@ -1884,6 +1891,9 @@ header code{
 .post-name{
     font-size: 11px;
     color: var(--name-color);
+}
+.post-name-default{
+    display: none;
 }
 .post-trip {
     font-size: 13px;

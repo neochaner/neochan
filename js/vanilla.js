@@ -86,6 +86,20 @@ function set_draggable(elem_id, clickEvent = false, excludeElements = [], crossD
 
 }
 
+function $remove(elem_id){
+    
+  let el = document.getElementById(elem_id);
+
+  if(el != null){
+    el.parentElement.removeChild(el);
+    return true;
+  }
+
+  return false;
+}
+
+
+
 function win_size(){
 
   let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;

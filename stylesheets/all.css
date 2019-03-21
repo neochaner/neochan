@@ -692,9 +692,10 @@
     content:"\f013"
 }.fa-file-image-o:before{
     content:"\f1c5"
-}.fa-chevron-right:before{
-    content:"\f054"
-}.fa-bold:before{
+}
+.fa-chevron-left:before{content:"\f053"}
+.fa-chevron-right:before{content:"\f054"}
+.fa-bold:before{
     content:"\f032"
 }.fa-italic:before{
     content:"\f033"
@@ -750,6 +751,7 @@
 .fa-thumb-tack:before {content: "\f08d";}
 .fa-anchor:before {content: "\f13d";}
 .fa-refresh:before {content: "\f021";}
+
 /* PLYR PLAYLIST STYLE */
 
 /* Playlist  */

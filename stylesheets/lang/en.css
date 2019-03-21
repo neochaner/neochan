@@ -1,5 +1,8 @@
 @charset "utf-8";
 
+.l_anonymous::before{
+    content:'Anonymous';
+}
 
 .l_error_noboard::before{
     content:'Board not found.';
