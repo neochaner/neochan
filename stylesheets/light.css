@@ -1816,7 +1816,7 @@ header code{
     color: var(--name-color);
 }
 .post-name-default{
-display: none;
+    display: none;
 }
 .post-trip {
     font-size: 13px;
