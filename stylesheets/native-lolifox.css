@@ -1845,14 +1845,9 @@ header code{
     font-size: 13px;
 }
  
-.thread {
-    counter-reset:postcount;
-    counter-increment:postcount;
-}
 
-.post-co:after { 
-    counter-increment: postcount;
-    content: "#" counter(postcount);
+.thread_single .post-co:after { 
+    content: "#" counter(p);
     margin-left: 0.5em;
     margin-right: 1em;
 }
