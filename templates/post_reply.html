@@ -2,21 +2,18 @@
 {# tabs and new lines will be ignored #}
 <article class="post{% if post.files %} post_file{% endif %}{% if post.num_files > 1 %} post_files{% endif %} post_{{ board.uri }}_{{ post.thread }}_{{ post.id }}" id="reply_{{ post.id }}" data-board="{{ board.uri }}" data-thread={{ post.thread }} data-post={{ post.id }}>
 	<header class="post-header">
-		<div class="poster-initials">
-			{% if not index %}<a id="{{ post.id }}" name="{{ post.id }}" class="post_anchor"></a>{% endif %}
-			<a class="post-header-item post-id" href="{{ post.link }}">#{{ post.id }}</a>
-			{% include 'post/flag.html' %} 
-			{% include 'post/ip.html' %} 
-			{% if config.hide_sage == false %}
-			{% if post.sage %}<span class="post-sage"></span>{% elseif post.name|length > 1 %}<span class='post-name'>{{ post.name }}</span>{% endif %}
-			{% endif %}
+		{% if not index %}<a id="{{ post.id }}" name="{{ post.id }}" class="post_anchor"></a>{% endif %}
+		<a class="post-id" href="{{ post.link }}">#{{ post.id }}</a>
 
-			{% if post.trip %}<span class="post-trip">{{ post.trip }}</span>{% endif %}
-		</div>
+
+		{% include 'post/flag.html' %} 
+		{% include 'post/ip.html' %}
+		{% include 'post/name.html' %}
+
 		<div class="view-inline-pc">{% include 'post/post_controls.html' %}</div> 
 
 	
-		<time class="post-header-item post-time" unixtime={{ post.time }} edit='{% if post.edited_at %}{{ post.edited_at }}{% else %}{{ post.time }}{% endif %}' datetime="{{ post.time|date('%Y-%m-%dT%H:%M:%S') }}{{ timezone() }}" onclick="hideReply({{ post.id }})">{{ post.time|date(config.post_date) }}</time>
+		<time class="post-time" unixtime={{ post.time }} edit='{% if post.edited_at %}{{ post.edited_at }}{% else %}{{ post.time }}{% endif %}' datetime="{{ post.time|date('%Y-%m-%dT%H:%M:%S') }}{{ timezone() }}" onclick="hideReply({{ post.id }})">{{ post.time|date(config.post_date) }}</time>
 	</header>
 	<section class="post-body">
 		{% if post.files %}

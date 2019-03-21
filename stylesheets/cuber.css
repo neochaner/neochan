@@ -1875,25 +1875,15 @@ header code{
 .post-header {
     width:100%;
     display: flex;
-    justify-content: space-between;
     align-items: center;
 
     background-image: url('/stylesheets/img/cuber_mark.png');
     background-repeat: repeat-x;
     background-position: bottom;
-    padding-bottom: 7px;
-    
-}
-.post-header > .poster-initials {
-    display: flex;
-    align-items: center;
-    margin-right: var(--post-items-margin);
+    padding-bottom: 7px; 
 }
 .post-header-item{
     display:inline-block
-}
-.post-header-item~.post-header-item{
-    margin: 0 10px;
 }
 .post-header-item~.post-header-item a{
     color:var(--subject-color)!important;
@@ -1930,8 +1920,12 @@ a.post-id:hover{
 
 
 .post-id{
-
     margin-right:var(--post-items-margin);
+}
+.post-subject{
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0 10px;
 }
 .post-sage{
     margin-right: var(--post-items-margin);
@@ -1951,6 +1945,7 @@ a.post-id:hover{
     font-size: 13px;
     color: var(--trip-color);
     margin-left: 1px;
+    margin-right:var(--post-items-margin);
 }
 
 
@@ -1961,9 +1956,13 @@ a.post-id:hover{
 }
 .post-time{
     font-size: 12px;
-    float:right;
     cursor:pointer;
     color: var(--header-elements-color);
+    margin-left: auto;
+}
+.post_op .post-time{
+    font-size: 12px!important;
+    margin-left: var(--post-items-margin)!important;
 }
 .post-time:hover{
   text-decoration:dotted underline;

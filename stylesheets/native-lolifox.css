@@ -59,67 +59,6 @@ html
 
 body {background: var(--body-color);color: var(--body2-color);font-family: Tahoma, Verdana, sans-serif;font-size: var(--font-size);}
 
-
-.post-header {display: none};
-
-.post-header-vi {
-    display: block; 
-    margin: 0;
-    line-height: 1.16em;
-    font-size: 13px;
-    min-height: 1.16em;
-}
-.post-header-vi p{
-    display: inline-block; 
-}
-
-.post-header-vi .post-btn{
-    text-decoration: none;
-    transition: transform 0.1s;
-    width: 15px;
-    text-align: center;
-    opacity: 0.8;
-    text-decoration: none;
-    margin: -6px 0px 0px -5px !important;
-    display: inline-block;
-}
-
-.post-header-vi span.name{
-    font-weight: bold;
-}
-.post-header-vi p{
-    display: block;
-    margin: 0;
-    line-height: 1.16em;
-    font-size: 13px;
-    min-height: 1.16em;
-}
-.post-header-vi .post_no{
-    font-weight: bold;
-}
-
-
-.post-body{
-    margin-top: 0.8em!important;
-    padding-right: 1.8em;
-    padding-bottom: 0.3em;
-}
-
-.thread_single {
-    counter-reset:postcount;
-    counter-increment:postcount;
-}
-.thread_single .post .reflink:after {
-    counter-increment: postcount;
-    content: "#" counter(postcount);
-    color: #800 !important;
-    margin-left: 0.5em;
-    margin-right: 1em;
-}
-
-
-
-
 a {
     color: var(--a1-color);
     text-decoration: none;
@@ -128,7 +67,8 @@ a:visited {color: var(--a1-color);}
 a:hover {color: var(--a-color-hover);}
 .a-off{ color:var(--a-off)!important; }
 .post-link{padding-right: 4px;}
-
+.post-header a:hover {color: var(--a-color-hover) !important;}
+.post-header a {color: var(--a1-color) !important;font-weight: 13px;}
 
 
 h1,h2{color: var(--a1-color);text-align:center}
@@ -1179,7 +1119,7 @@ hr{
     -webkit-box-direction:normal;
     flex-direction:column;
     min-height:100%;
-    padding:0px 6px 0px 6px;
+    padding:0px 60px 0px 60px;
 }
 .catalog,.stickers,.threads-container{
     -webkit-box-flex:1;
@@ -1651,14 +1591,11 @@ hr{
 #deleteBoard,#setBanners{
     display:none
 }
-
-
-.page-nav{ 
+.page-nav{
     position:fixed;
-    left: auto;
-    right: 5px;
-    top: 40%;
+    top:30px;
     bottom:0;
+    left:0;
     width:58px;
     display:-webkit-box;
     display:flex;
@@ -1702,17 +1639,6 @@ hr{
 .page-nav-bottom i{
     margin-top:auto
 }
-.page-nav > a {
-    flex: 0;
-    -webkit-box-flex: 0;
-    margin: 10px;
-    padding: 0; 
-}
-.page-nav > a > i {
-    padding: 10px;
-    background: #ca927b;
-}
-
 .board-pagination{
     display:inline-block;
     -webkit-user-select:none;
@@ -1829,8 +1755,19 @@ header code{
     font-family:inherit;
     font-weight:400
 }
-.post-quote-control{
-    display: none;
+.post-header {
+    width:100%;
+    display: flex;
+    align-items: center;
+}
+.post-header-item{
+    display:inline-block
+}
+.post-header-item~.post-header-item a{
+    color:var(--subject-color)!important;
+}
+.post-header-item~.post-header-item a:hover{
+    color:var(--a-color-hover)!important;
 }
 .post-anchor{
     display:block;
@@ -1857,6 +1794,11 @@ header code{
     color: var(--a2-color) !important;
     margin-right:var(--post-items-margin);
 }
+.post-subject{
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0 10px;
+}
 .post-sage{
     margin-right: var(--post-items-margin);
     cursor: pointer;
@@ -1875,19 +1817,28 @@ header code{
     font-size: 13px;
     color: var(--trip-color);
     margin-left: 1px;
+    margin-right:var(--post-items-margin);
 }
 
+.post-id::before{
+    content: "<";
+}
+.post-id::after{
+    content: ">";
+}
 
- 
 .post-staff{
     font-weight:700;
     color:#d60000
 }
 .post-time{
     font-size: 11px;
-    float:right;
     cursor:pointer;
     color: var(--body3-color);
+}
+.post_op .post-time{
+    font-size: 12px!important;
+    margin-left: var(--post-items-margin)!important;
 }
 .post-time:hover{
   text-decoration:dotted underline;
@@ -2540,6 +2491,19 @@ html.work-mode .post-file-info:hover~.post-file-link{
 @media (max-width:768px){
     .board{
         padding:0 10px 10px
+    }
+    .page-nav {
+        left: auto;
+        right: 5px;
+    }
+    .page-nav > a {
+        flex: 0;
+        -webkit-box-flex: 0;
+        margin: 10px;
+        padding: 0;
+    }
+    .page-nav > a > i {
+        padding: 10px;
     }
 }
 @media (max-width:480px){

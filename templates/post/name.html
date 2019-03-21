@@ -1,19 +1,25 @@
-{% set capcode = post.capcode|capcode %}
-{% if post.email|length > 0 and (config.hide_sage!=true or post.email!='sage') %}
-	{# start email #}
-	<a class="email" href="mailto:{{ post.email }}">
+{% if post.capcode and post.capcode.name %}
+	<span class='capcode'>capcode.name</span>
+{% else %}
+
+
+
+
 {% endif %}
-	<span {% if capcode.name %}style="{{ capcode.name }}" {% endif %}class="name">{{ post.name|bidi_cleanup }}</span>
-	{% if post.trip|length > 0 %}
-		<span {% if capcode.trip %}style="{{ capcode.trip }}" {% endif %}class="trip">{{ post.trip }}</span>
-	{% endif %}
-{% if post.email|length > 0 %}
-	{# end email #}
-	</a>
-{% endif %}&nbsp;
-{% if config.show_sages and post.email == 'sage' %}
-	<span class="sage">SAGE!&nbsp;</span>
+
+
+{% if post.name|length > 1 %}
+	<span class='post-name'>{{ post.name }}</span>
 {% endif %}
-{% if capcode %}
-        {{ capcode.cap }}
+
+{% if post.trip %}
+	<span class="post-trip">{{ post.trip }}</span>
 {% endif %}
+
+{% if config.hide_sage == false and post.sage %}
+	<span class="post-sage"></span>
+{% endif %}
+
+
+
+
