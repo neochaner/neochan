@@ -1845,6 +1845,11 @@ header code{
     font-size: 13px;
 }
  
+.thread {
+    counter-reset:postcount;
+    counter-increment:postcount;
+}
+
 .post-co:after { 
     counter-increment: postcount;
     content: "#" counter(postcount);
