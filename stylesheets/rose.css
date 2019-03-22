@@ -1960,9 +1960,8 @@ header code{
     background-color:#54578c
 }
 
-.post-no{
-    display: none;
-}
+.post-no{ display: none; }
+.post-id-vi{ display: none; }
 
 
 .post-id{

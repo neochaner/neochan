@@ -1859,9 +1859,8 @@ header code{
     background-color:#7c3d1b
 }
 
-.post-no{
-    display: none;
-}
+.post-no{ display: none; }
+.post-id-vi{ display: none; }
 
 
 .post-id{

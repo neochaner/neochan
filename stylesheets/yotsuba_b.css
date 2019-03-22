@@ -1865,9 +1865,8 @@ header code{
 }
 
 
-.post-no{
-    display: none;
-}
+.post-no{ display: none; }
+.post-id-vi{ display: none; }
 
 .post-id{
     font-size: 13px;

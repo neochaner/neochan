@@ -1920,9 +1920,8 @@ a.post-id:hover{
     color: var(--post-id-color-hover);
 }
 
-.post-no{
-    display: none;
-}
+.post-no{ display: none; }
+.post-id-vi{ display: none; }
 
 .post-id{
     margin-right:var(--post-items-margin);
