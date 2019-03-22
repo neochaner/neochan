@@ -154,11 +154,14 @@
 <div id="alert" class="modal" style="display: none;"></div>
 </div>
 </aside>
-	
+
+
+{% if thread and thread.id %}
 <nav class="page-nav">
 	<a class="page-nav-item page-nav-top page-nav-item_active" href="#top"><i class="fa fa-chevron-up"></i></a>
-{% if thread and thread.id %}
+ 
 	<a class="page-nav-item page-nav-middle page-nav-item_active" href="/{{ board.uri }}"><i class="fa fa-chevron-left"></i></a>
-{% endif %}
+
 	<a class="page-nav-item page-nav-bottom page-nav-item_active" href="#footer"><i class="fa fa-chevron-down"></i></a>
 </nav>
+{% endif %}
