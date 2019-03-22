@@ -1072,7 +1072,6 @@ srand(time());
 
 	
 	$config['additional_javascript'][] = 'js/file-selector.js'; 
-	$config['additional_javascript'][] = 'js/2ch.js';
 	$config['additional_javascript'][] = 'js/post-hover-tree.js';   
 	$config['additional_javascript'][] = 'js/ajax.js';
 
