@@ -33,8 +33,12 @@ $(document).on(deleteHiddenPostsConfig.key, function(e, value) {
 
 
 $(document).ready(function(){
-	filter_reload();
 
+	if(['general'].includes(config.active_page)){
+		return;
+	}
+
+	filter_reload();
 
 	document.body.addEventListener("click", function(e){
 
