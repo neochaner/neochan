@@ -1795,7 +1795,7 @@ header code{
     margin-right:4px;
     margin-top: -2px;
     transition: transform 0.2s;
-    font-size: 14px;
+    font-size: 13px;
 }
 .post-id-vi::before{ 
     content: '▶'; 
