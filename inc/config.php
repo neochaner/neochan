@@ -1054,7 +1054,6 @@ srand(time());
 
 
 	$config['additional_javascript'][] = 'js/jquery-3.1.0.min.js';
-	$config['additional_javascript'][] = 'js/jquery-ui-draggable.min.js'; // used draggable in audio-player.js (will be removed)
 	$config['additional_javascript'][] = 'js/vanilla.js';
 	$config['additional_javascript'][] = 'js/storage.js';
 

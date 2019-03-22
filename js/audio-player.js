@@ -190,21 +190,10 @@ function loadAudioPlayerPos(){
 
     fixAudioPlayerPos();
 
-    $plyr.draggable({
-        drag: function() {
-             
-        },
-        start: function() {
-           
-        },
-        stop: function() {
-           
-            fixAudioPlayerPos();
-            saveAudioPlayerPos();
-        }
+    set_draggable($plyr[0], false, ['input'], function(){
+        fixAudioPlayerPos();
+        saveAudioPlayerPos();
     });
-    
-
 
 }
 

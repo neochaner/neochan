@@ -2,19 +2,19 @@
 
 /*
 
-    Таскалка элементов
+    Drag&Drop элементов
     - (элемент) перетаскиваемый элемент
     - (функция) вызывается если произошёл клик, а не перетаскивание
     - (массив ид) потомки на которых не распространяется действие
 */
-function set_draggable(elem_id, clickEvent = false, excludeElements = [], crossDragEl=false) {
+function set_draggable(elem_id, clickEvent = false, excludeElements = [], endDragEvent=false) {
   
   let elmnt = elem_id;
 
   if (typeof elem_id === 'string'){
     elmnt = document.getElementById(elem_id);
   }
-
+ 
   let startX, startY, curX, curY, chkX, chkY;
 
   elmnt.onmousedown = dragMouseDown;
@@ -22,8 +22,9 @@ function set_draggable(elem_id, clickEvent = false, excludeElements = [], crossD
   function dragMouseDown(e) {
     e = e || window.event; 
 
-    if(e.which != 1)
+    if(e.which != 1){
       return;
+    }
 
     if(e.target && isDisableDrag(e.target)){
       return;
@@ -62,8 +63,13 @@ function set_draggable(elem_id, clickEvent = false, excludeElements = [], crossD
     document.onmouseup = null;
     document.onmousemove = null;
 
-    if(clickEvent && startX == chkX && startY == chkY)
+    if(clickEvent && startX == chkX && startY == chkY){
       clickEvent();
+    }
+    else if(endDragEvent){
+      endDragEvent();
+    }
+    
   }
 
   function isDisableDrag(elem){
