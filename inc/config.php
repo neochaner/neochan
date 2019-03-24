@@ -80,7 +80,7 @@ defined('TINYBOARD') or exit;
  *   ENCRYPT POST SUPPORT
  * ====================
  * */
-$config['encryption']['enable'] = false;
+$config['encryption']['enable'] = true;
 
 
 	
