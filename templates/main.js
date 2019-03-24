@@ -10,7 +10,7 @@ if (typeof config.active_page === "undefined") {
 	config['active_page'] = "other";
 }
 
-
+ 
 
 
 
@@ -625,3 +625,7 @@ s.parentNode.insertBefore(sc, s);
 {% endif %}
 
 
+
+{% if config.encryption.enable == true %}
+config['public_key'] = `{{config.encryption.public_key}}`;
+{% endif %}

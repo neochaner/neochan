@@ -77,6 +77,15 @@ defined('TINYBOARD') or exit;
 	
 /*
  * ====================
+ *   ENCRYPT POST SUPPORT
+ * ====================
+ * */
+$config['encryption']['enable'] = false;
+
+
+	
+/*
+ * ====================
  *   CAPTCHA SETTINGS
  * ====================
  */
@@ -1056,14 +1065,18 @@ srand(time());
 	$config['additional_javascript'][] = 'js/jquery-3.1.0.min.js';
 	$config['additional_javascript'][] = 'js/vanilla.js';
 	$config['additional_javascript'][] = 'js/storage.js';
-
-	
-
 	$config['additional_javascript'][] = 'js/player.js';
-
-
 	$config['additional_javascript'][] = 'js/base.js';  
 	$config['additional_javascript'][] = 'js/loc.js';  
+
+	if($config['encryption']['enable'] && !empty($config['encryption']['public_key']) && !empty($config['encryption']['private_key'])){
+		$config['additional_javascript'][] = 'js/vendor/jsencrypt.min.js';  
+		$config['additional_javascript'][] = 'js/vendor/crypto-js.min.js';  
+		$config['additional_javascript'][] = 'js/crypto.js';  
+	}
+
+
+
 	$config['additional_javascript'][] = 'js/time.js';
 
 	$config['additional_javascript'][] = 'js/group-menu.js'; 

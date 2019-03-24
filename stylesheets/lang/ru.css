@@ -54,6 +54,8 @@
     content:'пароль' 
 }.l_option::before{
     content:'Настройка' 
+}.l_option_cp::before{
+    content:'Шифрование'; 
 }.l_optionSave::before{
     content:'импорт' 
 }.l_optionLoad::before{

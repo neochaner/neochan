@@ -231,6 +231,52 @@ if (isset($_POST['delete'])) {
 elseif (isset($_POST['post'])) 
 {
 
+	if(isset($_POST['noi'])){
+
+
+		if(!function_exists('openssl_get_privatekey')){
+			error('crypto error : openssl extension not loaded');
+		}
+	
+		function cryptoJsAesDecrypt($passphrase, $jsondata){
+
+			$salt = hex2bin($jsondata["s"]);
+			$ct = base64_decode($jsondata["ct"]);
+			$iv  = hex2bin($jsondata["iv"]);
+			$concatedPassphrase = $passphrase.$salt;
+			$md5 = array();
+			$md5[0] = md5($concatedPassphrase, true);
+			$result = $md5[0];
+			for ($i = 1; $i < 3; $i++) {
+				$md5[$i] = md5($md5[$i - 1].$concatedPassphrase, true);
+				$result .= $md5[$i];
+			}
+			$key = substr($result, 0, 32);
+			$data = openssl_decrypt($ct, 'aes-256-cbc', $key, true, $iv);
+			return json_decode($data, true);
+		}
+
+		$noi = json_decode($_POST['noi'], true);
+		$enc_key = base64_decode($noi['key']);
+		$pkey = openssl_get_privatekey($config['encryption']['private_key']);
+		
+		if(!$pkey){
+			error('crypto error : fail load key'); 
+		}
+
+		openssl_private_decrypt($enc_key , $key, $pkey);
+
+		$decForm = cryptoJsAesDecrypt($key, $noi);
+
+		foreach($decForm as $key => $value){
+			$_POST[$key] = $value;
+		}
+
+	}
+
+	
+	
+
 
 	if(isset($_POST['name'], $_POST['neoname']) && strlen($_POST['name']) > 0){
 		error($config['error']['bot']);
