@@ -1069,7 +1069,7 @@ srand(time());
 	$config['additional_javascript'][] = 'js/base.js';  
 	$config['additional_javascript'][] = 'js/loc.js';  
 
-	if($config['encryption']['enable'] && !empty($config['encryption']['public_key']) && !empty($config['encryption']['private_key'])){
+	if($config['encryption']['enable']){
 		$config['additional_javascript'][] = 'js/vendor/jsencrypt.min.js';  
 		$config['additional_javascript'][] = 'js/vendor/crypto-js.min.js';  
 		$config['additional_javascript'][] = 'js/crypto.js';  

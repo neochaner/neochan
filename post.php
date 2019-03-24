@@ -268,6 +268,10 @@ elseif (isset($_POST['post']))
 
 		$decForm = cryptoJsAesDecrypt($key, $noi);
 
+		if($decForm == NULL){
+			error('crypto error : fail decrypt message'); 
+		}
+
 		foreach($decForm as $key => $value){
 			$_POST[$key] = $value;
 		}
