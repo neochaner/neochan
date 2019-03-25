@@ -212,6 +212,31 @@
 
 
 
+/* Ban Page */
+.l_you_are_banned::before{
+    content: 'Вы забанены!'
+}.l_you_were_banned::before{
+    content: 'Срок бана закончился.'
+}.l_you_were_banned_opmod::before{
+    content: 'Срок блокировки (создателем треда) закончился.'
+}.l_you_are_banned_opmod::before{
+    content: 'Создатель треда забанил вас.'
+}.l_you_id::before{
+    content: 'Ваш идентификатор : '
+}.l_you_banned_post::before{
+	content: 'Вы были забанены за это сообщение: '
+}.l_you_submitted_appeal::before{
+	content: 'Вы отправили аппеляцию '
+}.l_appeal_still_pending::before{
+	content: 'Ожидает обработки.'
+}.l_appeal_still_pending::before{
+	content: 'Ожидает обработки.'
+}.l_you_may_appeal::before{
+	content: 'Вы можете обжаловать бан. Введите причину ниже.'
+}.l_btn_appeal::before{
+	content: 'Отправить'
+}
+
 
 
 

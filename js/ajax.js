@@ -86,7 +86,8 @@ function replybox_submit(form) {
 		$(document).trigger('ajax_after_post', response);
 
 		if (response.banned) {
-			let start = response.page.indexOf("><body class") +12;
+
+			let start = response.page.indexOf("><body>") +7;
 			let end = response.page.indexOf("></body>") + 1;
 			let length = end - start;
 			let body =   response.page.substr(start, length);

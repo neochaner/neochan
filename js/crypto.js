@@ -20,9 +20,10 @@ docReady(function(){
             alert('Ошибка при шифровании ключа!');
          }
 
-        var padding_length = Math.floor(Math.random() * 1000);
+        let  random_length = Math.floor(Math.random() * 1000);
+        
         let cryptedForm = { 
-            'padding' : $rand(padding_length),
+            'random' : $rand(random_length),
             'board' : formData.get('board'), 
             'thread' : formData.get('thread'), 
             'name' : formData.get('name'),

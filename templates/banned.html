@@ -1,11 +1,24 @@
 {% filter remove_whitespace %}
 {# Automatically removes unnecessary whitespace #}
-<div class="ban">
-	{% if ban.expires and time() >= ban.expires %}
-		<h2>{% trans %}You were banned!{% endtrans %}</h2>
+
+		
+{% if ban.expires and time() >= ban.expires %}
+	{% if ban.creator == -2 %}
+		{% set subtitle = 'l_you_were_banned_opmod' %}	
 	{% else %}
-		<h2>{% trans %}You are banned!{% endtrans %}</h2>
+		{% set subtitle = 'l_you_were_banned' %}
 	{% endif %}
+{% else %}
+	{% if ban.creator == -2 %}
+		{% set subtitle = 'l_you_are_banned_opmod' %}	
+	{% else %}
+		{% set subtitle = 'l_you_are_banned' %}
+	{% endif %}
+{% endif %}
+
+<div class="ban">
+	<h2 class="{{subtitle}}"></h2>
+
 	<p>
 		{% if ban.expires and time() >= ban.expires %}
 			{% trans %}You were banned from{% endtrans %}
@@ -87,7 +100,7 @@
 		{% endif %}
 		</span>
 	</p>
-	<p>{% trans %}Your IP is{% endtrans %} <strong>{{ ban.ip }}</strong>.</p>
+	<p class="l_you_id"><strong>{{ ban.ip }}</strong>.</p>
 
 	{% if config.ban_page_extra %}
 		<p>{{ config.ban_page_extra }}</p>
@@ -95,7 +108,7 @@
 	
 	{% if post and config.ban_show_post %}
 		<hr>
-		<p>{% trans %}You were banned for the following post on{% endtrans %} {{ board.url }}:</p>
+		<p class="l_you_banned_post"> </p>
 		{{ post }}
 		<br>
 	{% endif %}
@@ -103,9 +116,9 @@
 	{% if config.ban_appeals %}
 		<hr>
 		{% if ban.appeal_state == 1 %}
-			<p>
-				{% trans %}You submitted an appeal for this ban on{% endtrans %} 
-				<strong>{{ ban.appeal_time|date(config.ban_date) }}</strong>. {% trans %}It is still pending{% endtrans %}.
+			<p class='l_you_submitted_appeal'>
+				<strong>{{ ban.appeal_time|date(config.ban_date) }}</strong>.
+				<p class='l_appeal_still_pending'><p>
 			</p>
 		{% elseif ban.appeal_state == 2 %}
 				<p>
@@ -114,14 +127,28 @@
 					{% trans %}and it was denied. You may not appeal this ban again.{% endtrans %}
 				</p>
 		{% else %}
-				<p>{% trans %}You may appeal this ban. Please enter your reasoning below.{% endtrans %}</p>
+				<p class='l_you_may_appeal'></p>
 			<form class="ban-appeal" action="/{{ config.file_post }}" method="post">
 				<input type="hidden" name="ban_id" value="{{ ban.id }}">
 				<textarea name="appeal" rows="4" cols="40"></textarea>
 				<br>
-				<button type="submit" class="button l_btn_Submit"></button>
+				<button type="submit" class="button l_btn_appeal"></button>
 			</form>
 		{% endif %}
 	{% endif %}
 </div>
 {% endfilter %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1023,9 +1023,12 @@ function displayBan($ban) {
 	
 	
 	// Show banned page and exit
+	$title = 'Oops...';
+
 	$page = Element('page.html', array(
-			'title' => _('Banned!'),
+			'title' => $title,
 			'config' => $config,
+			
 			'nojavascript' => true,
 			'body' => Element('banned.html', array(
 				'config' => $config,

@@ -239,10 +239,46 @@
 
 
 
+.l_you_are_banned::before{
+    content: 'You are banned!'
+}.l_you_were_banned::before{
+    content: 'You were banned.'
+}.l_you_were_banned_opmod::before{
+    content: 'You were banned (thread ban).'
+}.l_you_are_banned_opmod::before{
+    content: 'Thread creator banned you.'
+}.l_you_id::before{
+    content: 'You ID: '
+}.l_you_banned_post::before{
+	content: 'You were banned for the following post on'
+}.l_you_submitted_appeal::before{
+	content: 'You submitted an appeal for this ban on'
+}.l_appeal_still_pending::before{
+	content: 'It is still pending.'
+}.l_you_may_apeeal::before{
+	content: 'You may appeal this ban. Please enter your reasoning below.'
+}.l_btn_appeal::before{
+	content: 'Send appeal'
+}
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+d
 
 
 
