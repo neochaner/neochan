@@ -20,7 +20,6 @@ var uStore={
 	,
 	'kpop':[0,0,0],
 	'mu':[0,0,0],
-	'test':[0,0,0],
 	'jp':[0,0,0],
 
  }; 
@@ -37,11 +36,17 @@ $(document).ready(function(){
 	uStore = {};
 
 	let posts = document.getElementsByClassName('post');
-	let postID, eTime, postTime;
+	let boardUri, postID, eTime, postTime;
 			
 	for(let i=0;i<posts.length;i++){
+
+		boardUri =  posts[i].dataset.board;
 		postID = posts[i].dataset.board+'_'+posts[i].dataset.thread+'_'+posts[i].dataset.post;
 		eTime = posts[i].getElementsByTagName("time");
+
+		if(!uStore.hasOwnProperty(boardUri)){
+			uStore[boardUri] = [0, 0, 0];
+		}
 					
 		if(eTime.length > 0){
 			postTime = eTime[0].getAttribute('edit');
