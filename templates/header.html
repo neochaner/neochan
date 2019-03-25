@@ -10,9 +10,9 @@
 
 {% for name, uri in config.menu_pages %}
 	{% if name|slice(0, 2) == 'l_' %}
-		<a class="view-pc  header-item header-board {{ name }}" href="{{ uri }}"></a>
+		<a class="view-pc  header-item header-board {{ name }}" href="{% if mod %}/{{ config.file_mod }}?{% endif %}{{ uri }}"></a>
 	{% else %}
-		<a class="view-pc  header-item header-board" href="{{ uri }}">{{ name }}</a>
+		<a class="view-pc  header-item header-board" href="{% if mod %}/{{ config.file_mod }}?{% endif %}{{ uri }}">{{ name }}</a>
 	{% endif %}
 {% endfor %}
 
@@ -22,9 +22,9 @@
 			<option></option>
 		{% for name, uri in config.menu_pages %}
 			{% if name|slice(0, 2) == 'l_' %}
-			<option value="{{ uri }}" class="{{name}} localize"></option>
+			<option value="{% if mod %}/{{ config.file_mod }}?{% endif %}{{ uri }}" class="{{name}} localize"></option>
 			{% else %}
-			<option value="{{ uri }}" >{{name}}/</option>
+			<option value="{% if mod %}/{{ config.file_mod }}?{% endif %}{{ uri }}" >{{name}}/</option>
 			{% endif %}
 		{% endfor %}
 	</select>
@@ -50,7 +50,7 @@
 <span class='l_option' style='font-weight: bold;'></span>
 <span  style="position: absolute;right: 20px; cursor: pointer;font-size: 13px;">
 	<a class="l_optionSave" style="padding: 0 5px;" onclick='loadSettings()'></a>
-	<a class="l_optionLoad" style="padding: 0 5px;" onclick='saveSettings()''></a>
+	<a class="l_optionLoad" style="padding: 0 5px;" onclick='saveSettings()'></a>
 </span>
 <hr>
 
@@ -131,9 +131,9 @@
 
 
 	<div class="account-tabs">
-		<a href="/mod.php?/"> Панель управления</a>
+		<a href="/{{ config.file_mod }}?/"> Панель управления</a>
 		<a href="#"> Репорты <span class="pull-right alert-numb account-reports">0</span></a>
-		<a href="/mod.php?/inbox"> Сообщения <span class="pull-right alert-numb account-messages">0</span></a>
+		<a href="/{{ config.file_mod }}?/inbox"> Сообщения <span class="pull-right alert-numb account-messages">0</span></a>
 	</div>
 
 

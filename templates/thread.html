@@ -22,7 +22,7 @@
 <div class="page-news">{{ config.global_message }}</div>
 {% endif %}
 <nav>
-	<a class="button mr5 l_back" href="../"></a>
+	<a class="button mr5 l_back" href="{% if mod %}/{{ config.file_mod }}?{% endif %}{{ board.url }}"></a>
 	<a class="button mr5 l_catalog" href="{{ board.url }}catalog.html"></a>
 	<a class="button mr5 l_reply" onclick='lastReply()'></a>
 </nav>
