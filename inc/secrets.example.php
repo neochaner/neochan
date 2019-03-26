@@ -32,3 +32,8 @@ $config['cache']['enabled'] = 'memcached';
 $config['secure_trip_salt'] = '2b6e265d-de1e-465a-8967-a5a9e1f51572';
 $config['cookies']['salt'] = '41ab5e79-a9c1-4ba3-ab1c-a2eee296d2a3';
 
+
+$config['encryption']['key_length'] = 2048;
+$config['encryption']['key_alg'] = 'sha512';
+$config['encryption']['public_key'] = '';
+$config['encryption']['private_key'] = '';
