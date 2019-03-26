@@ -57,7 +57,7 @@ var csmiles = {
 		'nayeon_disgust','joy_say','joy_contempt','jim_wut','jim_smile2','jim_smile3','bomi_hey','sana_cheese','sana_wow','jooe_herpderp',
 		'yves_aim','jennie_vaseline','momo_song','seol_coffee','yuna_listen','luda_sexy','naeun_tease','naeun_wrinkle','eunji_smile',
 		'eunji_secret','im_crazy','sexy_dance','salt','cheeck','nayoung_smile','rose_chee','rose_chuu','wink1','vulgar_wink',
-		'soyeon_lol','cb_yuju_susp', 'shy2', 'cb_yuju_hide', 'sejeong_ew', 'mimi_smile',
+		'soyeon_lol','cb_yuju_susp', 'shy2', 'cb_yuju_hide', 'sejeong_ew', 'mimi_smile', 'sumin_cute', 'sumin_finger'
 		
 	]},
 
