@@ -4,7 +4,7 @@
 <div class="btn-group" role="group" style="display: inline-flex;padding: 0 10px;">
 
 
-{% if mod and mod.type == 0 %}
+{% if mod and mod.type == 0 and post.thread != NULL %}
 <a class="button btn-sm" href="?/{{ board.dir }}res/{{ post.thread }}.html/delete/{{ post.id }}/{{ mod.token }}">{{ config.mod.link_delete }}</a>
 <a class="button btn-sm" href="?/{{ board.dir }}res/{{ post.thread }}.html/ban/{{ post.id }}/{{ mod.token }}">{{ config.mod.link_ban }}</a>
 <a class="button btn-sm" href="?/{{ board.dir }}res/{{ post.thread }}.html/ban_delete/{{ post.id }}/{{ mod.token }}">{{ config.mod.link_bandelete }}</a>
