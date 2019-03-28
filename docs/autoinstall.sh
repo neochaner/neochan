@@ -110,7 +110,7 @@ echo "+-------------------------------------------+"
 echo "  $1%  download neochan source to dir $WWW "
 echo "+-------------------------------------------+"
 if [ ! -d "$WWW" ]; then
-git clone --progress https://github.com/neochaner/neochan $WWW
+git clone --progress https://github.com/9cute/neochan $WWW
 cp "$WWW/inc/secrets.example.php" "$WWW/inc/secrets.php"
 fi
 }
@@ -127,7 +127,9 @@ clear
 echo "+-------------------------------------------+"
 echo "  $1%  setup board configuration "
 echo "+-------------------------------------------+"
+chown -R www-data $WWW
 php "$WWW/install.php" "$WWW" "$MYSQL_DB_NAME" "root" $MYSQL_ROOT_PASSWORD
+chown -R www-data $WWW
 sleep 1
 }
 
@@ -170,6 +172,26 @@ echo "*/10 * * * * cd $WWW; /usr/bin/php $WWW/boards.php
 */5 * * * * cd $WWW; /usr/bin/php $WWW/index.php" > /etc/cron.d/neochan
 }
 
+setup_limits(){
+
+echo "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root $WWW;
+    index index.php index.html index.htm index.nginx-debian.html;
+    server_name _;
+    location / {
+        
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fas
+" > /etc/nginx/sites-available/defa
+
+sysctl -p
+}
+
 gen_pass() {
     MATRIX='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
     LENGTH=10
@@ -205,28 +227,7 @@ clear
 echo "+-------------------------------------------+"
 echo "  $1% UPDATE REPOS"
 echo "+-------------------------------------------+"
-if [[ $OSV == "UBUNTU16" ]]; then
-#add-apt-repository "deb https://deb.torproject.org/torproject.org xenial main"
-#add-apt-repository "deb-src https://deb.torproject.org/torproject.org xenial main"
-elif [[ $OSV == "UBUNTU18" ]]; then
-#add-apt-repository "deb https://deb.torproject.org/torproject.org bionic main"
-#add-apt-repository "deb-src https://deb.torproject.org/torproject.org bionic main"
-elif [[ $OSV == "DEBIAN8" ]]; then
-#add-apt-repository "deb https://deb.torproject.org/torproject.org jessie main"
-#add-apt-repository "deb-src https://deb.torproject.org/torproject.org jessie main"
-add-apt-repository "deb http://www.deb-multimedia.org jessie main non-free"
-add-apt-repository "deb-src http://www.deb-multimedia.org jessie main non-free"
-apt-get -qq update
-apt-get install deb-multimedia-keyring
-apt-get -qq update
-elif [[ $OSV == "DEBIAN9" ]]; then
-#add-apt-repository "deb https://deb.torproject.org/torproject.org stretch main"
-#add-apt-repository "deb-src https://deb.torproject.org/torproject.org stretch main"
-elif [[ $OSV == "DEBIAN10" ]]; then
-#add-apt-repository "deb https://deb.torproject.org/torproject.org buster main"
-#add-apt-repository "deb-src https://deb.torproject.org/torproject.org buster main"
-fi
-sleep 1
+
 }
 
 install() { 
@@ -254,7 +255,7 @@ get_neochan "60"
 setup_neochan "65"
 remove_apache
 get "70" "nginx"
-setup_nginx "75" "85.209.91.92" 
+setup_nginx "75" 
 }
 
 

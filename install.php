@@ -66,6 +66,7 @@ file_put_contents($secrets_file, "<?php
 ?>");
 chmod($secrets_file, 0444);
 
+create_board();
 
 
 function message($text){
@@ -96,4 +97,53 @@ function gen_uuid() {
         mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
     );
 }
+
+function create_board(){
+    
+    require 'inc/functions.php';
+    require 'inc/mod/pages.php';
+
+    global $config, $mod;
+    
+    $mod = array('id'=>1, 'username'=> 'admin', 'type'=> 30, 'boards' => '*');
+
+    $_POST = ['uri'=> 'b', 'title'=> 'Random', 'subtitle' => ''];
+    mod_new_board();
+
+	
+	 
+	$_POST = [		
+			'rebuild' => true, 
+			'rebuild_cache' => true, 
+			'rebuild_themes' => true, 
+			'rebuild_javascript' => true, 
+			'boards_all' => true,
+			'rebuild_index' => true
+			];
+		buildJavascript();		
+	rebuildThemes('all');	
+	
+   // mod_rebuild();
+	
+	include 'boards.php';
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ?>
