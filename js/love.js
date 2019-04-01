@@ -23,7 +23,9 @@ $(window).bind('load', function(){
 
 	theme.addEventListener("change", function(){	
 		localStorage.setItem('theme-css', this.value);
+		config.theme = this.value;
 		document.getElementById("theme-css").href = "/stylesheets/" + this.value+ ".css?neo23" + new Date().getTime();
+		timeReload();
 	});
 
 
