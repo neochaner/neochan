@@ -231,7 +231,7 @@ function post_menu(event)
 	lastMenuID = menuID;
 
 	$(menu).appendTo('.main');
-	var pos = $(post).offset();
+	var pos = $(event.target).offset();
 
     $("#post-menu").offset({ top: pos.top+18, left: pos.left});
 
