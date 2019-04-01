@@ -468,7 +468,6 @@ function getModTrip()
 }
 
 
- 
 function cite(event)
 {
 
@@ -479,14 +478,18 @@ function cite(event)
 		window.location.href = '/' + post.dataset.board +  '/res/' + post.dataset.thread + '.html#'+post.dataset.post;
 		return;
 	}
- 
+  
 
 	$("#replybox").hide();
+ 
+
+
 
 
 	var pasteText  = '>>' + post.dataset.post + '\n' + getSelectedText(true);
 
-	$("#replybox").insertAfter(post);
+	//$("#replybox").insertAfter(post); 
+	post.after(document.getElementById('replybox'))
 
 	AddTag(pasteText, '', 'replybox_text');
 
@@ -500,7 +503,7 @@ function cite(event)
 		$("#replybox").fadeIn(200);
 	}
 
-	// эту анимацию наверно нужно тоже отключить в мобильной версии
+	// эту анимацию наверно нужно отключить в мобильной версии
 	$('html').animate({ scrollTop: $("#replybox").offset().top - ((window.innerHeight/2)-120)}, 200);
 	
 	document.getElementById('replybox_text').focus();
@@ -595,9 +598,6 @@ function init() {
 		highlightReply(window.location.hash.substring(1));
 }
 
-var RecaptchaOptions = {
-	theme : 'clean'
-};
 
 onready_callbacks = [];
 function onready(fnc) {
