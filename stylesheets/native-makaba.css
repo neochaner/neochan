@@ -2289,8 +2289,8 @@ html.work-mode .post-file-info:hover~.post-file-link{
     overflow: auto;
     min-width: 328px;
     min-height: 180px;
-    background-color: var(--post-background-color);
-    border: 1px solid var(--replyborder-color);
+    background-color: #e3e3e3;
+    border: 1px solid #afafaf;
     border-radius: 3px;
 }
 .reply_float{
