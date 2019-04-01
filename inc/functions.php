@@ -14,11 +14,6 @@ if (realpath($_SERVER['SCRIPT_FILENAME']) == str_replace('\\', '/', __FILE__)) {
 	exit;
 }
 
-if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) 
-{
-	$_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
-}
-
 
 define('TINYBOARD', null);
 
@@ -3158,11 +3153,6 @@ function recaptcha_verify($answer)
 		return false;
 	}
 
-	/*if (isset($_SERVER["HTTP_CF_CONNECTING_IP"]))
-	{
-		$_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
-	}*/
-
 
 	$post_data = http_build_query(array(
 			'secret' => $config['recaptcha_secret_key'],
@@ -3714,8 +3704,44 @@ function TimeStatTouch($tag, $tagvalue=null, $duration_sec = 180){
 function ip_link($ip, $href = true) {
 	return "<a id=\"ip\"" . ($href ? " href=\"?/IP/$ip\"" : "") . ">$ip</a>";
 }
-	
 
+
+function postLike($board_uri, $post_id, $disLike = false){
+	
+	global $config, $board, $mod;
+	
+	if(!openBoard($board_uri)){
+		server_reponse('No board', array('success'=>false, 'error'=>'l_error_noboard'));
+	}
+	
+	 
+	$query = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `id` = :id", $board['uri']));
+	$query->bindValue(':id', $post_id, PDO::PARAM_INT);
+	$query->execute() or error(db_error($query));
+
+	if (!$post = $query->fetch(PDO::FETCH_ASSOC))
+		return false;
+	
+	$post['modifiers'] = extract_modifiers($post['body_nomarkup']);
+	$modifier = $disLike ? 'dislike' : 'like';
+	var_dump($post['body_nomarkup']);
+	
+	if(!isset($post['modifiers'][$modifier])){
+		$post['body_nomarkup'] .= "\n<tinyboard $modifier>1</tinyboard>";
+	} else {
+		$value = $post['modifiers'][$modifier];
+		$newValue = $value+1;
+		$post['body_nomarkup'] = str_replace(
+		"<tinyboard $modifier>{$value}</tinyboard>", 
+		"<tinyboard $modifier>{$newValue}</tinyboard>",
+		$post['body_nomarkup'] );
+	}
+	
+	var_dump($post['body_nomarkup']);
+	var_dump($post['modifiers']);
+	exit;
+	
+}
 
 
 
