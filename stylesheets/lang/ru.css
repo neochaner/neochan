@@ -153,6 +153,10 @@
     content:'Отредактирован'
 }
 
+/* Thread */
+.l_post_reply::before{
+    content:'Ответ'
+}
 
 .l_youarebanned::before{
     content:'Вы забанены'

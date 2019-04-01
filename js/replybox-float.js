@@ -10,9 +10,42 @@
 var REPLY_FLOATING = false;
 
 if(config.active_page == 'thread'){
-    docReady(enable_replybox_float);
+    docReady(function(){
+
+      enable_replybox_float();
+
+      if(['native-makaba', 'native-lolifox'].includes(config.theme)){
+        set_replybox_float_default();
+      }
+
+  
+
+    });
+
 }
 
+
+
+function set_replybox_float_default(){
+ 
+  let size = win_size();
+
+  if(size.width > 900 && size.height>900){
+
+    REPLY_FLOATING = true;
+
+    var replyBox = document.getElementById('replybox');
+    var reply = document.querySelector('#replybox .reply');
+
+    replyBox.style.position = 'fixed'; 
+    replyBox.style.top = '40%';
+    replyBox.style.left = '50%';
+    reply.style.width = '400' + 'px';
+    reply.style.height =  '250' + 'px';
+    replyBox.style.zIndex=100;
+  }
+
+}
 
 function enable_replybox_float(){
   let replyDraggers = document.getElementsByClassName('reply-dragger');
@@ -58,8 +91,6 @@ function enable_replybox_float(){
 
     } else {
 
-    
-
       // calculate the new cursor position:
       curX = startX - e.clientX;
       curY = startY - e.clientY;
@@ -83,7 +114,6 @@ function enable_replybox_float(){
   }
 
 }
-
 
 function disable_replybox_float(set_bottom = false){
 

@@ -1866,6 +1866,8 @@ header code{
 
 .post-no{ display: none; }
 .post-id-vi{ display: none; }
+.post-thread-reply{ display: none; }
+
 
 .post-id{
     color:#5e2d14;

@@ -26,9 +26,10 @@
 	{% include 'post/post_controls.html' %}
 	<time class="post-header-item post-time" unixtime={{ post.time }} edit='{% if post.edited_at %}{{ post.edited_at }}{% else %}{{ post.time }}{% endif %}' datetime="{{ post.time|date('%Y-%m-%dT%H:%M:%S') }}{{ timezone() }}" onclick="hideReply({{ post.id }})">{{ post.time|date(config.post_date) }}</time>
 	
-	<a class='post-no' onclick="cite(event)">№{{ post.id }}</a>
-
-
+	<a class='post-no' onclick="cite(event)">{{ post.id }}</a>
+	{% if index %}
+	<a class='post-thread-reply l_post_reply' href="{{ post.link }}"></a>
+	{% endif %}
 </header>
 
 

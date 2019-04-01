@@ -1426,6 +1426,7 @@ srand(time());
 	$config['stylesheets']['Yotsuba']	= 'yotsuba.css';
 	$config['stylesheets']['Yotsuba B']	= 'yotsuba_b.css'; 
 	$config['stylesheets']['Native Lolifox']	= 'native-lolifox.css'; 
+	$config['stylesheets']['Native Makaba']	= 'native-makaba.css'; 
 
 
 	 

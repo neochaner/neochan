@@ -1922,6 +1922,8 @@ a.post-id:hover{
 
 .post-no{ display: none; }
 .post-id-vi{ display: none; }
+.post-thread-reply{ display: none; }
+
 
 .post-id{
     margin-right:var(--post-items-margin);

@@ -1,6 +1,10 @@
 var loadPageTick = new Date().getTime();
 var optionLocalTimeKey = 'localTimeMode';
 var optionLocalTimeValue;
+var OPT_TIMESHORT = true;
+var OPT_TIMEFORMATDAY = [' ', ' ', ' ', ' ', ' ', ' ', ' '];
+
+ 
 var interval_id;
 
 function getServerTime()
@@ -9,11 +13,11 @@ function getServerTime()
 	return serverTime + elapsed_sec;
 }
 
+ 
+
 $(document).ready(function(){
 
 	optionLocalTimeValue = menu_add_checkbox(optionLocalTimeKey, false, 'l_relative');
-
-	do_time(document);
 	interval_id = setInterval(do_time, 1000 * 60, document);	
 	 
 	$(document).on(optionLocalTimeKey, function(e, value) {	
@@ -22,10 +26,41 @@ $(document).ready(function(){
 		do_time(document);
 	});
 
+	timeReload();
 
 });
 
+function timeReload(){
 
+	function D(dayNum, sym=2){
+
+		if(config.language == 'ru'){
+			if(sym==2)
+				return ([ "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"][dayNum]);
+			else 
+				return ([ "Вск", "Пнд", "Втр", "Срд", "Чтв", "Птн", "Суб", "Вск"][dayNum]);
+		} else{
+			return ([ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][dayNum]);
+		}
+	}
+
+	switch (config.theme) {
+		case 'native-lolifox':
+			OPT_TIMEFORMATDAY = [' ('+D(0)+') ', ' ('+D(1)+') ', ' ('+D(2)+') ', ' ('+D(3)+') ', ' ('+D(4)+') ', ' ('+D(5)+') ', ' ('+D(6)+') ',' ('+D(7)+') '];
+			OPT_TIMESHORT = false
+			break;
+		case 'native-makaba':
+			OPT_TIMEFORMATDAY = [' '+D(0, 3)+' ', ' '+D(1, 3)+' ', ' '+D(2, 3)+' ', ' '+D(3, 3)+' ', ' '+D(4, 3)+' ', ' '+D(5, 3)+' ', ' '+D(6, 3)+' ',' '+D(7, 3)+' '];
+			OPT_TIMESHORT = false
+			break;
+		default:
+			OPT_TIMESHORT = true;
+			OPT_TIMEFORMATDAY =  [' ', ' ', ' ', ' ', ' ', ' ', ' '];
+		break;
+	}
+
+	do_time(document);
+}
  
  
 
@@ -58,40 +93,53 @@ var zeropad = function(num, count) {
 var dateformatEU = (typeof strftime === 'undefined') ? function(t) 
 {
 
-		var year = cur_year == t.getFullYear() ? "" : "/" + t.getFullYear().toString().substring(2);
-		var no_date = cur_day == t.getUTCDate() && cur_month == t.getMonth(1 && cur_day == t.getUTCDate())
+	var year = cur_year == t.getFullYear() ? "" : "/" + t.getFullYear().toString().substring(2);
+	var no_date = cur_day == t.getUTCDate() && cur_month == t.getMonth(1 && cur_day == t.getUTCDate())
 
-		var f_date = zeropad(t.getMonth() + 1, 2) + "/" + zeropad(t.getDate(), 2)  + year;
-		var f_day = " ";// " (" + [_("Sun"), _("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"), _("Sat"), _("Sun")][t.getDay()]  + ") ";
-		var f_time = zeropad(t.getHours(), 2) + ":" + zeropad(t.getMinutes(), 2) + ":" + zeropad(t.getSeconds(), 2);
+	var f_date = zeropad(t.getMonth() + 1, 2) + "/" + zeropad(t.getDate(), 2)  + year;
+	var f_day = OPT_TIMESHOWDAY ? (" (" + [_("Sun"), _("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"), _("Sat"), _("Sun")][t.getDay()]  + ") ") : ' ';
+	var f_time = zeropad(t.getHours(), 2) + ":" + zeropad(t.getMinutes(), 2) + ":" + zeropad(t.getSeconds(), 2);
 
-		return no_date ? f_time : f_date +  f_day + f_time;
+	return (no_date && !OPT_TIMESHOWDAY) ? f_time : f_date +  f_day + f_time;
 
-	} : function(t) {
+} : function(t) {
 		// post_date is defined in templates/main.js
-		return strftime(window.post_date, t, datelocale);
-	};
+	return strftime(window.post_date, t, datelocale);
+};
 
-	var dateformatRU = (typeof strftime === 'undefined') ? function(t)
-	{
+var dateformatRU = (typeof strftime === 'undefined') ? function(t)
+{
 
-		var year = cur_year == t.getFullYear() ? "" : "/" + t.getFullYear().toString().substring(2);
-		var no_date = cur_day == t.getUTCDate() && cur_month == t.getMonth(1 && cur_day == t.getUTCDate())
+	var year = cur_year == t.getFullYear() ? "" : "/" + t.getFullYear().toString().substring(2);
+	var no_date = cur_day == t.getUTCDate() && cur_month == t.getMonth(1 && cur_day == t.getUTCDate())
 
-		var f_date = zeropad(t.getDate(), 2) + "/" + zeropad(t.getMonth()+1, 2)  + year;
-		var f_day = " ";// (" + [_("Вс"), _("Пн"), _("Вт"), _("Ср"), _("Чт"), _("Пт"), _("Сб"), _("Вс")][t.getDay()]  + ") ";
-		var f_time = zeropad(t.getHours(), 2) + ":" + zeropad(t.getMinutes(), 2) + ":" + zeropad(t.getSeconds(), 2);
+	var f_date = zeropad(t.getDate(), 2) + "/" + zeropad(t.getMonth()+1, 2)  + year;
+	var f_day = OPT_TIMESHOWDAY ?  (" (" + [_("Вс"), _("Пн"), _("Вт"), _("Ср"), _("Чт"), _("Пт"), _("Сб"), _("Вс")][t.getDay()]  + ") ") : ' ';
+	var f_time = zeropad(t.getHours(), 2) + ":" + zeropad(t.getMinutes(), 2) + ":" + zeropad(t.getSeconds(), 2);
 
-		return no_date ? f_time : f_date +  f_day + f_time;
+	return (no_date && !OPT_TIMESHOWDAY) ? f_time : f_date +  f_day + f_time;
 
- 
-
-	} : function(t) {
+} : function(t) {
 		// post_date is defined in templates/main.js
-		return strftime(window.post_date, t, datelocale);
-	};
+	return strftime(window.post_date, t, datelocale);
+};
 
+var dateformatUN = (typeof strftime === 'undefined') ? function(t)
+{
 
+	var year = (OPT_TIMESHORT && cur_year == t.getFullYear()) ? "" : "/" + t.getFullYear().toString().substring(2);
+	var no_date = cur_day == t.getUTCDate() && cur_month == t.getMonth(1 && cur_day == t.getUTCDate())
+
+	var f_date = zeropad(t.getDate(), 2) + "/" + zeropad(t.getMonth()+1, 2)  + year;
+	var f_day = OPT_TIMEFORMATDAY[t.getDay()];
+	var f_time = zeropad(t.getHours(), 2) + ":" + zeropad(t.getMinutes(), 2) + ":" + zeropad(t.getSeconds(), 2);
+
+	return (no_date && OPT_TIMESHORT) ? f_time : f_date +  f_day + f_time;
+
+} : function(t) {
+		// post_date is defined in templates/main.js
+	return strftime(window.post_date, t, datelocale);
+};
 
 function timeDifferenceEU(current, previous) 
 {
@@ -202,7 +250,7 @@ var do_localtime_ru = function(elem)
 		{
 
 			var t = times[i].getAttribute('datetime');
-			var isoDateTime =  dateformatRU(iso8601(t));
+			var isoDateTime =  dateformatUN(iso8601(t));
 
 			times[i].innerText = timeAgo;
 			times[i].title = isoDateTime;
@@ -227,7 +275,7 @@ var do_localtime_eu = function(elem)
 		{
 
 			var t = times[i].getAttribute('datetime');
-			var isoDateTime =  dateformatEU(iso8601(t));
+			var isoDateTime =  dateformatUN(iso8601(t));
 
 			times[i].innerText = timeAgo;
 			times[i].title = isoDateTime;
@@ -236,6 +284,8 @@ var do_localtime_eu = function(elem)
 		
 	}
 };
+	
+ 
 	
 
 
@@ -249,7 +299,7 @@ var do_absolutetime_ru = function(elem)
     for(var i = 0; i < times.length; i++) 
     {
 		var t = times[i].getAttribute('datetime');
-		var abs = dateformatRU(iso8601(t));
+		var abs = dateformatUN(iso8601(t));
 
 		if(times[i].innerHTML != abs)
 		{
@@ -279,7 +329,7 @@ var do_absolutetime_eu = function(elem)
     {
 
 		var t = times[i].getAttribute('datetime');
-		var abs =  dateformatEU(iso8601(t));
+		var abs =  dateformatUN(iso8601(t));
 
 		if(times[i].innerHTML != abs)
 		{

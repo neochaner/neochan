@@ -9,11 +9,11 @@
 		{% include 'post/flag.html' %} 
 		{% include 'post/ip.html' %}
 		{% include 'post/name.html' %}
-		<div class="view-inline-pc">{% include 'post/post_controls.html' %}</div> 
+		{% if mod %}<div class="view-inline-pc">{% include 'post/post_controls.html' %}</div> {% endif %}
 
 	
 		<time class="post-time" unixtime={{ post.time }} edit='{% if post.edited_at %}{{ post.edited_at }}{% else %}{{ post.time }}{% endif %}' datetime="{{ post.time|date('%Y-%m-%dT%H:%M:%S') }}{{ timezone() }}" onclick="hideReply({{ post.id }})">{{ post.time|date(config.post_date) }}</time>
-		<a class='post-no' onclick="cite(event)">#{{ post.id }}</a>
+		<a class='post-no' onclick="cite(event)">{{ post.id }}</a>
 		<span class='post-co'></span>
 	</header>
 	<section class="post-body">
@@ -23,7 +23,7 @@
 		<blockquote class="post-message">{{ post.body }}{% include 'post/poll.html' %}</blockquote>
 	</section>
 	<footer class="post-footer">
-		<div class="view-inline-mobile">{% include 'post/post_controls.html' %}</div> 
+		{% if mod %}<div class="view-inline-mobile">{% include 'post/post_controls.html' %}</div> {% endif %}
 		<div class="post-backlinks">
 {% if post.backlinks is defined %}
 {% for b_id in post.backlinks %}

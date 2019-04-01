@@ -1,5 +1,3 @@
-@charset "UTF-8";
-
 :root {
     --neon-general:#fff;
     --neon-color:#CA927B;
@@ -1787,9 +1785,10 @@ header code{
 
 
 
-.post-id{
-   display: none;
-}
+.post-id{  display: none;}
+.post-thread-reply{  display: none;}
+
+
 .post-id-vi{
     order: -1;
     margin-right:4px;
@@ -1844,6 +1843,7 @@ header code{
 .post-sage::before{
     content: 'SAGE!';
 }
+.post-no::before{content: '#'}
 .post-no{
     order: 4;
     font-size: 13px;

@@ -154,11 +154,15 @@
     content: 'Hide thread by trip';
 }.l_show_thread_trip::before{
     content: 'Show thread by trip';
-}
-
-.l_edited::before{
+}.l_edited::before{
     content:'Edited'
 }
+
+/* Thread */
+.l_post_reply::before{
+    content:'Reply'
+}
+
 
 .l_youarebanned::before{
     content:'You are banned'
