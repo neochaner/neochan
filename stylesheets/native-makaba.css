@@ -249,6 +249,8 @@ table.mod.config-editor input[type="text"] {
 input:-webkit-autofill {
     box-shadow: 0 0 0 30px var(--placeholder-color) inset;
 }
+ 
+
 
 .footer-text{
     color: var(--body2-color);
@@ -2292,6 +2294,9 @@ html.work-mode .post-file-info:hover~.post-file-link{
     background-color: #e3e3e3;
     border: 1px solid #afafaf;
     border-radius: 3px;
+}
+.reply-header input:-webkit-autofill {
+    box-shadow: 0 0 0 30px #e3e3e3 inset;
 }
 .reply_float{
     margin-top:0!important;
