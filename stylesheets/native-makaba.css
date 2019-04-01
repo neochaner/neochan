@@ -1952,7 +1952,7 @@ header code{
     cursor:pointer
 }
 .post-body{
-    margin:17px;
+    margin:10px 17px 10px 17px;
     overflow: auto;
     max-height: 600px;
 }
