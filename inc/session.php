@@ -38,35 +38,11 @@ class session {
 		
 		self::$data['create'] = time() ;
 
+		self::$ip = $_SERVER['REMOTE_ADDR'];
+		self::$ip_range = self::$ip;
 		self::$is_onion = in_array($_SERVER['REMOTE_ADDR'], $config['tor_service_ips']);
 		self::$is_i2p = in_array($_SERVER['REMOTE_ADDR'], $config['i2p_service_ips']);
-		self::$is_darknet = (self::$is_onion || self::$is_i2p);
-
-		// ! don't use /filter_var(  FILTER_VALIDATE_IP/
-		if(strpos($_SERVER['REMOTE_ADDR'], ":") === false)
-		{
-			self::$ip = $_SERVER['REMOTE_ADDR'];
-		}
-		else
-		{
-
-			if ($_SERVER['REMOTE_ADDR'][0] == ':' && preg_match('/^\:\:(ffff\:)?(\d+\.\d+\.\d+\.\d+)$/', $_SERVER['REMOTE_ADDR'], $m))
-				self::$ip = $m[2];
-			else
-			{
-				$b = explode(':', $_SERVER['REMOTE_ADDR']);
-				self::$ip = $b[0] . ':' . $b[1] . ':' . $b[2] . ':' .  $b[3] ;
-			}
-		}
-
-		$b = explode('.', self::$ip);
-
-		if(count($b) == 4){
-			self::$ip_range = $b[0] . '.' . $b[1] . '.' . $b[2] . '0/24';
-		}
-		else{
-			self::$ip_range = self::$ip;
-		}
+		self::$is_darknet = (self::$is_onion || self::$is_i2p); 
 
 		if(isset($_COOKIE[$config['cookies']['general']]))
 		{
