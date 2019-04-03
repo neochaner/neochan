@@ -3737,7 +3737,7 @@ function postRate($board_uri, $post_id, $like = true){
 	} 
 
 	if($post['thread'] != NULL && !$config['rating']['post']){
-		server_reponse('Option has benn disabled', array('success'=>false, 'error'=>'l_error'));
+		server_reponse('Option has been disabled', array('success'=>false, 'error'=>'l_error'));
 	}
 	
 
