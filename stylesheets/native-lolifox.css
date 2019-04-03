@@ -1865,12 +1865,12 @@ header code{
 }
 .post-no::before{content: '#'}
 .post-no{
-    order: 4;
+    order: 6;
     font-size: 13px;
     font-weight: bold;
 }
 .post-co{
-    order: 5;
+    order: 8;
     font-size: 13px;
 }
  
