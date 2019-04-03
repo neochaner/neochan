@@ -1,15 +1,5 @@
 /*
  * ajax.js
- * https://github.com/savetheinternet/Tinyboard/blob/master/js/ajax.js
- *
- * Released under the MIT license
- * Copyright (c) 2013 Michael Save <savetheinternet@tinyboard.org>
- * Copyright (c) 2013-2014 Marcin Łabanowski <marcin@6irc.net>
- *
- * Usage:
- *   $config['additional_javascript'][] = 'js/jquery.min.js';
- *   $config['additional_javascript'][] = 'js/ajax.js';
- *
  */
 var do_not_ajax = false;
 
@@ -20,6 +10,37 @@ $(window).bind('load', function()
 
 
 });
+
+
+function rating(e, value){
+
+	e.preventDefault();
+
+	let el = e.target.tagName == 'I' ? e.target.parentElement : e.target;
+	let rateValue = el.parentElement.parentElement.querySelector('.rate-value');
+	let url = el.href + '&json_response=1'
+	
+    $.ajax({
+		url: url,
+        type: 'GET',
+        contentType: 'multipart/form-data',
+		success: function(response, textStatus, xhr) {
+			if(response.success)
+				rateValue.innerText = parseInt(rateValue.innerText) + value;
+            if(response.error)
+				lalert(response.error);
+			if(response.message)
+				lalert(response.message); 
+		},
+		error: function(xhr, status, er) {
+			alert(_T('Сервер вернул ошибку: ') + er);
+		},
+		contentType: false,
+		processData: false
+	}, 'json');
+ 
+	return false;
+}
 
 function strip_tags(html)
 {

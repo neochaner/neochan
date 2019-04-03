@@ -1976,6 +1976,23 @@ a.post-id:hover{
 .post-time:hover{
   text-decoration:dotted underline;
 }
+.post-rate{
+    margin-right: 6px;
+    padding: 0 6px;
+    background-color: #333;
+}.post-rate-up{
+    
+}.post-rate-down{
+    
+}.rate-none{
+    margin: 0 4px;
+}.rate-pos{
+    color: green;
+    margin: 0 4px;
+}.rate-neg{
+    color: red;
+    margin: 0 4px;
+}
 .post-file-info{
     font-size:smaller;
     font-style:italic;

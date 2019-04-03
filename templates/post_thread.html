@@ -14,7 +14,8 @@
 {# tabs and new lines will be ignored #}
 <article class="thread thread_index"  id="thread_{{ post.id }}"  data-board="{{ board.uri }}" data-thread="{{ post.id }}">
 <article class="post post_op post_{{ board.uri }}_{{ post.id }}_{{ post.id }} {% if post.files %} post_file{% endif %}{% if post.num_files > 1 %} post_files{% endif %}" id="post{{ post.id }}" data-board="{{ board.uri }}" data-thread={{ post.id }} data-post={{ post.id }}>
-<header class="post-header">
+<header class="post-header"> 
+	{% include 'post/rating.html' %}
 	{% if isukko == true %}<h3 class="post-header-item post-subject"><a href="/{{ post.board }}/">/{{ post.board }}</a></h3>{% endif %}
 	{% if not index %}<a id="{{ post.id }}" name="{{ post.id }}" class="post_anchor"></a>{% endif %}
 	<a class="post-id-vi" onclick="post_menu(event)"></a>
@@ -30,6 +31,7 @@
 	{% if index %}
 	<a class='post-thread-reply l_post_reply' href="{{ post.link }}"></a>
 	{% endif %}
+ 
 </header>
 
 

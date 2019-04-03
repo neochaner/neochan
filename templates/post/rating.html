@@ -1,0 +1,16 @@
+
+
+
+{% if (post.thread is null and config.rating.thread == true) or config.rating.post == true %}
+
+{% set like_count = post.modifiers.like|default("0") %}
+{% set dislike_count = post.modifiers.dislike|default("0") %}
+{% set post_rating = like_count - dislike_count %}
+ 
+
+<div class='post-rate'>
+<a class='post-rate-up' href='/post.php?rate=1&id={{ post.id }}&board={{ board.uri}}' onclick='rating(event, 1)' style='color:green'><i class='fa caret-up'></i></a>
+<span class='rate-value rate-{% if post_rating == 0 %}none{% elseif post_rating > 0 %}pos{% else %}neg{% endif %}'>{{ post_rating }}</span>
+<a class='post-rate-down' href='/post.php?rate=0&id={{ post.id }}&board={{ board.uri}}' onclick='rating(event, -1)' style='color:red;'><i class='fa caret-down'></i></a>
+</div>
+{% endif %}

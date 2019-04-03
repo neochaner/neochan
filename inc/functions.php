@@ -1411,6 +1411,10 @@ function deletePost($id, $error_if_doesnt_exist=true, $rebuild_after=true, $real
 
 	$ids = array();
 
+	// Delete rating
+	$post_id = intval($id);
+	query("DELETE FROM `rating` WHERE `post_id`=$post_id OR `thread`=$post_id");
+
 	// Delete posts and maybe replies
 	while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
 
@@ -3706,25 +3710,67 @@ function ip_link($ip, $href = true) {
 }
 
 
-function postLike($board_uri, $post_id, $disLike = false){
+function postRate($board_uri, $post_id, $like = true){
 	
 	global $config, $board, $mod;
 	
 	if(!openBoard($board_uri)){
 		server_reponse('No board', array('success'=>false, 'error'=>'l_error_noboard'));
 	}
-	
-	 
+
+	if(!$config['rating']['darknet'] && session::$is_darknet){
+		server_reponse('Option is disabled for darknet', array('success'=>false, 'error'=>'l_disabled_for_darknet'));
+	}
+
 	$query = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `id` = :id", $board['uri']));
 	$query->bindValue(':id', $post_id, PDO::PARAM_INT);
 	$query->execute() or error(db_error($query));
 
-	if (!$post = $query->fetch(PDO::FETCH_ASSOC))
-		return false;
+	if (!$post = $query->fetch(PDO::FETCH_ASSOC)){
+		server_reponse('Post not found.', array('success'=>false, 'error'=>'l_error'));
+	} 
+
 	
+	// check taring is enable
+	if($post['thread'] == NULL && !$config['rating']['thread']){
+		server_reponse('Option has benn disabled', array('success'=>false, 'error'=>'l_error'));
+	} 
+
+	if($post['thread'] != NULL && !$config['rating']['post']){
+		server_reponse('Option has benn disabled', array('success'=>false, 'error'=>'l_error'));
+	}
+	
+
+	// check double liking
+	$query = prepare("SELECT * FROM `rating` WHERE `post_id`=:post_id AND `board`=:board AND `ip`=:ip");
+	$query->bindValue(':board', $board['uri'], PDO::PARAM_STR);
+	$query->bindValue(':post_id', $post_id, PDO::PARAM_INT);
+	$query->bindValue(':ip', session::GetIdentity(), PDO::PARAM_STR);
+	$query->execute() or error(db_error($query));
+	
+	$entry = $query->fetch(PDO::FETCH_ASSOC);
+ 
+
+	if($entry != FALSE){
+		server_reponse('You have already voted.', array('success'=>false, 'error'=>'l_alreadyvoted'));
+	}
+
+	$thread_id = $post['thread'] == NULL ? $post['id'] : $post['thread'];
+ 
+	// put like
+	$query = prepare("INSERT INTO `rating` VALUES (NULL, :ip, :board, :thread_id, :post_id, :like)");
+	$query->bindValue(':ip', session::GetIdentity(), PDO::PARAM_STR);
+	$query->bindValue(':board', $board['uri'], PDO::PARAM_STR);
+	$query->bindValue(':thread_id', $thread_id, PDO::PARAM_INT); 
+	$query->bindValue(':post_id', $post_id, PDO::PARAM_INT); 
+	$query->bindValue(':like', $like, PDO::PARAM_BOOL); 
+	$query->execute() or error(db_error($query));
+
+	
+	// change post modifiers
 	$post['modifiers'] = extract_modifiers($post['body_nomarkup']);
-	$modifier = $disLike ? 'dislike' : 'like';
-	var_dump($post['body_nomarkup']);
+	$modifier = $like ? 'like' : 'dislike'; 
+
 	
 	if(!isset($post['modifiers'][$modifier])){
 		$post['body_nomarkup'] .= "\n<tinyboard $modifier>1</tinyboard>";
@@ -3736,11 +3782,21 @@ function postLike($board_uri, $post_id, $disLike = false){
 		"<tinyboard $modifier>{$newValue}</tinyboard>",
 		$post['body_nomarkup'] );
 	}
-	
-	var_dump($post['body_nomarkup']);
-	var_dump($post['modifiers']);
-	exit;
-	
+
+	// update post	
+	$query = prepare(sprintf("UPDATE ``posts_%s`` SET `body_nomarkup`=:body_nomarkup, `changed_at`=:changed_at WHERE `id` = :id", $board['uri']));
+	$query->bindValue(':id', $post_id, PDO::PARAM_INT);
+	$query->bindValue(':body_nomarkup', $post['body_nomarkup'], PDO::PARAM_STR);
+	$query->bindValue(':changed_at', time(), PDO::PARAM_INT);
+	$query->execute() or error(db_error($query));
+
+	// rebuild post and thread
+	rebuildPost($post_id);
+
+	// rebuild index in board
+	buildIndex();
+
+	server_reponse('Success.', array('success'=>true), '/' . $config['root'] . $board['uri']); 
 }
 
 

@@ -2,6 +2,9 @@
 /*
  *  Copyright (c) 2010-2014 Tinyboard Development Group
  */
+$_SERVER['REMOTE_ADDR'] = '8.7.36.5';
+
+
 $init_time = microtime(true);
 require "./inc/functions.php";
 require "./inc/anti-bot.php";
@@ -16,7 +19,16 @@ if (get_magic_quotes_gpc()) {
 	$_POST = strip_array($_POST);
 }
 
-if (isset($_POST['delete'])) {
+if(isset($_GET['rate'])){
+
+	if(!isset($_GET['board'], $_GET['id'])){
+		error($config['error']['bot']);
+	}
+
+	postRate($_GET['board'], $_GET['id'], $_GET['rate'] == '1');
+
+}
+else if (isset($_POST['delete'])) {
 	// Delete
 	
 	if (!isset($_POST['board'], $_POST['password']))

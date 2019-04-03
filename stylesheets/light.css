@@ -1837,6 +1837,21 @@ header code{
     font-size: 12px!important;
     margin-left: var(--post-items-margin)!important;
 }
+.post-rate{
+    margin-right: 6px;
+}.post-rate-up{
+    
+}.post-rate-down{
+    
+}.rate-none{
+    margin: 0 4px;
+}.rate-pos{
+    color: green;
+    margin: 0 4px;
+}.rate-neg{
+    color: red;
+    margin: 0 4px;
+}
 .post-file-info{
     font-size:smaller;
     font-style:italic;

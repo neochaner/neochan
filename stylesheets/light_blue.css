@@ -1984,6 +1984,23 @@ header code{
     color: #444;
     margin-left: auto;
 }
+.post-rate{
+    margin-right: 6px;
+}.post-rate-up{
+    
+}.post-rate-down{
+    
+}.rate-none{
+    margin: 0 4px;
+}.rate-pos{
+    color: green;
+    margin: 0 4px;
+}.rate-neg{
+    color: red;
+    margin: 0 4px;
+}
+
+
 .post_op .post-time{
     font-size: 12px!important;
     margin-left: var(--post-items-margin)!important;

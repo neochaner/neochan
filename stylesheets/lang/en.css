@@ -13,6 +13,10 @@
 }.l_error_extension_not_supported::before{
     content:'Extension not supported.';
 }
+
+.l_disabled_for_darknet{
+    content:'Option disabled for tor/i2p.';
+}
  
 .l_enter_captcha::before{
     content:'captcha';

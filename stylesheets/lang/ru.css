@@ -13,6 +13,10 @@
 }.l_error_extension_not_supported::before{
     content:'Тип файла не поддерживается.';
 }
+
+.l_disabled_for_darknet{
+    content:'Опция отключена для tor/i2p сетей.';
+}
  
 .l_enter_captcha::before{
     content:'капча';

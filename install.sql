@@ -55,6 +55,21 @@ CREATE TABLE IF NOT EXISTS `playlist` (
  ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 ;
  
 
+
+CREATE TABLE IF NOT EXISTS `rating` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ip` varbinary(37) NOT NULL,
+  `board` varchar(58) DEFAULT NULL,
+  `thread` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
+  `like` BOOL DEFAULT FALSE,
+
+  PRIMARY KEY (`id`), 
+  KEY `post_id` (`post_id`)
+ ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 ;
+  
+
+
 -- --------------------------------------------------------
 
 --

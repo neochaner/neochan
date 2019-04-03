@@ -1899,6 +1899,21 @@ header code{
     order: 4;
     margin-right:var(--post-items-margin);
 }
+.post-rate{
+    margin-right: 4px;
+}.post-rate-up{
+    
+}.post-rate-down{
+    
+}.rate-none{
+    margin: 0 4px;
+}.rate-pos{
+    color: green;
+    margin: 0 4px;
+}.rate-neg{
+    color: red;
+    margin: 0 4px;
+}
 .post-sage{
     order: 3;
     color: red;

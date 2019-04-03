@@ -152,7 +152,6 @@ $config['captcha']['antispam']['max_posts'] = 5;
 
 $config['captcha']['antispam']['cookie_time'] = 60 * 60 * 24 * 7;
 
-	
 
 
 
@@ -342,6 +341,18 @@ $config['polls']['darknet_enable'] = true;	// можно голосовать и
 
 $config['polls']['ro_min_sec'] = 60 * 10;
 $config['polls']['postcount_min'] = 0;
+
+
+ /*
+ * ====================
+ *  Настройки рейтинга тредов/постов (лаки и дизлайки)
+ * ====================
+ */
+$config['rating']['thread'] = false;	// включено голосование за тред
+$config['rating']['post'] = false;		// включено голосование за любой пост
+$config['rating']['darknet'] = false;	// можно голосовать из сетей  tor/i2p
+
+
 
 
 $config['neotube']['enable'] = true;
