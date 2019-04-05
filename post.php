@@ -2,8 +2,7 @@
 /*
  *  Copyright (c) 2010-2014 Tinyboard Development Group
  */
-$_SERVER['REMOTE_ADDR'] = '8.7.36.5';
-
+ 
 
 $init_time = microtime(true);
 require "./inc/functions.php";
