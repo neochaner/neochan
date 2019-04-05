@@ -1797,6 +1797,32 @@ hr{
     .reply-container form{
         margin-left: 0px!important;
     }
+    .post-thread-reply{
+        display: none;
+    }
+    .omit{    
+        display: flex !important;
+        justify-content: space-between;
+        width: 100%;
+        margin-left:0px;
+        overflow: auto;
+        padding: 5px;
+        background: #D1D1D1;
+    }
+    .omit-info{
+        font-weight: bold;
+    }
+    .omit-link{
+        display: inline-block !important;
+        border-radius: 3px;
+        padding: 6px 10px 5px 10px !important;
+        background-color: #DDDDDD;
+        border: 1px solid #CCCCCC;
+        user-select: none;
+        background-repeat: repeat-x;
+        color: #FF6600; 
+        cursor: pointer;
+    }
 }
 
 
