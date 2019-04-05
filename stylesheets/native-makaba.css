@@ -1765,18 +1765,25 @@ hr{
     }
 }
 @media (max-width: 600px) {
+    body{
+       /* line-height:1;*/
+    }
     .post {
-        min-width: 100%;
+        min-width: 100%!important;
         width: 100%;
         max-width:  100%;
-        margin-left: 6px;    
+        margin-left: 0px;    
         padding: 0px 0px 3px;
     }
     .post-header{
+        width: auto!important;
         background: #D1D1D1;
         font-size: 1em!important;
         padding: 4px 0px 4px 4px!important;
         overflow: hidden; 
+    }
+    .post_op .post-header{
+        padding: 4px 0px 4px 0px!important;
     }
     .post_anchor::before{
         content: '';
