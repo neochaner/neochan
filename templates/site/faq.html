@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+<head>
+{% include 'head.html' %}
+<title>Справка</title>
+</head>
+{% include 'header.html' %}
+
+
+
+<style>
+.faq {
+    cursor: pointer;
+    padding: 14px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 16px;
+    transition: 0.4s; 
+    display: block;
+    max-width: 100%!important;
+}
+
+        
+.active, .faq:hover {
+    background-color: #ccc; 
+}
+        
+.panel {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.faq:after {
+    content: '\02795'; /* Unicode character for "plus" sign (+) */
+    font-size: 13px;
+    color: #000;
+    float: right;
+    margin-left: 5px;
+}
+
+.active:after {
+    content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+</style>
+
+ 
+
+
+
+<main class="main">
+
+<section class="board" id="threads">
+    
+<h1 class="page-title"><a style='cursor: default;'>Справка</a></h1>
+
+
+
+<hr>
+
+
+<section class="threads-container faq-container" id="thread-container">
+
+<body>
+    
+<button class="faq post">Общие правила</button>
+<div class="panel">
+<p><b>1.</b> 
+Не нарушайте законы Нидерландов, России и страны, в которой Вы находитесь в данный момент. 
+</p>
+
+<p><b>2.</b> 
+Детская порнография и ее имитация, в т.ч. и рисованная, наркотики, терроризм, суицид запрещены, даже если это разрешено вашими местными законами.
+</p>
+
+<br>
+Остальные правила регулируются ОП-модераторами, выданные ими баны действуют только в созданных ими тредах и не распространяются на всю доску.
+</div>
+                  
+                                    
+    <button class="faq post">Модерация</button>
+    <div class="panel">
+    <p>
+    Вы можете модерировать созданный вами тред, если укажете трипкод при его создании в поле опции. 
+    Трипкод - это ваш пароль, он должен начинаться с символа #.
+    После создания треда, внизу оп-поста появится значёк - <i class="fa fa-shield"></i> . Нажав на него сможете включить ваши модераторские возможности.
+    </p>
+    </div>
+                
+                
+    <button class="faq post">Файлы и лимиты</button>
+    <div class="panel">
+        <p>10 файлов на 1 пост</p>
+        <p>30Мб - максимальный размер файла(ов) в посте</p>
+        <p>Поддерживаются форматы файлов: jpg, png, gif, webm, mp4, txt, zip, rar, mp3, torrent</p>
+    </div>
+                
+    <button class="faq post">Рулетка</button>
+    <div class="panel">
+    <br>
+    <p>Для рулетки используется комманда <b>roll(число)</b>. Например:</p>
+        <p><b>roll(100)</b>   -   Выдать случайное число до 100.</p>
+        <table class="rtable"><tbody><tr><td><div class="roll-img"></div></td><td>0-100  -  выпадает: <b>41</b> </td></tr></tbody></table>
+        <br>
+        <p><b>roll(1,10)</b>    -   Выдать случайное число от 1 до 10.</p>
+        <table class="rtable"><tbody><tr><td><div class="roll-img"></div></td><td>1-10  -  выпадает: <b>7</b> </td></tr></tbody></table>
+        <br>
+        <p>Кроме чисел вы можете указать свои варианты ответов перечисленных через запятую.</p>
+        <p><b>roll(да,нет,может быть)</b>    -   Выбирает один из указанных вами ответов.</p>
+        <table class="rtable"><tbody><tr><td><div class="roll-img"></div></td><td>да<br><i class="fa fa-check"></i><strong>нет</strong><br>может быть<br></td></tr></tbody></table>
+                   
+    </div>
+
+    <button class="faq post">Создание опросов</button>
+    <div class="panel">
+    <br>
+    <p>Для создания голосования используется комманда <b>poll(варинт1,варинт2,варинт3)</b>. Результат:</p>
+        
+        <div id="989074621" class="poll" style="opacity: 1;">
+            <div class="poll-group">
+                <a class="poll-control" onclick="alert(_T('Это пример'))"><i class="fa fa-check"><b>варинт1</b></i></a>
+                <small>(0%, 0 Голосов)</small>
+                <div class="pollbar" style="width: 0%;"></div>
+            </div>
+            <div class="poll-group"><a class="poll-control" onclick="alert(_T('Это пример'))"><i class="fa fa-check"><b>варинт2</b></i></a>
+                <small>(0%, 0 Голосов)</small>
+                <div class="pollbar" style="width: 0%;"></div></div>
+            <div class="poll-group"><a class="poll-control" onclick="alert(_T('Это пример'))"><i class="fa fa-check"><b>варинт3</b></i></a>
+                <small>(0%, 0 Голосов)</small>
+                <div class="pollbar" style="width: 0%;"></div>
+            </div>
+                <p style="text-align: center;" id="0"></p>
+        </div>
+
+
+    </div>
+
+
+ 
+<script>
+    var acc = document.getElementsByClassName("faq");
+    var i;
+                
+    for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+             this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+            } else {
+                panel.style.display = "block";
+            }
+        });
+    }
+</script>
+                
+</body>
+
+
+
+
+
+
+</section>
+
+
+
+
+<hr>
+
+
+</section>
+</main>
+<aside class="hover-container hover-container_thread"></aside>
+<br><br><br>
+</html>
+
+
+
+
+
+
+
+
