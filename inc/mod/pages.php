@@ -921,17 +921,13 @@ function mod_page_ip_less($b, $id)
 	if (!openBoard($b)) {
 		error('No board.');
 	}
-
-	$ip;
-	$iprange = false; 
-
+ 
 	$query = prepare(sprintf('SELECT `ip`,`range_ip_hash` FROM ``posts_%s`` WHERE `id` = :id', $b));
 	$query->bindValue(':id', $id);
 	$query->execute() or error(db_error($query));
 	
 	$result = $query->fetch(PDO::FETCH_ASSOC);
  
-
 	if ($result) {
 		$ip = $result['ip'];
 	} else {

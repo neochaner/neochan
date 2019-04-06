@@ -1,7 +1,5 @@
 /*
-* global: config 
-* global: disable_replybox_float
-* global: plyr
+* global: config, plyr, disable_replybox_float, autoLoadSecDefault
 *
 */
 
@@ -620,8 +618,6 @@ function neotubeSync()
          
         }
 	}
-
-
 
 }
 

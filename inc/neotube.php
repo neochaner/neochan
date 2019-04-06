@@ -4,7 +4,7 @@ require_once 'inc/lib/webm/ffmpeg.php';
 
 class Neotube 
 {
-	public static $tmp_path;
+    public static $tmp_path;
     public static $cache_sec = 60;
     public static $paused_delete_sec = 60 * 60 * 24 * 3; // удаление видео поставленных на паузу
     public static $switch_sec = 3;

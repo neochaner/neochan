@@ -1,4 +1,6 @@
-
+/** 
+ * global: store, config, localStorage
+ */
 
 
 $(window).bind('load', function(){

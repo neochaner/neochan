@@ -286,11 +286,10 @@ class Bans
 	{
 		global $config;
 
-		$query = query("DELETE FROM ``bans`` WHERE `expires` IS NOT NULL AND `expires` < " . time() . " AND `seen` = 1") or error(db_error());
+		query("DELETE FROM ``bans`` WHERE `expires` IS NOT NULL AND `expires` < " . time() . " AND `seen` = 1") or error(db_error());
 		if (!$config['cron_bans']) {
 			rebuildThemes('bans');
 		}
-
 	}
 
 	public static function delete($ban_id, $modlog = false, $boards = false, $dont_rebuild = false)
