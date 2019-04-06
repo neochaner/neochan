@@ -240,34 +240,29 @@ $config['security_mode_time'] = 60*60*24;
 /*
  * ====================
  *  Cache settings
+ * 
+ * 	Support : memcache, memcached, apc, redis, xcache
  * ====================
  */
 
-	/*
-	 * On top of the static file caching system, you can enable the additional caching system which is
-	 * designed to minimize SQL queries and can significantly increase speed when posting or using the 
-	 * moderator interface. APC is the recommended method of caching.
-	 *
-	 * http://tinyboard.org/docs/index.php?p=Config/Cache
-	 */
-
-	
-	// $config['cache']['enabled'] = 'xcache';
+	//$config['cache']['enabled'] = 'xcache';
 	//$config['cache']['enabled'] = 'apc';
+	//$config['cache']['enabled'] = 'memcache';
 	$config['cache']['enabled'] = 'memcached';
 	// $config['cache']['enabled'] = 'redis';
 
-	// Timeout for cached objects such as posts and HTML.
+	// Default timeout 
 	$config['cache']['timeout'] = 60 * 60 * 48; // 48 hours
 
-	// Memcached servers to use. Read more: http://www.php.net/manual/en/memcached.addservers.php
+	// Memcached servers 
 	$config['cache']['memcached'] = array(
 		array('localhost', 11211)
 	);
 
+	// Memcache server
+	$config['cache']['memcache'] =array('localhost', 11211);
+
 	// Redis server to use. Location, port, password, database id.
-	// Note that Tinyboard may clear the database at times, so you may want to pick a database id just for
-	// Tinyboard to use.
 	$config['cache']['redis'] = array('localhost', 6379, '', 1);
 
 	// EXPERIMENTAL: Should we cache configs? Warning: this changes board behaviour, i'd say, a lot.

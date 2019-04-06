@@ -6,12 +6,19 @@
 
 defined('TINYBOARD') or exit;
 
-class Cache {
+class Cache 
+{
 	private static $cache;
-	public static function init() {
+
+	public static function init() 
+	{
 		global $config;
 		
 		switch ($config['cache']['enabled']) {
+			case 'memcache':
+				self::$cache = new Memcache;
+				self::$cache->addServer($config['cache']['memcache'][0], $config['cache']['memcache'][1]);
+				break;
 			case 'memcached':
 				self::$cache = new Memcached();
 				self::$cache->addServers($config['cache']['memcached']);
@@ -29,12 +36,16 @@ class Cache {
 				break;
 		}
 	}
-	public static function get($key) {
+
+	public static function get($key) 
+	{
 		global $config;
 
 
 		$data = false;
 		switch ($config['cache']['enabled']) {
+			case 'memcache':
+				// no need break
 			case 'memcached':
 				if (!self::$cache)
 					self::init();
@@ -69,14 +80,25 @@ class Cache {
 				
 		return $data;
 	}
-	public static function set($key, $value, $expires = false) {
+
+	public static function set($key, $value, $expires = false) 
+	{
 		global $config;
 
 
 		if (!$expires)
 			$expires = $config['cache']['timeout'];
+
+		if($expires  > 2592000){
+			syslog(LOG_WARNING, "[NOTICE] Cache::set - variable \$expires ($expires) looks like unix timestamp");
+		}
 		
 		switch ($config['cache']['enabled']) {
+			case 'memcache':
+				if (!self::$cache)
+					self::init();
+				self::$cache->set($key, $value, 0, $expires);
+				break;
 			case 'memcached':
 				if (!self::$cache)
 					self::init();
@@ -103,11 +125,16 @@ class Cache {
 				break;
 		}	
 	}
-	public static function delete($key) {
+	
+	public static function delete($key)
+	{
 		global $config;
 
 		switch ($config['cache']['enabled']) {
-			case 'memcached':
+			case 'memcache':				
+				// no need break
+			case 'memcached':				
+				// no need break
 			case 'redis':
 				if (!self::$cache)
 					self::init();
@@ -131,10 +158,14 @@ class Cache {
 				break;
 		}		
 	}
-	public static function flush() {
+	
+	public static function flush()
+	{
 		global $config;
 		
 		switch ($config['cache']['enabled']) {
+			case 'memcache':		
+				// no need break
 			case 'memcached':
 				if (!self::$cache)
 					self::init();
@@ -170,7 +201,6 @@ class Cache {
 		self::delete("last_post_id_{$boardname}");
 		self::delete("div_thread_active_{$boardname}");
 	}
-
 
 	public static function flush_board($boardname)
 	{
