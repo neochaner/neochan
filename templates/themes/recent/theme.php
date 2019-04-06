@@ -1,7 +1,8 @@
 <?php
 include_once $config['dir']['themes'] . '/recent/info.php';
 	
-	function recentposts_build($action, $settings, $board) {
+function recentposts_build($action, $settings, $board)
+{
 		// Possible values for $action:
 		//	- all (rebuild everything, initialization)
 		//	- news (news has been updated)
@@ -11,42 +12,44 @@ include_once $config['dir']['themes'] . '/recent/info.php';
 		
 		$b = new RecentPosts();
 		$b->build($action, $settings);
-	}
+}
 	
-	// Wrap functions in a class so they don't interfere with normal Tinyboard operations
-	class RecentPosts {
-		public function build($action, $settings) {
-			global $config, $_theme;
-			
-			if ($action == 'all') {
-				copy('templates/themes/recent/' . $settings['basecss'], $config['dir']['home'] . $settings['css']);
-			}
-			
-			$this->excluded = explode(' ', $settings['exclude']);
-			
-			if ($action == 'all' || $action == 'post' || $action == 'post-thread' || $action == 'post-delete') {
+// Wrap functions in a class so they don't interfere with normal Tinyboard operations
+class RecentPosts 
+{
 
-				file_write($config['dir']['home'] . $settings['html'], $this->homepage($settings));
-				
-			}
+  public function build($action, $settings)
+	{
+		global $config, $_theme;
+			
+		if ($action == 'all') {
+				copy('templates/themes/recent/' . $settings['basecss'], $config['dir']['home'] . $settings['css']);
 		}
+			
+		$this->excluded = explode(' ', $settings['exclude']);
+			
+		if ($action == 'all' || $action == 'post' || $action == 'post-thread' || $action == 'post-delete') {
+				file_write($config['dir']['home'] . $settings['html'], $this->homepage($settings));
+		}
+	}
 		
-		// Build news page
-		public function homepage($settings) {
+	// Build news page
+	public function homepage($settings)
+	{
 			global $config, $board;
 			
 			$recent_images = Array();
 			$recent_posts = Array();
-			$stats = Array();
-			
-			$boards = listBoards();
-			
+			$stats = Array(); 
 			$query = '';
+			$boards = listBoards();
+
 			foreach ($boards as &$_board) {
 				if (in_array($_board['uri'], $this->excluded))
 					continue;
 				$query .= sprintf("SELECT *, '%s' AS `board` FROM ``posts_%s`` WHERE `files` IS NOT NULL UNION ALL ", $_board['uri'], $_board['uri']);
 			}
+
 			$query = preg_replace('/UNION ALL $/', 'ORDER BY `time` DESC LIMIT ' . (int)$settings['limit_images'], $query);
 			
 			if ($query == '') {
@@ -89,6 +92,7 @@ include_once $config['dir']['themes'] . '/recent/info.php';
 					continue;
 				$query .= sprintf("SELECT *, '%s' AS `board` FROM ``posts_%s`` UNION ALL ", $_board['uri'], $_board['uri']);
 			}
+
 			$query = preg_replace('/UNION ALL $/', 'ORDER BY `time` DESC LIMIT ' . (int)$settings['limit_posts'], $query);
 			$query = query($query) or error(db_error());
 			
@@ -146,7 +150,9 @@ include_once $config['dir']['themes'] . '/recent/info.php';
 				'recent_posts' => $recent_posts,
 				'stats' => $stats
 			));
-		}
-	};
+
+	}
+
+}
 	
-?>
+

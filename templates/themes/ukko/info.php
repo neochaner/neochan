@@ -46,8 +46,8 @@
 	$theme['install_callback'] = 'ukko_install';
 
 	if(!function_exists('ukko_install')) {
-		function ukko_install($settings) {
-			
+		function ukko_install($settings) 
+		{
 			if (!file_exists($settings['uri'])){
 				@mkdir($settings['uri'], 0777) or error("Couldn't create " . $settings['uri'] . ". Check permissions.", true);
 			}
@@ -55,5 +55,3 @@
 	        file_write($settings['uri'] . '/ukko.js', Element('themes/ukko/ukko.js', array()));
 		}
 	}
-	
-?>
