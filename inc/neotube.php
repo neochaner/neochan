@@ -1,8 +1,9 @@
 <?php
+
 require_once 'inc/lib/webm/ffmpeg.php';
 
-class neotube {
-
+class Neotube 
+{
 
 	public static $tmp_path;
     public static $cache_sec = 60;
@@ -22,7 +23,8 @@ class neotube {
         self::$tmp_path = 'tmp/neotube/';
     }
 
-    public static function addYoutubeLink($link){
+    public static function addYoutubeLink($link)
+    {
 
         global $config, $board, $pdo;
 
@@ -68,9 +70,8 @@ class neotube {
 
     }
 
-    public static function addPlaylistFile($file){
- 
-
+    public static function addPlaylistFile($file)
+    {
         $webminfo = get_webm_info($file['tmp_name']);
 
         if (!empty($webminfo['error']))
@@ -83,17 +84,16 @@ class neotube {
         $track['height'] = $webminfo['height'];
         $track['duration'] = floor($webminfo['duration']);
 
-     
         return self::addToPlaylist('file', 'id' . time() ,  $file['tmp_name'], $track['duration'], $file['name'], $file['mime'], $outputList);
-    
     }
 
-    public static function addToPlaylist($type, $id, $path, $duration_sec, $title, $mime, &$output_list){
-    
+    public static function addToPlaylist($type, $id, $path, $duration_sec, $title, $mime, &$output_list)
+    {
         global $config;
 
-        if(!$config['neotube']['enable'])
+        if (!$config['neotube']['enable']) {
             return false;
+        }
     
         $query = prepare("SELECT `json` FROM `playlist` WHERE `nkey` = :nkey");
         $query->bindValue(':nkey', self::$nkey, PDO::PARAM_STR);
@@ -103,16 +103,15 @@ class neotube {
         $tracks = null;
         $lastTrackEnd=0;
 
-        if($list){
+        if ($list) {
             $tracks = json_decode($list['json'], TRUE);
             $tracks = self::clearPlayList($tracks);
         } 
 
-        if($tracks==null){
+        if ($tracks==null) {
             $tracks = array();
             $lastTrackEnd=time();
         } else {
-
             $lastTrackEnd= $tracks[count($tracks)-1]['end'];
         }
 
@@ -135,42 +134,41 @@ class neotube {
     
         $output_list = $tracks;
         return true;
-    
     }
 
-    public static function removeFromPlaylist($id){
-
-    
+    public static function removeFromPlaylist($id)
+    {
         $list = self::getPlaylist();
     
-        if(!is_array($list))
+        if (!is_array($list)) {
             return null;
+        }
     
         $nlist = array();
     
-        foreach ($list as $track){
+        foreach ($list as $track) {
             if($track['id'] == $id)
                 unlink($track['path']);
             else
                 array_push($nlist, $track);
         }
     
-        if(count($list) == count($nlist))
+        if (count($list) == count($nlist)) {
             return null;
+        }
 
         $lastEnd = 0;   
     
         // rebuild time...
-        for($i=0; $i<count($nlist); $i++){
+        for ($i=0; $i<count($nlist); $i++) {
     
-            if($i==0){
+            if ($i==0) {
                 if($nlist[0]['start'] > time()){
     
                     $nlist[0]['start'] = time()+2;
                     $nlist[0]['end'] = time()+2+$nlist[0]['duration'];
                 }
-            }
-            else{
+            } else {
                 $lastEnd = $nlist[$i-1]['end'];
     
                 $nlist[$i]['start'] = $lastEnd + self::$switch_sec;
@@ -184,8 +182,8 @@ class neotube {
         return $json;
     }
     
-    public static function uploadTrack(){
-
+    public static function uploadTrack()
+    {
         $file = $_FILES['file'];
         $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
         $newPath = self::$tmp_path . time() . '.' . $ext;
@@ -202,13 +200,12 @@ class neotube {
 
             $result = self::addPlaylistFile($file);
 
-            if(!$result){
+            if (!$result) {
                 unlink($newPath);
                 server_reponse('Произошла ошибка при обработке файла', array('success'=>false, 'error'=>'l_error_process_file'));
             }
             
-        }
-        else{
+        } else {
             server_reponse('FAIL', array('success'=>false, 'error'=>'l_error_process_file'));
         }
     
@@ -217,11 +214,11 @@ class neotube {
 
     }
 
-    public static function uploadLocalTrack($filename){
-
+    public static function uploadLocalTrack($filename)
+    {
         global $config;
-        $config['webm']['max_length'] = 9999999;
 
+        $config['webm']['max_length'] = 9999999;
         $file['tmp_name'] =   "tmp/$filename";
         $file['path'] = "tmp/$filename"; 
         $file['name'] = basename($filename);
@@ -229,35 +226,37 @@ class neotube {
         $ext = pathinfo($file['tmp_name'], PATHINFO_EXTENSION);
         $mime = mime_content_type($file['tmp_name']);
 
-        if(!file_exists($file['tmp_name']))
+        if (!file_exists($file['tmp_name'])) {
             server_reponse('Файл не найден');
+        }
 
-        if(!in_array($mime, array('video/webm', 'video/mp4', 'video/x-matroska', 'application/octet-stream'))){
+        if (!in_array($mime, array('video/webm', 'video/mp4', 'video/x-matroska', 'application/octet-stream'))) {
             server_reponse("Тип файла [ $mime ] не поддерживается", array('success'=>false, 'error'=>'l_error_extension_not_supported'));
         }
 
-        if($mime == 'application/octet-stream')
+        if ($mime == 'application/octet-stream') {
             $mime='';
+        }
 
         $file['mime'] = $mime;
 
 
-        if(!self::addPlaylistFile($file)){
+        if (!self::addPlaylistFile($file)) {
             server_reponse('Произошла ошибка при обработке файла', array('success'=>false, 'error'=>'l_error_process_file'));
         }
         
         return true;
     }
 
-    
-    public static function pauseTrack(){
-        
+    public static function pauseTrack()
+    {
         $list = self::getPlaylist();
 
-        if(!is_array($list))
+        if (!is_array($list)) {
             return null;
+        }
 
-        if($list[0]['pause'] == -1){
+        if ($list[0]['pause'] == -1) {
 
             $elapsed = time() - $list[0]['start'];
             $list[0]['pause'] = $elapsed;
@@ -290,8 +289,8 @@ class neotube {
 
     }
     
-    public static function setPlayList($json){
-
+    public static function setPlayList($json)
+    {
         $query = prepare("INSERT INTO `playlist` VALUES (:nkey, :board, :tracks) ON DUPLICATE KEY UPDATE `json`=:tracks");
         $query->bindValue(':nkey', self::$nkey, PDO::PARAM_STR);
         $query->bindValue(':board', self::$board, PDO::PARAM_STR);
@@ -300,11 +299,10 @@ class neotube {
     
         cache::set(self::$nkey, $json, self::$cache_sec);
         cache::delete(self::$board_key);
-    
     }
 
-    public static function deletePlayList(){
-
+    public static function deletePlayList()
+    {
         $query = prepare("DELETE FROM `playlist` WHERE `nkey`=:nkey");
         $query->bindValue(':nkey', self::$nkey, PDO::PARAM_STR);
         $query->execute() or error(db_error($query));
@@ -313,24 +311,24 @@ class neotube {
         cache::delete(self::$board_key);
     }
  
-    public static function getPlaylist(){
-    
+    public static function getPlaylist()
+    {
         return json_decode(self::getPlaylistJson(), TRUE);
     }
 
-    public static function getPlaylistJson(){
-    
-    
+    public static function getPlaylistJson()
+    {
         $json = cache::get(self::$nkey);
 
-        if($json)
+        if ($json) {
             return $json;
+        }
  
         $query = prepare("SELECT `json` FROM `playlist` WHERE `nkey`=:nkey");
         $query->bindValue(':nkey', self::$nkey, PDO::PARAM_STR);
         $query->execute() or error(db_error($query));
     
-        if($tracks = $query->fetch(PDO::FETCH_ASSOC)){
+        if ($tracks = $query->fetch(PDO::FETCH_ASSOC)) {
             $list = json_decode($tracks['json'], TRUE);
             $nlist = self::clearPlayList($list);
 
@@ -340,10 +338,9 @@ class neotube {
         return null;
     }
     
-    public static function getThreadName($id){
-
- 
-        if (openBoard(self::$board)){
+    public static function getThreadName($id)
+    {
+        if (openBoard(self::$board)) {
  
             $query = prepare(sprintf("SELECT `subject` FROM ``posts_%s`` WHERE `id`=:thread", self::$board));
             $query->bindValue(':thread', $id, PDO::PARAM_INT);
@@ -360,12 +357,13 @@ class neotube {
         return '#' . self::$thread_id;
     }
 
-    public static function getBoardPlaylists(){
-
+    public static function getBoardPlaylists()
+    {
         $plists = cache::get(self::$board_key);
     
-        if($plists)
+        if($plists) {
             return $plists;
+        }
 
         $query = prepare('SELECT * FROM `playlist` WHERE `board`=:board');
         $query->bindValue(':board', self::$board, PDO::PARAM_STR);
@@ -382,100 +380,54 @@ class neotube {
 
             $clearList = self::clearPlayList($list);
     
-            if($clearList != null)
+            if($clearList != null) {
                 $plists[] = array('title' => $ntitle, 'link' => "/$nboard/res/$nthread.html", 'thread'=>$nthread);
+            }
         }
   
         cache::set(self::$board_key, $plists, self::$cache_sec);
         return $plists;
     
     }
- 
-    /*
-    public static function checkRights($trip){
-
-        if($trip == null || strlen($trip) < 1)
-            return false;
- 
-        if (openBoard(self::$board)){
- 
-            $query = prepare(sprintf("SELECT `trip` FROM ``posts_%s`` WHERE `id`=:thread", self::$board));
-            $query->bindValue(':thread', self::$thread_id, PDO::PARAM_INT);
-            $query->execute() or error(db_error($query));
-            
-            if ($thread = $query->fetch(PDO::FETCH_ASSOC)){
-                
-                return $thread['trip'] == $trip;
-            }
-
-        }
- 
-        return false;
-    }*/
-
     
     /*
         Clear videos from playlist
 
         * return array actually tracks or null
     */
-    public static function clearPlayList($list){
+    public static function clearPlayList($list)
+    {
 
-        if(!is_array($list) || count($list) == 0)
+        if (!is_array($list) || count($list) == 0) {
             return null;
+        }
     
         $newList = array();
         $is_paused =false;
 
-        foreach ($list as $track){
+        foreach ($list as $track) {
 
-            if($track['pause'] != -1)
+            if ($track['pause'] != -1) {
                 $is_paused = true;
-
+            }
 
             $endTime = $track['end'] + ($is_paused ? self::$paused_delete_sec : 0);
 
-            if($endTime < time()){
+            if ($endTime < time()) {
                 unlink($track['path']);
-
-            } else{
+            } else {
                 array_push($newList, $track);
             }
         }
 
-
-        if(count($list) != count($newList)){
+        if (count($list) != count($newList)) {
             if(count($newList) == 0)
                 self::deletePlayList();
             else 
                 self::setPlayList(json_encode($newList));
         }
             
-
         return count($newList) > 0 ? $newList : null;
-
-
     }
-
-     
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

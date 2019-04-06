@@ -7,22 +7,26 @@
 defined('TINYBOARD') or exit;
 require_once 'inc/functions.php';
 
-class Filter {
+class Filter 
+{
 	public $flood_check;
 	private $condition;
 	private $post;
 	
-	public function __construct(array $arr) {
-		foreach ($arr as $key => $value)
-			$this->$key = $value;		
+	public function __construct(array $arr)
+	{
+		foreach ($arr as $key => $value) {
+			$this->$key = $value;
+		}
 	}
 	
-	public function match($condition, $match) {
+	public function match($condition, $match)
+	{
 		$condition = strtolower($condition);
 
 		$post = &$this->post;
 		
-		switch($condition) {
+		switch ($condition) {
 			case 'custom':
 				if (!is_callable($match))
 					error('Custom condition for filter is not callable!');
@@ -39,7 +43,7 @@ class Filter {
 					foreach ($match as $flood_match_arg) {
 						switch ($flood_match_arg) {
 							case 'ip':
-								$identity = session::GetIdentity();
+								$identity = Session::getIdentity();
 								if ($flood_post['ip'] != $identity)
 									continue 3;
 								break;
@@ -119,7 +123,7 @@ class Filter {
 				}
 				return false;
 			case 'ip':
-				$identity = session::GetIdentity();
+				$identity = Session::getIdentity();
 				return preg_match($match, $identity);
 			case 'op':
 				return $post['op'] == $match;
@@ -138,7 +142,7 @@ class Filter {
 		global $board;
 
 		$this->add_note = isset($this->add_note) ? $this->add_note : false;
-		$identity = session::GetIdentity();
+		$identity = Session::getIdentity();
 		if ($this->add_note) {
 			$query = prepare('INSERT INTO ``ip_notes`` VALUES (NULL, :ip, :mod, :time, :body)');
 	                $query->bindValue(':ip', $identity);
@@ -151,7 +155,7 @@ class Filter {
 			case 'reject':
 				error(isset($this->message) ? $this->message : 'Posting throttled by filter.');
 			case 'ban':
-				$identity = session::GetIdentity();
+				$identity = Session::getIdentity();
 				if (!isset($this->reason))
 					error('The ban action requires a reason.');
 				
@@ -227,13 +231,13 @@ function do_filters(array $post) {
 	
 	if (isset($has_flood)) {
 		if ($post['has_file']) {
-			$identity = session::GetIdentity();
+			$identity = Session::getIdentity();
 			$query = prepare("SELECT * FROM ``flood`` WHERE `ip` = :ip OR `posthash` = :posthash OR `filehash` = :filehash");
 			$query->bindValue(':ip', $identity);
 			$query->bindValue(':posthash', make_comment_hex($post['body_nomarkup']));
 			$query->bindValue(':filehash', $post['filehash']);
 		} else {
-			$identity = session::GetIdentity();
+			$identity = Session::getIdentity();
 			$query = prepare("SELECT * FROM ``flood`` WHERE `ip` = :ip OR `posthash` = :posthash");
 			$query->bindValue(':ip', $identity);
 			$query->bindValue(':posthash', make_comment_hex($post['body_nomarkup']));

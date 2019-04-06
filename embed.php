@@ -2,14 +2,14 @@
 header("Content-type: image/jpeg");
 
 
-if(!isset($_GET['service'],  $_GET['id']))
+if (!isset($_GET['service'],  $_GET['id'])) {
     exit;
-
+}
 
 
 $path ='tmp/embed/' . $_GET['service'] . '_' . $_GET['id'];
 
-if(file_exists($path)){
+if (file_exists($path)) {
     die(file_get_contents($path));
 }
 
@@ -18,8 +18,7 @@ $link = null;
 
 
 
-switch($_GET['service'])
-{
+switch ($_GET['service']) {
     case 'youtube':
         $link = "https://img.youtube.com/vi/" . $_GET['id'] . "/0.jpg";
         break;
@@ -44,8 +43,7 @@ switch($_GET['service'])
         break;
     default:
         exit;
-        break;  
-    
+        break;
 }
 
     
@@ -56,8 +54,9 @@ switch($_GET['service'])
 
 $image =  file_get_contents($link);
 
-if(strlen($image) < 100)
+if (strlen($image) < 100) {
     die('404 not found');
+}
 
 file_put_contents($path, $image);
 
@@ -69,13 +68,11 @@ function CurlRequest($request, $timeout_ms=2000)
 {
 
     //Проверка на правильность URL 
-    if(!filter_var($request, FILTER_VALIDATE_URL))
-    {
+    if (!filter_var($request, FILTER_VALIDATE_URL)) {
         return null;
     }
 
-    if(function_exists('curl_version'))
-    {
+    if (function_exists('curl_version')) {
 
         //Инициализация curl
         $ch = curl_init($request);
@@ -90,25 +87,18 @@ function CurlRequest($request, $timeout_ms=2000)
 
         ));
     
-
         $response = curl_exec($ch);
         curl_close($ch);
 
-        if ($response) 
+        if ($response) {
             return $response;
+        }
 
 
-    }
-    else
-    {
+    } else {
         //ini_set('default_socket_timeout', $timeout_ms);
         return file_get_contents($request);
     }
 
-
     return null;
 }
-
-
-
-?>

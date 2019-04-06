@@ -1,20 +1,25 @@
 <?php
 include 'inc/functions.php';
 
-function outputError($errCode, $errString) {
+function outputError($errCode, $errString)
+{
   http_response_code($errCode);
   error ($errString);
   return 0;
 }
 
-function getRequestMethod($r) {
+function getRequestMethod($r) 
+{
   $reqMethod = "NG";
+
   if ($r === 'GET'){
     $reqMethod = "GET";
   }
+
   if ($r === "POST"){
     $reqMethod = "POST";
   }
+
   return $reqMethod;
 }
 
@@ -24,7 +29,7 @@ if ($requestMethod === "NG"){
   outputError (400, "Bad Request.");
 }
 
-if ($requestMethod === "GET"){
+if ($requestMethod === "GET") {
   $captcha = generate_captcha($config['captcha']['extra']);
   
   $html = "{$captcha['html']}<br/>
@@ -35,7 +40,7 @@ if ($requestMethod === "GET"){
   echo Element("page.html", array("config" => $config, "body" => $body, "title" => _("Bypass DNSBL"), "subtitle" => _("Post even if blocked")));
 }
 
-if ($requestMethod === "POST"){
+if ($requestMethod === "POST") {
   $resp = file_get_contents($config['captcha']['provider_check'] . "?" . http_build_query([
     'mode' => 'check',
     'text' => $_POST['captcha_text'],
@@ -45,7 +50,7 @@ if ($requestMethod === "POST"){
 
   if ($resp === '1') {
     $tor = checkDNSBL($_SERVER['REMOTE_ADDR']); // This actually needs to use an IP address, but doesnt store it anywhere
-    $identity = session::GetIdentity();
+    $identity = Session::getIdentity();
     if (!$tor) {
       $query = prepare('INSERT INTO ``dnsbl_bypass`` VALUES(:ip, NOW(), 0) ON DUPLICATE KEY UPDATE `created`=NOW(),`uses`=0');
       $query->bindValue(':ip', $identity);

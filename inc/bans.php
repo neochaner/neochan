@@ -11,13 +11,16 @@ require 'inc/lib/IP/Lifo/IP/CIDR.php';
 
 use Lifo\IP\CIDR;
 
-class Bans {
+class Bans
+{
 	
-	public static function isTorIp($hash){
+	public static function isTorIp($hash)
+	{
 		return $hash[0] == '!';
 	}
 	
-	public static function range_to_string($mask) {
+	public static function range_to_string($mask)
+	{
 		list($ipstart, $ipend) = $mask;
 
 		if (!isset($ipend) || $ipend === false) {
@@ -31,6 +34,7 @@ class Bans {
 		// What the fuck are you doing, son?
 
 		$range = CIDR::range_to_cidr(inet_ntop($ipstart), inet_ntop($ipend));
+
 		if ($range !== false) {
 			return $range;
 		}
@@ -38,14 +42,16 @@ class Bans {
 		return '???';
 	}
 
-	private static function calc_cidr($mask) {
+	private static function calc_cidr($mask)
+	{
 		$cidr  = new CIDR($mask);
 		$range = $cidr->getRange();
 
 		return array(inet_pton($range[0]), inet_pton($range[1]));
 	}
 
-	public static function parse_time($str) {
+	public static function parse_time($str)
+	{
 		if (empty($str)) {
 			return false;
 		}
@@ -93,7 +99,8 @@ class Bans {
 		return time() + $expire;
 	}
 
-	public static function parse_range($mask) {
+	public static function parse_range($mask) 
+	{
 		$ipstart = false;
 		$ipend   = false;
 
@@ -127,7 +134,7 @@ class Bans {
 			}
 
 			list($ipstart, $ipend) = self::calc_cidr($mask);
-		} elseif(self::isTorIp($mask)) {
+		} elseif (self::isTorIp($mask)) {
 			$ipstart = $mask;
 		} else if (($ipstart = @inet_pton($mask)) === false) {
 			return false;
@@ -136,8 +143,8 @@ class Bans {
 		return array($ipstart, $ipend);
 	}
 
-	public static function find($criteria, $board = false, $get_mod_info = false, $id = false) {
-
+	public static function find($criteria, $board = false, $get_mod_info = false, $id = false)
+	{
 		global $config;
 
 		$query = prepare('SELECT ``bans``.*' . ($get_mod_info ? ', `username`' : '') . ' FROM ``bans``
@@ -177,14 +184,15 @@ class Bans {
 		return $ban_list;
 	}
 
-	public static function stream_json($out = false, $filter_ips = false, $filter_staff = false, $board_access = false) {
-
+	public static function stream_json($out = false, $filter_ips = false, $filter_staff = false, $board_access = false)
+	{
 		global $pdo; 
+		$query_addition = "";
+
 		if ($board_access && $board_access[0] == '*') {
 			$board_access = false;
 		}
-
-		$query_addition = "";
+ 
 		if ($board_access) {
 			$boards = implode(", ", array_map(array($pdo, "quote"), $board_access));
 			$query_addition .= "WHERE `board` IN (" . $boards . ")";
@@ -263,8 +271,10 @@ class Bans {
 
 	}
 
-	public static function seen($ban_id) {
+	public static function seen($ban_id)
+	{
 		global $config;
+
 		$query = query("UPDATE ``bans`` SET `seen` = 1 WHERE `id` = " . (int) $ban_id) or error(db_error());
 		if (!$config['cron_bans']) {
 			rebuildThemes('bans');
@@ -272,8 +282,10 @@ class Bans {
 
 	}
 
-	public static function purge() {
+	public static function purge()
+	{
 		global $config;
+
 		$query = query("DELETE FROM ``bans`` WHERE `expires` IS NOT NULL AND `expires` < " . time() . " AND `seen` = 1") or error(db_error());
 		if (!$config['cron_bans']) {
 			rebuildThemes('bans');
@@ -281,8 +293,10 @@ class Bans {
 
 	}
 
-	public static function delete($ban_id, $modlog = false, $boards = false, $dont_rebuild = false) {
+	public static function delete($ban_id, $modlog = false, $boards = false, $dont_rebuild = false)
+	{
 		global $config;
+
 		if ($boards && $boards[0] == '*') {
 			$boards = false;
 		}
@@ -316,8 +330,10 @@ class Bans {
 		return true;
 	}
 
-	public static function new_ban($mask, $reason, $length = false, $ban_board = false, $mod_id = false, $post = false) {
+	public static function new_ban($mask, $reason, $length = false, $ban_board = false, $mod_id = false, $post = false)
+	{
 		global $mod, $config, $pdo, $board; 
+
 		if ($mod_id === false) {
 			$mod_id = isset($mod['id']) ? $mod['id'] : -1;
 		}
@@ -403,11 +419,9 @@ class Bans {
 
 		return $pdo->lastInsertId();
 	}
-
-
 	
-	public static function get_ban($ban_id){
-
+	public static function get_ban($ban_id)
+	{
 		$query = prepare('SELECT * FROM `bans` WHERE `id`=:id');
         $query->bindValue(':id', $ban_id, PDO::PARAM_INT);
         $query->execute() or error(db_error($query));
@@ -415,8 +429,8 @@ class Bans {
 		return $query->fetch(PDO::FETCH_ASSOC);
 	}
 
-	public static function set_appeal($ban_id, $text){
-
+	public static function set_appeal($ban_id, $text)
+	{
         $query = prepare('UPDATE `bans` SET `appeal_time`=:time, `appeal_state`=1,`appeal_text`=:text WHERE `id`=:id');
         $query->bindValue(':id', $ban_id, PDO::PARAM_INT);
         $query->bindValue(':text', utf8tohtml($text), PDO::PARAM_STR);
@@ -424,22 +438,21 @@ class Bans {
 
         $query->execute() or error(db_error($query));
 
-   }
+	}
 
-	public static function deny_appeal($ban_id){
-
+	public static function deny_appeal($ban_id)
+	{
         $query = prepare('UPDATE `bans` SET `appeal_state`=2 WHERE `id`=:id');
         $query->bindValue(':id', $ban_id, PDO::PARAM_INT);
         $query->execute() or error(db_error($query));
 	}
 
-	public static function get_requested_appeals($from_board = false){
-
-		if($from_board){
+	public static function get_requested_appeals($from_board = false)
+	{
+		if ($from_board) {
 			$query = prepare('SELECT * FROM `bans` WHERE `appeal_state`=1 AND `board`=:board');
 			$query->bindValue(':board', $board, PDO::PARAM_STR);
-		}
-        else {
+		} else {
 			$query = prepare('SELECT * FROM `bans` WHERE `appeal_state`=1');
 		}
 
@@ -447,57 +460,4 @@ class Bans {
 		return $query->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-	
 }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	

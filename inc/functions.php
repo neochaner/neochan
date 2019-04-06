@@ -279,7 +279,7 @@ function loadConfig() {
 
 	// Keep the original address to properly comply with other board configurations
 	if (!isset($__ip)){
-		$identity = session::GetIdentity();
+		$identity = Session::getIdentity();
 		$__ip = $identity;
 	}
 	
@@ -999,7 +999,7 @@ function displayBan($ban) {
 		Bans::seen($ban['id']);
 	}
 
-	$ban['ip'] = session::GetIdentity();
+	$ban['ip'] = Session::getIdentity();
 
 	if ($ban['post'] && isset($ban['post']['board'], $ban['post']['id'])) {
 		if (openBoard($ban['post']['board'])) {
@@ -1057,7 +1057,7 @@ function checkBan($board = false) {
 		return true;
 	}
 
-	$bans = Bans::find(session::GetIdentity(), $board, $config['show_modname']);
+	$bans = Bans::find(Session::getIdentity(), $board, $config['show_modname']);
 
 	foreach ($bans as &$ban) {
 
@@ -1142,7 +1142,7 @@ function threadExists($id) {
 
 function insertFloodPost(array $post) {
 	global $board;
-	$identity = session::GetIdentity();
+	$identity = Session::getIdentity();
 	
 	$query = prepare("INSERT INTO ``flood`` VALUES (NULL, :ip, :board, :time, :posthash, :filehash, :isreply)");
 	$query->bindValue(':ip', $identity);
@@ -1193,8 +1193,8 @@ function post(array $post, &$template=null)
 	$query->bindValue(':body_nomarkup', $post['body_nomarkup']);
 	$query->bindValue(':time', isset($post['time']) ? $post['time'] : time(), PDO::PARAM_INT);
 	$query->bindValue(':password', $post['password']);
-	$query->bindValue(':ip', isset($post['ip']) ? $post['ip'] : session::GetIdentity());
-	$query->bindValue(':range_ip_hash', session::GetIdentityRange());
+	$query->bindValue(':ip', isset($post['ip']) ? $post['ip'] : Session::getIdentity());
+	$query->bindValue(':range_ip_hash', Session::getIdentityRange());
 	
 	if ($post['op'] && $post['mod'] && isset($post['sticky']) && $post['sticky']) {
 		$query->bindValue(':sticky', true, PDO::PARAM_INT);
@@ -1647,7 +1647,7 @@ function index($page, $mod=false) {
 
 // Handle statistic tracking for a new post.
 function updateStatisticsForPost( $post, $new = true ) {
-	$identity = session::GetIdentity();
+	$identity = Session::getIdentity();
 	$postIp   = isset($post['ip']) ? $post['ip'] : $identity;
 	$postUri  = $post['board'];
 	$postTime = (int)( $post['time'] / 3600 ) * 3600;
@@ -1855,7 +1855,7 @@ function muteTime() {
 
 	if ($time = event('mute-time'))
 		return $time;
-	$identity = session::GetIdentity();
+	$identity = Session::getIdentity();
 	
 	// Find number of mutes in the past X hours
 	$query = prepare("SELECT COUNT(*) FROM ``mutes`` WHERE `time` >= :time AND `ip` = :ip");
@@ -1870,7 +1870,7 @@ function muteTime() {
 
 function mute() {
 	// Insert mute
-	$identity = session::GetIdentity();
+	$identity = Session::getIdentity();
 	$query = prepare("INSERT INTO ``mutes`` VALUES (:ip, :time)");
 	$query->bindValue(':time', time(), PDO::PARAM_INT);
 	$query->bindValue(':ip', $identity);
@@ -1883,7 +1883,7 @@ function checkMute() {
 	global $config;
 
 	if ($config['cache']['enabled']) {
-		$identity = session::GetIdentity();
+		$identity = Session::getIdentity();
 		// Cached mute?
 		if (($mute = cache::get("mute_${identity}")) && ($mutetime = cache::get("mutetime_${identity}"))) {
 			error(sprintf($config['error']['youaremuted'], $mute['time'] + $mutetime - time()));
@@ -1892,7 +1892,7 @@ function checkMute() {
 
 	$mutetime = muteTime();
 	if ($mutetime > 0) {
-		$identity = session::GetIdentity();
+		$identity = Session::getIdentity();
 		// Find last mute time
 		$query = prepare("SELECT `time` FROM ``mutes`` WHERE `ip` = :ip ORDER BY `time` DESC LIMIT 1");
 		$query->bindValue(':ip', $identity);
@@ -1905,7 +1905,7 @@ function checkMute() {
 
 		if ($mute['time'] + $mutetime > time()) {
 			if ($config['cache']['enabled']) {
-				$identity = session::GetIdentity();
+				$identity = Session::getIdentity();
 				cache::set("mute_${identity}", $mute, $mute['time'] + $mutetime - time());
 				cache::set("mutetime_${identity}", $mutetime, $mute['time'] + $mutetime - time());
 			}
@@ -3718,7 +3718,7 @@ function postRate($board_uri, $post_id, $like = true){
 		server_reponse('No board', array('success'=>false, 'error'=>'l_error_noboard'));
 	}
 
-	if(!$config['rating']['darknet'] && session::$is_darknet){
+	if(!$config['rating']['darknet'] && Session::$is_darknet){
 		server_reponse('Option is disabled for darknet', array('success'=>false, 'error'=>'l_disabled_for_darknet'));
 	}
 
@@ -3745,7 +3745,7 @@ function postRate($board_uri, $post_id, $like = true){
 	$query = prepare("SELECT * FROM `rating` WHERE `post_id`=:post_id AND `board`=:board AND `ip`=:ip");
 	$query->bindValue(':board', $board['uri'], PDO::PARAM_STR);
 	$query->bindValue(':post_id', $post_id, PDO::PARAM_INT);
-	$query->bindValue(':ip', session::GetIdentity(), PDO::PARAM_STR);
+	$query->bindValue(':ip', Session::getIdentity(), PDO::PARAM_STR);
 	$query->execute() or error(db_error($query));
 	
 	$entry = $query->fetch(PDO::FETCH_ASSOC);
@@ -3759,7 +3759,7 @@ function postRate($board_uri, $post_id, $like = true){
  
 	// put like
 	$query = prepare("INSERT INTO `rating` VALUES (NULL, :ip, :board, :thread_id, :post_id, :like)");
-	$query->bindValue(':ip', session::GetIdentity(), PDO::PARAM_STR);
+	$query->bindValue(':ip', Session::getIdentity(), PDO::PARAM_STR);
 	$query->bindValue(':board', $board['uri'], PDO::PARAM_STR);
 	$query->bindValue(':thread_id', $thread_id, PDO::PARAM_INT); 
 	$query->bindValue(':post_id', $post_id, PDO::PARAM_INT); 

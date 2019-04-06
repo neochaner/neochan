@@ -3,25 +3,24 @@ require 'inc/functions.php';
 require 'inc/mod/pages.php';
 
 
-
-
 header('Content-Type: text/json; charset=utf-8');
 $_POST['json_response'] = 1;
 
  
 
-
-if(isset($_POST['post_id']) && !is_numeric($_POST['post_id']))
+if (isset($_POST['post_id']) && !is_numeric($_POST['post_id'])) {
     error($config['error']['wrong_params']);
+}
 
-if (empty($_POST['board']) || !openBoard($_POST['board']))
+if (empty($_POST['board']) || !openBoard($_POST['board'])) {
     error($config['error']['wrong_params']);
+}
 
-if(isset($_POST['thread_id']) && !is_numeric($_POST['thread_id']))
+if (isset($_POST['thread_id']) && !is_numeric($_POST['thread_id'])) {
     error($config['error']['wrong_params']);
+}
 
-if($_POST['action'] == 'get_deleted')
-{
+if ($_POST['action'] == 'get_deleted') {
     get_posts_from_hell($_POST['thread_id']);
     exit;
 }
@@ -30,8 +29,7 @@ if($_POST['action'] == 'get_deleted')
 // авторизируемся модератором
 check_login(false, true);
 
-if($mod != null)
-{
+if ($mod != null) {
 
     if(
     !hasPermission($config['mod']['ban']) ||
@@ -44,38 +42,35 @@ if($mod != null)
 
  
 
-if($mod == null)
-{
+if ($mod == null) {
     // авторизируемся оп-модератором
     check_opmod_login();
 
-    if($mod == null)
+    if ($mod == null) {
         error($config['error']['noaccess'] );
+    }
 
     $thread_access_id = "{$board['uri']}_{$_POST['thread_id']}";
 
     // проверяем можем ли мы модерировать тред
-    if(isset($_POST['thread_id']))
-    {
-        if(!in_array($thread_access_id , $mod['threads']))
+    if (isset($_POST['thread_id'])) {
+        if (!in_array($thread_access_id , $mod['threads'])) {
             error($config['error']['noaccess']);
+        }
     }
 
     // проверяем относится ли пост к треду
-    if(isset($_POST['post_id']))
-    {
+    if (isset($_POST['post_id'])) {
 
         $query = prepare(sprintf("SELECT * FROM `posts_%s` WHERE `id` = :post_id", $board['uri']));
         $query->bindValue(':post_id', $_POST['post_id'], PDO::PARAM_INT);
         $query->execute() or error(db_error($query));
 
-        if ($post = $query->fetch(PDO::FETCH_ASSOC)) 
-        { 
-            if($post['thread'] !== $_POST['thread_id'])
+        if ($post = $query->fetch(PDO::FETCH_ASSOC)) { 
+            if ($post['thread'] !== $_POST['thread_id']) {
                 error($config['error']['noaccess']);
-        }
-        else
-        {
+            }
+        } else {
             error($config['error']['noaccess']);
         }
     }
@@ -83,8 +78,7 @@ if($mod == null)
 
 
 
-switch($_POST['action'])
-{
+switch ($_POST['action']) {
 
     case 'login':
         $boards = isset($mod['boards']) ? $mod['boards'] : [];
@@ -122,17 +116,15 @@ switch($_POST['action'])
         $_POST['public_message'] =  $_POST['reason']; // public message
         $_POST['new_ban']='';
 
-        if($delete_all)
-        { 
+        if ($delete_all) { 
             // сначала удаляем все посты, кроме того за который баним
             $query = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `id` = :id", $board['uri']));
             $query->bindValue(':id', $_POST['post_id'], PDO::PARAM_INT);
             $query->execute() or error(db_error($query));
         
-            if ($post = $query->fetch(PDO::FETCH_ASSOC)) 
-            { 
-                if ($post['thread'])
-                {
+            if ($post = $query->fetch(PDO::FETCH_ASSOC)) { 
+                
+                if ($post['thread']){
  
                     $query = prepare(sprintf("SELECT * FROM `posts_%s` WHERE `thread` = :thread AND `ip` = :ip AND `id` != :id" , $board['uri']));
                     $query->bindValue(':thread', $post['thread'], PDO::PARAM_INT);   
@@ -145,25 +137,21 @@ switch($_POST['action'])
                         $deleted_posts = $query->rowCount();
                         json_response_add("deleted_count",  $deleted_posts);
 
-                        if( $deleted_posts > 0)
+                        if ($deleted_posts > 0) {
                             json_response_add("need_reload",  true);
+                        }
 
                         modLog("Start delete $deleted_posts posts by IP address");
 
-                        if ($ip_posts = $query->fetchAll(PDO::FETCH_ASSOC)) 
-                        { 
-                            foreach($ip_posts as $ip_post)
-                            {
+                        if ($ip_posts = $query->fetchAll(PDO::FETCH_ASSOC)) { 
+                            foreach ($ip_posts as $ip_post) {
                                 send_post_to_hell($ip_post['id'], false, true);
                             }
                         }
                     }
                 }
-
             }
         }
- 
-
 
         $result = nban::new($board['uri'], $_POST['post_id'], $_POST['reason'],  (int)$_POST['length']);
 
@@ -184,44 +172,45 @@ switch($_POST['action'])
         break;
     case 'add_playlist':
   
-        neotube::init($_POST['board'], $_POST['thread_id']);
+        Neotube::init($_POST['board'], $_POST['thread_id']);
 
         if(substr($_POST['link'], 0, 4) != 'http'){
 
-            if(!neotube::uploadLocalTrack($_POST['link']))
+            if(!Neotube::uploadLocalTrack($_POST['link']))
                 server_reponse('Fail change playlist', array('success'=> false));
             
-            $json = neotube::getPlaylist(); 
+            $json = Neotube::getPlaylist(); 
             json_response(array('success'=>  $json != null, 'playlist' => $json, 'time'=> time()+1));
             break;
         }
 
-        if(!neotube::addYoutubeLink( $_POST['link']))
+        if(!Neotube::addYoutubeLink( $_POST['link'])) {
             server_reponse('Fail change playlist', array('success'=> false));
+        }
 
-        $json = neotube::getPlaylist(); 
+        $json = Neotube::getPlaylist(); 
         json_response(array('success'=>  $json != null, 'playlist' => $json, 'time'=> time()+1));
 
         break;
     case 'remove_track':
-        neotube::init($_POST['board'], $_POST['thread_id']);
-        $json = neotube::removeFromPlaylist($_POST['id']);
+        Neotube::init($_POST['board'], $_POST['thread_id']);
+        $json = Neotube::removeFromPlaylist($_POST['id']);
 
         json_response(array('success'=> true,  'playlist' => $json));
         break;
 
     case 'upload_track':
-        neotube::init($_POST['board'], $_POST['thread_id']);
-        $result = neotube::uploadTrack();
+        Neotube::init($_POST['board'], $_POST['thread_id']);
+        $result = Neotube::uploadTrack();
 
-        json_response(array('success'=>  $result != null, 'playlist' => neotube::getPlaylistJson()));
+        json_response(array('success'=>  $result != null, 'playlist' => Neotube::getPlaylistJson()));
         break;
 
     case 'pause_track':
-        neotube::init($_POST['board'], $_POST['thread_id']);
-        $result = neotube::pauseTrack();
+        Neotube::init($_POST['board'], $_POST['thread_id']);
+        $result = Neotube::pauseTrack();
 
-        json_response(array('success'=>  $result != null, 'playlist' => neotube::getPlaylistJson()));
+        json_response(array('success'=>  $result != null, 'playlist' => Neotube::getPlaylistJson()));
         break;
     case 'neotube_rights':
         json_response(array('success'=> true, 'rights' => true));
@@ -242,10 +231,9 @@ function hide_post($post_id, $rebuild = true, $return = false)
     $query->bindValue(':id', $post_id, PDO::PARAM_INT);
     $query->execute() or error(db_error($query));
 
-    if ($post = $query->fetch(PDO::FETCH_ASSOC)) 
-    {
-        if($post['thread'] < 0)
-        {
+    if ($post = $query->fetch(PDO::FETCH_ASSOC)) {
+        
+        if($post['thread'] < 0) {
             json_reponse(array('fail'=>'Нельзя удалять посты из ада'));
         }
         
@@ -267,20 +255,19 @@ function hide_post($post_id, $rebuild = true, $return = false)
         $query->execute() or error(db_error($query));
         $query = $query->fetch(PDO::FETCH_ASSOC);
 
-        if($rebuild)
-        {
+        if ($rebuild) {
             buildThread($post['thread']);
             buildIndex();
         }
 
-        if(!$return)
+        if (!$return) {
             json_response(array('post_delete_success'=> true));
+        }
 
-    }
-    else
-    {
-        if(!$return)
+    } else {
+        if (!$return) {
             json_response(array('fail'=> 'Произошла ошибка'));
+        }
     }
 
     
@@ -296,8 +283,7 @@ function delete_file($post_id, $hash)
     $query->bindValue(':id', $post_id, PDO::PARAM_INT);
     $query->execute() or error(db_error($query));
 
-    if ($post = $query->fetch(PDO::FETCH_ASSOC)) 
-    {
+    if ($post = $query->fetch(PDO::FETCH_ASSOC)) {
 
         if (!$post['files']) {
             json_response(array('fail'=> 'Произошла ошибка'));
@@ -306,29 +292,26 @@ function delete_file($post_id, $hash)
         $files = json_decode($post['files']);
         $new_files = array();
 
-        foreach($files as $f)
-        {
+        foreach ($files as $f) {
             
-            if ($f->hash == $hash)
-            {
-                if (isset($f->file, $f->thumb) && $f->file !== 'deleted') 
-                {
+            if ($f->hash == $hash){
+
+                if (isset($f->file, $f->thumb) && $f->file !== 'deleted') {
                     
 					@file_unlink($config['dir']['img_root'] . $board['dir'] . $config['dir']['img'] . $f->file);
                     @file_unlink($config['dir']['img_root'] . $board['dir'] . $config['dir']['thumb'] . $f->thumb);
 
-                    if($f->fat)
+                    if ($f->fat) {
                         delete_fat_file($f);
+                    }
                 }
-            }
-            else
-            {
+
+            } else {
                 $new_files[] = $f;
             }
         }
 
         $json = json_encode($new_files);
-		
 
         modLog("set poiler to post #$post_id");
         $query = prepare(sprintf("UPDATE `posts_%s` SET `files`=:files, `edited_at` = UNIX_TIMESTAMP(NOW()), `changed_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = :id", $board['uri']));
@@ -343,9 +326,7 @@ function delete_file($post_id, $hash)
 
         json_response(array('file_delete_success'=> true));
 
-    }
-    else
-    {
+    } else {
         json_response(array('fail'=> 'Произошла ошибка'));
     }
 
@@ -362,8 +343,7 @@ function spoiler_file($post_id, $hash)
     $query->bindValue(':id', $post_id, PDO::PARAM_INT);
     $query->execute() or error(db_error($query));
 
-    if ($post = $query->fetch(PDO::FETCH_ASSOC)) 
-    {
+    if ($post = $query->fetch(PDO::FETCH_ASSOC)) {
 
         if (!$post['files']) {
             json_response(array('fail'=> 'Произошла ошибка'));
@@ -371,10 +351,9 @@ function spoiler_file($post_id, $hash)
 
         $files = json_decode($post['files']);
 
-        foreach($files as &$f)
-        {
-            if ($f->file !== 'deleted' && $f->hash == $hash)
-            {
+        foreach ($files as &$f) {
+
+            if ($f->file !== 'deleted' && $f->hash == $hash){
                 $f->thumb = 'spoiler';
             }
         }
@@ -395,9 +374,7 @@ function spoiler_file($post_id, $hash)
 
         json_response(array('spoiler_file_success'=> true));
 
-    }
-    else
-    {
+    } else {
         json_response(array('fail'=> 'Произошла ошибка'));
     }
 
@@ -415,13 +392,11 @@ function get_posts_from_hell($thread_id)
     $query->bindValue(':id', $thread_id, PDO::PARAM_INT);
     $query->execute() or error(db_error($query));
 
-    if ($posts = $query->fetchAll(PDO::FETCH_ASSOC)) 
-    {
+    if ($posts = $query->fetchAll(PDO::FETCH_ASSOC)) {
 
         $data = "<html><main>";
 
-        foreach($posts as $post)
-        {
+        foreach ($posts as $post) {
             $list =  Element('post_reply.html', array(
                 'config' => $config,
                 'board' => $board,
@@ -431,7 +406,6 @@ function get_posts_from_hell($thread_id)
             ));
 
             $data .= $list;
-
         }
 
         $data .= "</main></html>";
@@ -444,11 +418,6 @@ function get_posts_from_hell($thread_id)
 }
 
 
-
-
-
- 
-
 function response($arr)
 {
     die(json_encode($arr));
@@ -456,15 +425,3 @@ function response($arr)
 
 
 
-
-
-
-
-
-
-
-
-
- 
-
-?>

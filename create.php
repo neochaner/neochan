@@ -11,7 +11,7 @@ if (!$config['allow_create_userboards']) {
 }
 
 
-if (session::$is_darknet && !$config['allow_create_userboards_from_darknet']) {
+if (Session::$is_darknet && !$config['allow_create_userboards_from_darknet']) {
 	error(_('Create user boards is not allowed for you.'));
 }
 
@@ -21,7 +21,8 @@ $query->bindValue(':timeout_min', $config['allow_create_userboards_timeout']);
 $query->execute() or error(db_error($query));
 
 $count = $query->fetch();
-if(!is_array($count) || $count[0] > 0){
+
+if (!is_array($count) || $count[0] > 0){
 	error("please, try later");
 }
 
@@ -36,8 +37,7 @@ if (!isset($_POST['uri'], $_POST['title'], $_POST['subtitle'], $_POST['username'
 		"subtitle" => _("before someone else does"),
 		'boardlist' => createBoardlist(),
 	));
-}
-else {
+} else {
 	$uri      = $_POST['uri'];
 	$title    = $_POST['title'];
 	$subtitle = $_POST['subtitle'];
@@ -88,6 +88,7 @@ else {
 
 		}
 	}
+	
 	$query = prepare('SELECT ``username`` FROM ``mods`` WHERE ``username`` = :username');
 	$query->bindValue(':username', $username);
 	$query->execute() or error(db_error($query));

@@ -14,30 +14,32 @@ if (get_magic_quotes_gpc()) {
 
 
 
-if(isset($_POST['login'])){
+if (isset($_POST['login'])) {
     mod_login();
-}
-else if(isset($_POST['register'])){
+} else if (isset($_POST['register'])) {
 
     $data = "<script src='https://www.google.com/recaptcha/api.js' async defer></script>";
     $data .= "<div class='g-recaptcha' ID='recaptcha' data-sitekey='{$config['captcha']['recaptcha_public_key']}'></div>";
 
   
-    if(!preg_match('/^[A-Za-z0-9_]+$/', $_POST['username']))
+    if (!preg_match('/^[A-Za-z0-9_]+$/', $_POST['username'])) {
         json_response(array('invalid_username_1' => true));
+    }
         
-    if(!isset($_POST['username']) || strlen($_POST['username']) < 5)
+    if (!isset($_POST['username']) || strlen($_POST['username']) < 5) {
         json_response(array('invalid_username_2' => true));
+    }
         
-    if(!isset($_POST['password']) || strlen($_POST['password']) < 5)
+    if (!isset($_POST['password']) || strlen($_POST['password']) < 5) {
         json_response(array('invalid_password_1' => true));
+    }
 
-    if(!isset($_POST['g-recaptcha-response']))
+    if (!isset($_POST['g-recaptcha-response'])) {
         json_response(array('captcha' => true, 'data'=> $data));
+    }
 
 
-    if(!recaptcha_verify($_POST['g-recaptcha-response']))
-	{
+    if (!recaptcha_verify($_POST['g-recaptcha-response'])) {
         json_response(array('captcha' => true, 'data'=> $data, 'alert'=> $config['error']['captcha']));
     }
  
@@ -50,7 +52,7 @@ else if(isset($_POST['register'])){
     $query->execute() or error(db_error($query));
     $users = $query->fetchAll(PDO::FETCH_ASSOC);
 
-    if (sizeof($users) > 0){
+    if (sizeof($users) > 0) {
         json_response(array('invalid_username_3' => true));
     }
 
@@ -69,46 +71,51 @@ else if(isset($_POST['register'])){
     json_response(array('register_success'=>true));
 
 
-} else if(isset($_POST['logout'])){
+} else if (isset($_POST['logout'])) {
     mod_logout();
-} else if(isset($_POST['update_profile'])){
+} else if (isset($_POST['update_profile'])) {
     profile_update();
-} else if(isset($_POST['logout'])){
+} else if (isset($_POST['logout'])) {
     mod_logout(false);
 } else if (isset($_REQUEST['vote'])) {
  
     global $config, $board;
 
-    if(!isset($_REQUEST['board']) || !openBoard($_REQUEST['board']))
+    if (!isset($_REQUEST['board']) || !openBoard($_REQUEST['board'])) {
         server_reponse('No board', array('success'=>false, 'error'=>'l_error_noboard'));
+    }
 
-    if(session::AllowVote())
+    if (Session::isAllowVote()) {
         server_reponse('No access', array('success'=>false, 'error'=>'l_error_noaccess'));
+    }
 
     $query = prepare(sprintf("SELECT * FROM `posts_%s` WHERE `id` = :id", $board['uri']));
     $query->bindValue(':id', (int)$_REQUEST['post'], PDO::PARAM_INT);
     $query->execute() or error(db_error($query));
 
-    if ($post = $query->fetch(PDO::FETCH_ASSOC)) 
-    {
+    if ($post = $query->fetch(PDO::FETCH_ASSOC)) {
 
-        if(is_string($post['poll']) == NULL)
+        if (is_string($post['poll']) == NULL) {
             server_reponse('Poll not found', array('success'=>false, 'error'=>'l_poll_notfound'));
+        }
 
         $post['poll'] = json_decode($post['poll'], TRUE);
         $vote = (int)$_REQUEST['vote'];
 
-        if(count($post['poll']) <= $vote)
+        if (count($post['poll']) <= $vote) {
             server_reponse('Invalid vote number', array('success'=>false, 'error'=>'l_invalidvote'));
+        }
 
         // check double vote
-        if(in_array(session::GetIdentity(), $post['poll'][$vote]['ids']))
+        if (in_array(Session::getIdentity(), $post['poll'][$vote]['ids'])) {
             server_reponse('Already voted', array('success'=>false, 'error'=>'l_alreadyvoted'));
+        }
         
-        $post['poll'][$vote]['ids'][] = session::GetIdentity();
+        $post['poll'][$vote]['ids'][] = Session::getIdentity();
 
-        if(isset($_REQUEST['media']) && (int)$_REQUEST['media'] == 0)
+        if (isset($_REQUEST['media']) && (int)$_REQUEST['media'] == 0) {
             $post['poll'][$vote]['votes']++;
+        }
 
         recalculate_votes($post['poll']);
 
@@ -124,31 +131,32 @@ else if(isset($_POST['register'])){
 
         buildThread($post['thread'] ? $post['thread'] : (int)$_REQUEST['post']); 
 
-        if(isset($_REQUEST['media']) && (int)$_REQUEST['media'] == 1)
+        if (isset($_REQUEST['media']) && (int)$_REQUEST['media'] == 1) {
             server_reponse('Already voted!', array('success'=>true, 'info'=>'l_alreadyvoted'));
+        }
 
         server_reponse('Voted!', array('success'=>true, 'info'=>'l_vote_success'));
-    }
-    else
+    } else {
         server_reponse('Invalid post', array('success'=>false, 'error'=>'l_invalidpost'));
+    }
 
 }
-else if(isset($_POST['get_playlists'], $_POST['board'])){
+else if (isset($_POST['get_playlists'], $_POST['board'])){
 
-    if(!isset($_POST['board']) || !openBoard($_POST['board']))
+    if (!isset($_POST['board']) || !openBoard($_POST['board'])) {
         server_reponse('No board', array('success'=>false, 'error'=>'l_error_noboard'));
+    }
 
-    neotube::init($_POST['board'], '0');
-    $list = neotube::getBoardPlaylists();
+    Neotube::init($_POST['board'], '0');
+    $list = Neotube::getBoardPlaylists();
 
-    if($list == null || count($list) == 0)
+    if ($list == null || count($list) == 0) {
         json_response(array('success'=> false, 'error' => 'l_board_notubes'));
-    else {
+    } else {
 
         $html='';
 
-        foreach($list as $track){
-
+        foreach ($list as $track) {
             $html .= "<a href='{$track['link']}?#neotube' style='display:block;padding: 10px;'>#{$track['thread']} - {$track['title']}</a>";
         }
 
@@ -156,30 +164,27 @@ else if(isset($_POST['get_playlists'], $_POST['board'])){
     }
 
 
-}
-else
-{
+} else {
     json_response(array('alert'=> 'unkhown action'));
 }
 
 
 
 
-function profile_update(){
-    
+function profile_update()
+{
     global $mod, $config;
 
     $data = check_profile();
 
-    if(!is_array($data))
-    {
+    if (!is_array($data)){
+
         json_response(array(
             'success'=> false, 
             'update_profile'=>true,
             'auth' => false,
             'data' => array(),
         ));
-    
     }
 
     $permissions = array(
@@ -240,22 +245,22 @@ function profile_update(){
     json_response( $result );
 }
 
-function recalculate_votes(&$poll){
+function recalculate_votes(&$poll)
+{
 
     $votes = 0;
-    foreach($poll as $variant)
+    foreach ($poll as $variant) {
         $votes += $variant['votes'];
+    }
 
-    if($votes == 0)
+    if ($votes == 0) {
         return;
+    }
 
-    foreach($poll as &$variant)
+    foreach ($poll as &$variant) {
         $variant['percent'] = (int)(($variant['votes'] / $votes) * 100);
+    }
 }
-
-
-
-?>
 
 
 

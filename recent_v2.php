@@ -107,22 +107,21 @@ else if(isset($_GET['thread']) && isset($_GET['board']) && in_array($_GET['board
 
     $posts = array();
 
-    foreach($data as $post)
-    {
+    foreach ($data as $post) {
         if($post['changed_at'] > $_GET['time'] || ($post['changed_at'] == $_GET['time'] && $post['id'] != $_GET['post']))
             $posts[] = $post;
     }
 
 
-    if(isset($_GET['neotube']) && $_GET['neotube'] > 0){
+    if (isset($_GET['neotube']) && $_GET['neotube'] > 0) {
 
-        neotube::init($_GET['board'], $_GET['thread']);
-        $playlist = neotube::getPlaylist();
+        Neotube::init($_GET['board'], $_GET['thread']);
+        $playlist = Neotube::getPlaylist();
  
         $result = array('posts'=> $posts, 'post_len'=> count($posts), 'playlist' => is_array($playlist) ? $playlist : null);
         echo json_encode($result); 
 
-    } else{
+    } else {
 
         $result = array('posts'=> $posts, 'post_len'=> count($posts));
         echo json_encode($result);

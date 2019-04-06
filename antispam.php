@@ -1,8 +1,6 @@
-
 <?php
 include_once 'inc/functions.php';
 include_once 'inc/session.php';
-
 
 if (!isset($_GET['board']) || !openBoard($_GET['board'])) {
 	http_response_code(404);
@@ -11,30 +9,28 @@ if (!isset($_GET['board']) || !openBoard($_GET['board'])) {
 
 $back_link = '/' . $_GET['board'] . '/';
 
-if($_GET['thread']){
+if ($_GET['thread']) {
 	$back_link .= 'res/' . $_GET['thread'] . '.html';
 }
 
-session::load();
-session::$is_onion = true;
+Session::load();
+Session::$is_onion = true;
 
 
-if(chanCaptcha::check())
-	session::CaptchaSolved();
+if (chanCaptcha::check()) {
+	Session::captchaSolved();
+}
 
 
 echo Element("antispam.html", [
-	'dump'=> json_encode(session::$data),
+	'dump'=> json_encode(Session::$data),
 	'config' => $config,
 	'board' => $board,
-	'is_darknet' => session::$is_onion ||session::$is_i2p,
+	'is_darknet' => Session::$is_onion ||Session::$is_i2p,
 	'back_link' => $back_link,
 	'captcha_onstart'=> true,
-	'captchas_left' => session::$data['capchas_left'], 
+	'captchas_left' => Session::$data['capchas_left'], 
 	'captchas_need' => $config['tor']['need_capchas'],
-	'verify_progress' => (session::$data['capchas_left'] * 100) / ($config['tor']['need_capchas']),
-	'allow_post' => session::AllowPost(),
+	'verify_progress' => (Session::$data['capchas_left'] * 100) / ($config['tor']['need_capchas']),
+	'allow_post' => Session::isAllowPost(),
 ]);
-
-
-?>

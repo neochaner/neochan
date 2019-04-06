@@ -84,10 +84,9 @@ function usermod_check_token($board_name, $thread, $token){
 
 }
 
-function usermod_get_token($board_name, $thread, $trip){
-
+function usermod_get_token($board_name, $thread, $trip)
+{
     global $config, $board;
-
 
     // make token
     $token = usermod_generate_token($trip);
@@ -96,10 +95,9 @@ function usermod_get_token($board_name, $thread, $trip){
     $query->bindParam(':token', $token, PDO::PARAM_STR);
     $query->bindParam(':thread', $thread, PDO::PARAM_INT);
     $query->bindParam(':trip', $trip, PDO::PARAM_STR);
-    $query->bindParam(':ip', session::GetIdentity(), PDO::PARAM_STR);
+    $query->bindParam(':ip', Session::getIdentity(), PDO::PARAM_STR);
 
     $query->execute() or error(db_error($query));
-
 
     if($query->rowCount() <= 0)
         usermod_auth("wrong tripcode");
@@ -108,11 +106,11 @@ function usermod_get_token($board_name, $thread, $trip){
 
 }
 
-function usermod_auth($warning = ''){
-   
+function usermod_auth($warning = '')
+{
     global $config, $board;
 
-    if(isset($_POST['disable_error'])){
+    if (isset($_POST['disable_error'])) {
         $warning = '';
     }
   
@@ -129,14 +127,13 @@ function usermod_auth($warning = ''){
 
 }
 
-function usermod_generate_token(){
-
+function usermod_generate_token()
+{
     global $config;
 
     $chrs = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
     $length = 12;
     $str = ''; 
-
   
     for ($i = 0; $i < $length; $i++) { 
         $index = rand(0, strlen($chrs) - 1); 
@@ -148,8 +145,8 @@ function usermod_generate_token(){
     return substr($hash, 0, 16);
 }
 
-function usermod_view($board_name, $thread_id, $token){
-
+function usermod_view($board_name, $thread_id, $token)
+{
     global $config, $board;
 
     $mod = array('type'=> 0, 'token' => $token);
@@ -160,15 +157,14 @@ function usermod_view($board_name, $thread_id, $token){
     exit;
 }
 
-function usermod_delete($board_name, $thread_id, $post_id, $token){
-
+function usermod_delete($board_name, $thread_id, $post_id, $token)
+{
     global $config, $board;
-
 
     $query = prepare(sprintf('SELECT `id` FROM ``posts_%s`` WHERE `id` = :thread AND `password`=:token AND `ip`=:ip' , $board['uri']));
     $query->bindParam(':thread', $thread_id, PDO::PARAM_INT);
     $query->bindParam(':token', $token, PDO::PARAM_STR); 
-    $query->bindParam(':ip', session::GetIdentity(), PDO::PARAM_STR);
+    $query->bindParam(':ip', Session::getIdentity(), PDO::PARAM_STR);
     $query->execute() or error(db_error($query));
 
     if($query->fetch(PDO::FETCH_ASSOC) == FALSE)
@@ -184,37 +180,36 @@ function usermod_delete($board_name, $thread_id, $post_id, $token){
 
 }
 
-function usermod_ban_delete($board_name, $thread_id, $post_id, $token){
-
+function usermod_ban_delete($board_name, $thread_id, $post_id, $token)
+{
     $_POST['delete'] = true;
     usermod_ban($board_name, $thread_id, $post_id, $token);
 }
 
-function usermod_ban($board_name, $thread_id, $post_id, $token){
-
+function usermod_ban($board_name, $thread_id, $post_id, $token)
+{
     global $config, $board;
 
     $query = prepare(sprintf('SELECT `trip` FROM ``posts_%s`` WHERE `id` = :thread AND `password`=:token AND `ip`=:ip' , $board['uri']));
     $query->bindParam(':thread', $thread_id, PDO::PARAM_INT);
     $query->bindParam(':token', $token, PDO::PARAM_STR); 
-    $query->bindParam(':ip', session::GetIdentity(), PDO::PARAM_STR);
+    $query->bindParam(':ip', Session::getIdentity(), PDO::PARAM_STR);
     $query->execute() or error(db_error($query));
     $op = $query->fetch(PDO::FETCH_ASSOC);
 
-    if($op == FALSE)
-        error($config['error']['noaccess']); 
-
+    if ($op == FALSE) {
+        error($config['error']['noaccess']);
+    }
 
     if(isset($_POST['new_ban'])){
  
-
         $query = prepare(sprintf('SELECT `ip` FROM ``posts_%s`` WHERE `id` = :post_id' , $board['uri']));
         $query->bindParam(':post_id', $post_id, PDO::PARAM_STR); 
         $query->execute() or error(db_error($query));
 
         $result = $query->fetch(PDO::FETCH_ASSOC);
 
-        if(!$result){
+        if (!$result) {
             error(['post not found']); 
         }
   
@@ -228,9 +223,8 @@ function usermod_ban($board_name, $thread_id, $post_id, $token){
         modLog("[opmod] Create new ban, reason: " . utf8tohtml($_POST['reason']));
         Bans::new_ban($result['ip'], $reason, $length, $op['trip'], -2);         
  
-
         // public message
-        if($config['opmod']['public_bans']){
+        if ($config['opmod']['public_bans']) {
 
             $_POST['reason'] = preg_replace('/[\r\n]/', '', $_POST['reason']);
 
@@ -241,11 +235,10 @@ function usermod_ban($board_name, $thread_id, $post_id, $token){
 
         }
 
-
         // delete post
         $query = isset($_SERVER['QUERY_STRING']) ? rawurldecode($_SERVER['QUERY_STRING']) : '';
 
-        if(strpos($query, "ban_delete") !== FALSE){
+        if (strpos($query, "ban_delete") !== FALSE) {
             $query = prepare(sprintf("UPDATE ``posts_%s`` SET `hide`=1, `changed_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = :id OR `thread` = :id", $board['uri']));
             $query->bindValue(':id', $post_id, PDO::PARAM_INT);
             $query->execute() or error(db_error($query));

@@ -1,8 +1,6 @@
 <?php
 
-
-
-class session {
+class Session {
 
 	public static $data = [
 		'create'=>0,
@@ -22,13 +20,13 @@ class session {
 	public static $is_exit_node;
 	public static $initialized = false;
 
-
-	public static function init() {
-
+	public static function init() 
+	{
 		global $config;
 
-		if(self::$initialized)
+		if (self::$initialized) {
 			return;
+		}
 
 		self::$initialized = true;
 
@@ -36,7 +34,7 @@ class session {
 		self::$data['posts_left'] = $config['tor']['max_posts'];
 		self::$data['posts_max'] = $config['tor']['max_posts'];
 		
-		self::$data['create'] = time() ;
+		self::$data['create'] = time();
 
 		self::$ip = $_SERVER['REMOTE_ADDR'];
 		self::$ip_range = self::$ip;
@@ -44,20 +42,14 @@ class session {
 		self::$is_i2p = in_array($_SERVER['REMOTE_ADDR'], $config['i2p_service_ips']);
 		self::$is_darknet = (self::$is_onion || self::$is_i2p); 
 
-		if(isset($_COOKIE[$config['cookies']['general']]))
-		{
+		if (isset($_COOKIE[$config['cookies']['general']])) {
 			$arr = explode('_', $_COOKIE[$config['cookies']['general']]);
  
-			if(count($arr) == 3 && $arr[0] == 'c')
-			{ 
+			if (count($arr) == 3 && $arr[0] == 'c') { 
 				self::$cookie_id =$arr[1];
 				self::$cookie_key = $arr[2];
 			}
 		} 
-	}
-
-	public static function capchas_left(){
-		return $data['capchas_left'];
 	}
 
 	/*
@@ -67,74 +59,70 @@ class session {
 		 0 = проверка требуется
 		 1 = проверка пройдена
 	*/
-	public static function antispam_state(){
-
+	public static function getAntispamState()
+	{
 		global $config;
 
 		$www_cap = $config['captcha']['antispam']['enable_www'];
 		$darknet_cap = $config['captcha']['antispam']['enable_www'];
 		
-
-		if($www_cap == 0 && $darknet_cap == 0)
+		if ($www_cap == 0 && $darknet_cap == 0) {
 			return -1;
+		}
 
-
-		if($www_cap > 0 && !self::$is_darknet){
-
+		if ($www_cap > 0 && !self::$is_darknet) {
 			return ($www_cap > self::$data['capchas_left']) ? 0 : 1;
 		}
 
-		if($darknet_cap > 0 && self::$is_darknet){
-
+		if ($darknet_cap > 0 && self::$is_darknet) {
 			return ($darknet_cap > self::$data['capchas_left']) ? 0 : 1;
 		}
 
 
 	}
 
-	public static function Load(){
+	public static function load()
+	{
 
-		if(!self::$initialized)
+		if (!self::$initialized) {
 			self::init();
+		}
   
-		if(self::$cookie_id == 0)
+		if (self::$cookie_id == 0) {
 			return;
+		}
 		
 		$data = cache::get('cookie_' . self::$cookie_id);
 
-		if(!is_array($data))
-		{
+		if (!is_array($data)) {
+
 			$query = prepare("SELECT `data` FROM `cookie` WHERE `id` = :id");
 			$query->bindValue(':id', self::$cookie_id, PDO::PARAM_INT);
 			$query->execute() or error(db_error($query));
 
 			$db_data = $query->fetch(PDO::FETCH_ASSOC);
 
-			if($db_data)
-			{  
+			if ($db_data) {  
 				self::$data = json_decode($db_data['data'], TRUE);
 				cache::set('cookie_' . self::$cookie_id, self::$data, self::$cache_time);
-			}
-			else
-			{
+			} else {
 				self::$cookie_id = 0;
 			}
-		}
-		else
-		{
+
+		} else {
 			self::$data = $data;
 		}
 	}
 
-	public static function Save(){
-
+	public static function save()
+	{
 		global $config, $pdo;
 
-		if(!self::$initialized)
+		if (!self::$initialized) {
 			self::init();
+		}
 
-		if(self::$cookie_id == 0)
-		{
+		if (self::$cookie_id == 0) {
 			self::$cookie_key = 'cookie' . bin2hex(random_bytes(18));
 			self::$data['create'] = time(); 
 		}
@@ -145,55 +133,37 @@ class session {
 		$query->bindValue(':data', json_encode(self::$data));
 		$query->execute() or error(db_error($query));
 
-
-		if(self::$cookie_id == 0){
+		if (self::$cookie_id == 0) {
 			self::$cookie_id = $pdo->lastInsertId();
 			setcookie($config['cookies']['general'], 'c_' . self::$cookie_id . '_' . self::$cookie_key, time()+60*60*24*30);
 		} 
 		
-		
-		if(self::$cookie_id == 0)
-			syslog(LOG_ERR, '[neochan] [error] PostSession:Save, cookie_id == 0!');
-
-		cache::set('cookie_' . self::$cookie_id, self::$data, self::$cache_time);
-		
-	}
-
-	/* DONT USE IT, NEED REMOVED */
-	public static function NeedCaptchaCount(){
-
-		global $config;
-
-		if(!self::$initialized)
-			self::init();
-
-		if(self::$is_onion || self::$is_i2p)
-		{
-			$captcha_count = $config['tor']['need_capchas'] - self::$data['capchas_left'];
-
-			return $captcha_count < 0 ? 0 : $captcha_count ;
+		if (self::$cookie_id == 0) {
+			syslog(LOG_ERR, '[neochan] [error] Session:save, cookie_id == 0!');
 		}
 
-		return 0;
+		cache::set('cookie_' . self::$cookie_id, self::$data, self::$cache_time);
 	}
 
-	public static function CaptchaSolved(){
-
-		if(!self::$initialized)
+	public static function captchaSolved()
+	{
+		if (!self::$initialized) {
 			self::init();
+		}
 
 		self::$data['capchas_left']++;
-		self::Save();
+		self::save();
 	}
 
-	public static function AllowPost(){
-
+	public static function isAllowPost()
+	{
 		global $config;
 
-		if(!self::$initialized)
+		if (!self::$initialized) {
 			self::init();
+		}
 
-		if(self::$is_onion || self::$is_i2p){
+		if (self::$is_onion || self::$is_i2p) {
 
 			return self::$data['capchas_left'] >= $config['tor']['need_capchas'];
 		}
@@ -201,104 +171,100 @@ class session {
 		return true;
 	}
 
-	public static function AllowVote(){
+	public static function isAllowVote()
+	{
 
 		global $config;
 
-		if(!self::$initialized)
+		if (!self::$initialized) {
 			self::init();
+		}
 
-		if(!$config['polls']['enable'])
+		if (!$config['polls']['enable']) {
 			return false;
+		}
 
-		if((self::$is_i2p || self::$is_onion) && !$config['polls']['darknet_enable'])
+		if ((self::$is_i2p || self::$is_onion) && !$config['polls']['darknet_enable']) {
 			return false;
+		}
 
-		if($config['polls']['ro_min_sec'] > 0 && $config['polls']['ro_min_sec'] < self::$data['create'])
+		if ($config['polls']['ro_min_sec'] > 0 && $config['polls']['ro_min_sec'] < self::$data['create']) {
 			return false;
+		}
 
-		if($config['polls']['postcount_min'] > 0 && count(self::$data['spam']) >= $config['polls']['postcount_min'])
+		if ($config['polls']['postcount_min'] > 0 && count(self::$data['spam']) >= $config['polls']['postcount_min']) {
 			return false;
+		}
 
 		return true;
 	}
 
-	public static function Posted(){
-
-		if(!self::$initialized)
-			self::init();
-
-		self::$data['spam'][] = time();
-		self::Save();
-	}
-
-	public static function GetIdentity(){
-
+	public static function getIdentity()
+	{
 		global $config;
 
-		if(!self::$initialized)
+		if (!self::$initialized) {
 			self::init();
+		}
 
-		if(self::$is_onion || self::$is_i2p)
+		if (self::$is_onion || self::$is_i2p) {
 			return self::$cookie_key;
+		}
 
-		switch($config['security_mode'])
-		{
+		switch ($config['security_mode']) {
 			case 1:
-				return '!s1' . self::Encrypt(self::$ip, $config['security_salt']);
+				return '!s1' . self::encrypt(self::$ip, $config['security_salt']);
 			case 2:
-				return '!s2' . self::Encrypt(self::$ip);
+				return '!s2' . self::encrypt(self::$ip);
 			default:
 				return self::$ip;
 		}
 		
 	}
 
-	public static function GetIdentityRange(){
-
+	public static function getIdentityRange()
+	{
 		global $config;
 
-		if(!self::$initialized)
+		if (!self::$initialized) {
 			self::init();
+		}
 
-		if(self::$is_onion || self::$is_i2p)
+		if (self::$is_onion || self::$is_i2p) {
 			return self::$cookie_key;
+		}
 
-		switch($config['security_mode'])
-		{
+		switch ($config['security_mode']) {
 			case 1:
-				return '!r1' . self::Encrypt(self::$ip_range, $config['security_salt']);
+				return '!r1' . self::encrypt(self::$ip_range, $config['security_salt']);
 			case 2:
-				return '!r2' . self::Encrypt(self::$ip_range);
+				return '!r2' . self::encrypt(self::$ip_range);
 			default:
 				return self::$ip_range;
 		}
-
-
 	}
 
-
-
-
-
-	private static function GetKey(){
+	private static function getKey()
+	{
 
 		global $config;
 
 		$key = cache::get('CryptKey');
 
-		if(!$key)
+		if (!$key) {
 			cache::set('CryptKey', bin2hex(random_bytes(128)), $config['security_mode_time']);
+		}
 	
 		return $key;
 	}
 	
-	public static function Encrypt($string, $key = NULL) {
-		
+	public static function encrypt($string, $key = NULL)
+	{
 		global $config;
 
-		if($key == NULL)
-			$key = self::GetKey();
+		if ($key == NULL) {
+			$key = self::getKey();
+		}
 		
         $iv = $config['security_salt'] ?? 'none';
         $output = false;
@@ -309,12 +275,13 @@ class session {
         return base64_encode( openssl_encrypt( $string, $encrypt_method, $key, 0, $iv ) );
     }
 
-    public static function Decrypt($string, $key = NULL) {
-
+	public static function decrypt($string, $key = NULL)
+	{
 		global $config;
 
-		if($key == NULL)
-			$key = self::GetKey();
+		if ($key == NULL) {
+			$key = self::getKey();
+		}
 			
         $iv = $config['security_salt'] ?? 'none';
         $output = false;

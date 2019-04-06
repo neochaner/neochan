@@ -2,14 +2,13 @@
 /*
  *  Copyright (c) 2010-2014 Tinyboard Development Group
  */
- 
-
 $init_time = microtime(true);
 require "./inc/functions.php";
 require "./inc/anti-bot.php";
 
 // Fix for magic quotes
-if (get_magic_quotes_gpc()) {
+if (get_magic_quotes_gpc())
+{
 	function strip_array($var) {
 		return is_array($var) ? array_map('strip_array', $var) : stripslashes($var);
 	}
@@ -18,7 +17,8 @@ if (get_magic_quotes_gpc()) {
 	$_POST = strip_array($_POST);
 }
 
-if(isset($_GET['rate'])){
+if(isset($_GET['rate']))
+{
 
 	if(!isset($_GET['board'], $_GET['id'])){
 		error($config['error']['bot']);
@@ -26,8 +26,7 @@ if(isset($_GET['rate'])){
 
 	postRate($_GET['board'], $_GET['id'], $_GET['rate'] == '1');
 
-}
-else if (isset($_POST['delete'])) {
+} elseif (isset($_POST['delete'])) {
 	// Delete
 	
 	if (!isset($_POST['board'], $_POST['password']))
@@ -130,7 +129,7 @@ else if (isset($_POST['delete'])) {
 	}
 	
 	//if (checkDNSBL()) 
-	if(!$config['tor_allow_reports'] && session::$is_onion)
+	if(!$config['tor_allow_reports'] && Session::$is_onion)
 		error("Tor users may not report posts.");
 		
 	// Check if board exists
@@ -213,7 +212,7 @@ else if (isset($_POST['delete'])) {
 						' for "' . $reason . '"'
 					);
 				}
-				$identity = session::GetIdentity();
+				$identity = Session::getIdentity();
 				
 				$query = prepare("INSERT INTO `reports` (`time`, `ip`, `board`, `post`, `reason`, `local`, `global`) VALUES (:time, :ip, :board, :post, :reason, :local, :global)");
 				$query->bindValue(':time',   time(), PDO::PARAM_INT);
@@ -238,18 +237,16 @@ else if (isset($_POST['delete'])) {
 	header('Content-Type: text/json');
 	echo json_encode(array('success' => true));
 	//}
-}
-elseif (isset($_POST['post'])) 
-{
+} elseif (isset($_POST['post'])) {
 
-	if(isset($_POST['noi'])){
+	if (isset($_POST['noi'])) {
 
-
-		if(!function_exists('openssl_get_privatekey')){
+		if (!function_exists('openssl_get_privatekey')) {
 			error('crypto error : openssl extension not loaded');
 		}
 	
-		function cryptoJsAesDecrypt($passphrase, $jsondata){
+		function cryptoJsAesDecrypt($passphrase, $jsondata)
+		{
 
 			$salt = hex2bin($jsondata["s"]);
 			$ct = base64_decode($jsondata["ct"]);
@@ -271,7 +268,7 @@ elseif (isset($_POST['post']))
 		$enc_key = base64_decode($noi['key']);
 		$pkey = openssl_get_privatekey($config['encryption']['private_key']);
 		
-		if(!$pkey){
+		if (!$pkey) {
 			error('crypto error : fail load key'); 
 		}
 
@@ -279,25 +276,24 @@ elseif (isset($_POST['post']))
 
 		$decForm = cryptoJsAesDecrypt($key, $noi);
 
-		if($decForm == NULL){
+		if ($decForm == NULL) {
 			error('crypto error : fail decrypt message'); 
 		}
 
-		foreach($decForm as $key => $value){
+		foreach ($decForm as $key => $value) {
 			$_POST[$key] = $value;
 		}
 
 	}
 
 	
-	
 
 
-	if(isset($_POST['name'], $_POST['neoname']) && strlen($_POST['name']) > 0){
+	if (isset($_POST['name'], $_POST['neoname']) && strlen($_POST['name']) > 0) {
 		error($config['error']['bot']);
 	}
 
-	if(isset($_POST['neoname'])){
+	if (isset($_POST['neoname'])) {
 		$_POST['name'] = $_POST['neoname'];
 	}
 
@@ -312,41 +308,44 @@ elseif (isset($_POST['post']))
 	);
 	
 	// Check if board exists
-	if (!openBoard($post['board']))
+	if (!openBoard($post['board'])) {
 		error($config['error']['noboard']);
+	}
 
 	
-	if (!isset($_POST['name'])){
+	if (!isset($_POST['name'])) {
 		$_POST['name'] = $config['anonymous'];
 	} else {
-		if (stripos($_POST['name'], 'sage') === 0){
-			
+		if (stripos($_POST['name'], 'sage') === 0) {
 			$_POST['no-bump'] = true;
 			$_POST['name'] = substr($_POST['name'], 4);
-
 		}
 	}
  
-	if (!isset($_POST['email']))
+	if (!isset($_POST['email'])) {
 		$_POST['email'] = '';
+	}
 	
-	if (!isset($_POST['subject']))
+	if (!isset($_POST['subject'])) {
 		$_POST['subject'] = '';
+	}
 	
-	if (!isset($_POST['password']))
+	if (!isset($_POST['password'])) {
 		$_POST['password'] = '';
+	}
 	
 	if (isset($_POST['thread'])) {
 		$post['op'] = false;
 		$post['thread'] = round($_POST['thread']);
-	} else
+	} else {
 		$post['op'] = true;
+	}
 
 
 
-	session::Load();
+	Session::load();
 
-	if(session::antispam_state() == 0){
+	if(Session::getAntispamState() == 0){
 		$html = "Вам необходимо пройти\n<a href='/antispam.php?board={$_POST['board']}'>антиспам проверку</a>";
 		server_reponse($html, array('success'=> false, 'need_antispam_check'=> $html));
 	}  
@@ -512,12 +511,12 @@ elseif (isset($_POST['post']))
 	$post['has_file'] = (!isset($post['embed']) && (($post['op'] && !isset($post['no_longer_require_an_image_for_op']) && $config['force_image_op']) || !empty($_FILES['file']['name'])));
 
 	// Handle our Tor users
-	$tor = session::$is_darknet;
+	$tor = Session::$is_darknet;
 	
 	
-	if (session::$is_darknet && $post['has_file'] && !$config['tor_image_posting'])
+	if (Session::$is_darknet && $post['has_file'] && !$config['tor_image_posting'])
 		error('Sorry. Tor/i2p users can\'t upload files on this board.');
-	if (session::$is_darknet && !$config['tor_posting'])
+	if (Session::$is_darknet && !$config['tor_posting'])
 		error('Sorry. The owner of this board has decided not to allow Tor/i2p posters for some reason...');
 
 
@@ -1339,18 +1338,17 @@ elseif (isset($_POST['post']))
 	syslog(1, 'post score =' . (microtime(true) - $init_time));
 
 
-}
-elseif (isset($_POST['appeal'])) {
+} elseif (isset($_POST['appeal'])) {
 	
  
-	session::Load();
+	Session::load();
 
 	if (!isset($_POST['ban_id']))
 		error(Vi::$config['error']['bot']);
 
 	$ban_id = (int)$_POST['ban_id'];
 
-	$bans = Bans::find(session::GetIdentity());
+	$bans = Bans::find(Session::getIdentity());
 	foreach ($bans as $_ban) {
 		if ($_ban['id'] == $ban_id) {
 			$ban = $_ban;
@@ -1446,7 +1444,7 @@ elseif (isset($_POST['user_edit']))
 	if ($post = $query->fetch(PDO::FETCH_ASSOC)) 
 	{
 
-		$user_access = session::GetIdentity() == $post['ip'] && strlen($post['ip']) >= 2;
+		$user_access = Session::getIdentity() == $post['ip'] && strlen($post['ip']) >= 2;
 
 		if(!$user_access && !$mod_request)
 			server_reponse('No access', array('error' => 'Доступ запрещён'));

@@ -1,11 +1,11 @@
 <?php
 
-if(php_sapi_name() !== 'cli'){
+if (php_sapi_name() !== 'cli') {
     exit;
 }
 
 
-if(count($argv) != 5){
+if (count($argv) != 5) {
     echo 'Wrong arguments';
     exit;
 }
@@ -69,12 +69,14 @@ chmod($secrets_file, 0444);
 create_board();
 
 
-function message($text){
+function message($text)
+{
     echo "$text\n";
     sleep(1);
 }
 
-function generate_keys(){
+function generate_keys()
+{
 
     $rsaKey = openssl_pkey_new(array( 
         'private_key_bits' => 2048, 
@@ -87,7 +89,8 @@ function generate_keys(){
     return array('public'=> $key['key'], 'private'=> $pem);
 }
 
-function gen_uuid() {
+function gen_uuid()
+{
 
     return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
         mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
@@ -98,7 +101,8 @@ function gen_uuid() {
     );
 }
 
-function create_board(){
+function create_board()
+{
     
     require 'inc/functions.php';
     require 'inc/mod/pages.php';

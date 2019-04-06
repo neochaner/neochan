@@ -8,7 +8,8 @@ defined('TINYBOARD') or exit;
 require_once 'inc/functions.php';
 
 // create a hash/salt pair for validate logins
-function mkhash($username, $password, $salt = false) {
+function mkhash($username, $password, $salt = false)
+{
 	global $config;
 	
 	if (!$salt) {
@@ -19,7 +20,7 @@ function mkhash($username, $password, $salt = false) {
 	}
 	
 	// generate hash (method is not important as long as it's strong)
-	$identity = session::GetIdentity();
+	$identity = Session::getIdentity();
 	$hash = substr(base64_encode(md5($username . $config['cookies']['salt'] . sha1($username . $password . $salt . ($config['mod']['lock_ip'] ? $identity : ''), true), true)), 0, 20);
 	
 	if (isset($generated_salt))
@@ -28,20 +29,20 @@ function mkhash($username, $password, $salt = false) {
 		return $hash;
 }
 
-function generate_salt() {
+function generate_salt()
+{
 	mt_srand(microtime(true) * 100000 + memory_get_usage(true));
 	return md5(uniqid(mt_rand(), true));
 }
 
-function login($username, $password, $makehash=true) {
+function login($username, $password, $makehash=true)
+{
 	global $mod;
 	
 	// SHA1 password
 	if ($makehash) {
 		$password = sha1($password);
 	}
-
-	 
 
 	$query = prepare("SELECT `id`, `type`, `boards`, `password`, `salt` FROM ``mods`` WHERE BINARY `username` = :username");
 	$query->bindValue(':username', $username);
@@ -64,7 +65,8 @@ function login($username, $password, $makehash=true) {
 	return false;
 }
 
-function setCookies() {
+function setCookies() 
+{
 	global $mod, $config;
 	if (!$mod)
 		error('setCookies() was called for a non-moderator!');
@@ -78,7 +80,8 @@ function setCookies() {
 		time() + $config['cookies']['expire'], $config['cookies']['jail'] ? $config['cookies']['path'] : '/', null, !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off', $config['cookies']['httponly']);
 }
 
-function destroyCookies() {
+function destroyCookies() 
+{
 	global $config;
 	// Delete the cookies
 	setcookie($config['cookies']['mod'], 'deleted', time() - $config['cookies']['expire'], $config['cookies']['jail']?$config['cookies']['path'] : '/', null, !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off', true);
@@ -89,7 +92,7 @@ function modLog($action, $_board=null, $mod_id=-1)
 {
 
 	global $mod, $board, $config;
-	$identity = session::GetIdentity();
+	$identity = Session::getIdentity();
 	$query = prepare("INSERT INTO ``modlogs`` VALUES (:id, :ip, :board, :time, :text)");
 	$query->bindValue(':id', (isset($mod['id']) ? $mod['id'] : $mod_id), PDO::PARAM_INT);
 	$query->bindValue(':ip', $identity);
@@ -107,7 +110,8 @@ function modLog($action, $_board=null, $mod_id=-1)
 		_syslog(LOG_INFO, '[mod/' . $mod['username'] . ']: ' . $action);
 }
 
-function create_pm_header() {
+function create_pm_header()
+{
 	global $mod, $config;
 	
 	if ($config['cache']['enabled'] && ($header = cache::get('pm_unread_' . $mod['id'])) != false) {
@@ -195,7 +199,8 @@ function check_login($prompt = false, $dont_exit = false)
 	}
 }
 
-function check_profile(){
+function check_profile()
+{
 
 	global $config, $mod;
 

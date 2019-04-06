@@ -2,10 +2,9 @@
 
 include "inc/functions.php";
    
-$admin         = isset($mod["type"]) && $mod["type"]<=30;
+$admin = isset($mod["type"]) && $mod["type"]<=30;
 
-if (php_sapi_name() == 'fpm-fcgi' && !$admin && count($_GET) == 0) 
-{
+if (php_sapi_name() == 'fpm-fcgi' && !$admin && count($_GET) == 0) {
 	error('Cannot be run directly.');
 }
 
@@ -19,14 +18,14 @@ $boards = $query->fetchAll(PDO::FETCH_ASSOC);
 
 
 
-foreach($boards as $board){
+foreach ($boards as $board) {
 
 	$sta = getBoardStatistics($board['uri'], $statistics_hours);
 	$sta['uri'] = $board['uri'];
 	$sta['title'] = $board['title'];
 	
 
-	for($i=0; $i<count($statistics); $i++){
+	for ($i=0; $i<count($statistics); $i++) {
 
 		if($sta[$sort_by] > $statistics[$i][$sort_by]){
 			array_splice($statistics, $i, 0, array($sta));
@@ -35,7 +34,7 @@ foreach($boards as $board){
 		}
 	}
 
-	if($sta){
+	if ($sta) {
 		array_push($statistics, $sta);
 	}
 }
@@ -80,5 +79,3 @@ function getBoardStatistics($uri, $hours){
 
  
 }
-
-?>

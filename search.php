@@ -20,7 +20,7 @@
 	if(isset($_GET['search']) && !empty($_GET['search']) && isset($_GET['board']) && in_array($_GET['board'], $boards)) {		
 		$phrase = $_GET['search'];
 		$_body = '';
-		$identity = session::GetIdentity();
+		$identity = Session::getIdentity();
 		
 		$query = prepare("SELECT COUNT(*) FROM ``search_queries`` WHERE `ip` = :ip AND `time` > :time");
 		$query->bindValue(':ip', $identity);

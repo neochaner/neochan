@@ -41,7 +41,6 @@ class Cache
 	{
 		global $config;
 
-
 		$data = false;
 		switch ($config['cache']['enabled']) {
 			case 'memcache':
@@ -84,7 +83,6 @@ class Cache
 	public static function set($key, $value, $expires = false) 
 	{
 		global $config;
-
 
 		if (!$expires)
 			$expires = $config['cache']['timeout'];
