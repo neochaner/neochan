@@ -439,8 +439,9 @@ function rebuildThemes($action, $boardname = false) {
 function loadThemeConfig($_theme) {
 	global $config;
 
-	if (!file_exists($config['dir']['themes'] . '/' . $_theme . '/info.php'))
+	if (!file_exists($config['dir']['themes'] . '/' . $_theme . '/info.php')) {
 		return false;
+	}
 
 	// Load theme information into $theme
 	include $config['dir']['themes'] . '/' . $_theme . '/info.php';
@@ -494,7 +495,8 @@ function mb_substr_replace($string, $replacement, $start, $length) {
 	return mb_substr($string, 0, $start) . $replacement . mb_substr($string, $start + $length);
 }
 
-function setupBoard($array) {
+function setupBoard($array)
+{
 	global $board, $config;
 
 	$board = array(
@@ -526,7 +528,8 @@ function setupBoard($array) {
 			or error("Couldn't create " . $board['dir'] . $config['dir']['img'] . ". Check permissions.", true);
 }
 
-function openBoard($uri) {
+function openBoard($uri)
+{
 	global $config, $build_pages;
 
 	if ($config['try_smarter'])
@@ -540,7 +543,8 @@ function openBoard($uri) {
 	return false;
 }
 
-function getBoardInfo($uri) {
+function getBoardInfo($uri)
+{
 	global $config;
 
 	if ($config['cache']['enabled'] && ($board = cache::get('board_' . $uri))) {
@@ -560,14 +564,19 @@ function getBoardInfo($uri) {
 	return false;
 }
 
-function boardTitle($uri) {
+function boardTitle($uri)
+{
 	$board = getBoardInfo($uri);
-	if ($board)
+
+	if ($board) {
 		return $board['title'];
+	}
+
 	return false;
 }
 
-function cloudflare_purge($uri) {
+function cloudflare_purge($uri)
+{
 	global $config;
 
 	if (!$config['cloudflare']['enabled']) return;
@@ -575,18 +584,21 @@ function cloudflare_purge($uri) {
 	$schema_urls_purge = array("https://".$config['cloudflare']['domain'],"http://".$config['cloudflare']['domain'],"https://sys.".$config['cloudflare']['domain']);
 	foreach($schema_urls_purge as $schema_url_purge){
 		$cmd = "curl -X DELETE \"https://api.cloudflare.com/client/v4/zones/".$config['cloudflare']['zone']."/purge_cache\" -H \"X-Auth-Email: ".$config['cloudflare']['email']."\" -H \"X-Auth-Key: ".$config['cloudflare']['token']."\" -H \"Content-Type: application/json\" --data '{\"files\":[\"".$schema_url_purge."/".$uri."\"]}'";
-		$r = shell_exec_error($cmd);
+		shell_exec_error($cmd);
 	}	
 }
 
-function purge($uri, $cloudflare = false) {
+function purge($uri, $cloudflare = false)
+{
 	global $config;
 
 	if ($cloudflare) {
 		cloudflare_purge($uri);
 	}
 
-	if (!isset($config['purge'])) return;
+	if (!isset($config['purge'])) {
+		return;
+	}
 
 	// Fix for Unicode
 	$uri = rawurlencode($uri); 
@@ -617,7 +629,8 @@ function purge($uri, $cloudflare = false) {
 	}
 }
 
-function file_write($path, $data, $simple = false, $skip_purge = false) {
+function file_write($path, $data, $simple = false, $skip_purge = false)
+{
 	global $config;
 
 	if (preg_match('/^remote:\/\/(.+)\:(.+)$/', $path, $m)) {
@@ -3319,38 +3332,34 @@ function delete_from_ftp($remote_path)
 
 function delete_fat_file($file)
 {
-
 	global $config;
 
-	if(!$config['fat_system']){
+	if (!$config['fat_system']){
 		return true;
 	}
 
     $matches;
 	$patt = '/https?:\/\/[^\/]+\/([^$]+)/';
 
-	if($file instanceof stdClass && $file->fat)
-	{
+	if ($file instanceof stdClass && $file->fat) {
 		$file = $file->replace;
 	}
 
-	if(is_array($file))
+	if (is_array($file)) {
 		return false;
+	}
 
-	if(preg_match($patt, $file, $matches) == 1)
-	{
+	if (preg_match($patt, $file, $matches) == 1) {
 		delete_from_ftp($matches[1]);
 		return true;
 	}
 
 	return false;
-
 }
 
 
 function get_post_template($post)
 {
-
 	global $board, $config;
 
 	if(!isset($post['thread'], $post['id'])){
@@ -3360,20 +3369,18 @@ function get_post_template($post)
 
 	$post['modifiers'] = extract_modifiers($post['body_nomarkup']);
 
-	if(!isset($post['thread']) || $post['thread']  == null)
+	if (!isset($post['thread']) || $post['thread']  == null) {
 		$post['thread'] = $post['id'];
+	}
 
-	if(isset($post['id']) && $post['thread'] == $post['id'])
-	{
+	if (isset($post['id']) && $post['thread'] == $post['id']) {
 		return Element('post_thread.html', array(
 			'config' => $config,
 			'board' => $board,
 			'post' => $post,
 			'index' => false,
 		));
-	}
-	else
-	{
+	} else {
 		
 		return Element('post_reply.html', array(
 			'config' => $config,
@@ -3388,63 +3395,60 @@ function get_post_template($post)
 function getAudioInfo($path)
 {
 
- 	
 	$result = array(
 	'Artist'=>'', 'Album'=>'', 'Title'=>'', 
 	'image' => null, 'image_ext'=> null,
 	'error'=>'');
 	
-	
 	$json=shell_exec("exiftool $path -b -json");
 	$data = json_decode($json, TRUE)[0];
 	
-	if (json_last_error() !== JSON_ERROR_NONE) 
-	{
+	if (json_last_error() !== JSON_ERROR_NONE) {
 		$result['error'] == 'Error json parsd';
 		return $result;
 	}
 
-	foreach($data as $key => &$value)
-	{
+	foreach ($data as $key => &$value) {
 
-		if(!is_string($value) || 
-		strlen($value) < 4048 || 
-		substr( $value, 0, 7	) !== "base64:")
+		if (
+			!is_string($value) || 
+			strlen($value) < 4048 || 
+			substr( $value, 0, 7	) !== "base64:"
+		) {
 			continue;
+		}
 	
 		$bin = base64_decode(substr($value, 6));
 		$fi = new finfo(FILEINFO_MIME_TYPE);
 		$mime = $fi->buffer($bin);
 		$mimea = explode('/', $mime);
-		$type = $mimea[0];
 		$ext = $mimea[1];
 
-		if($mimea[0] != 'image')
+		if($mimea[0] != 'image') {
 			continue;
+		}
 		
 		$result['image'] = $bin;
 		$result['image_ext'] = $ext;
-		
 	}
 
-
-	foreach($data as $key => &$value)
-		if(isset($result[$key]))
+	foreach($data as $key => &$value) {
+		if (isset($result[$key])) {
 			$result[$key] = (string)$data[$key];
+		}
+	}
 		
 	return $result;
-	
 }
 
 function CleanBoardCache($board_uri, $thread_id=0)
 {
- 
 	$bkey = '_cachev2_' . $board_uri;
-
 	cache::delete($bkey);
 
-	if($thread_id != 0)
+	if ($thread_id != 0) {
 		cache::delete($bkey . '_' . $thread_id);
+	}
 }
 
 
@@ -3452,27 +3456,25 @@ function PrepareVliveLink($link, &$newLink){
 
 	global $config;
 	
-
 	$pattern = "/https?:\/\/(?:www\\.)?vlive\\.tv\/video\/([a-zA-Z0-9]+)/";
-
-
     $id = null;
 
-    if(preg_match($pattern, $link, $m1))
+    if (preg_match($pattern, $link, $m1)) {
 		$id = $m1[1];
-	else
+	} else {
 		return false;
+	}
 
     
 	$title = GetVliveTitle($id);
 	 
-    if($title == NULL)
-        return false;
+    if ($title == NULL) {
+		return false;
+	}
 
     $template = $config['vlive_link_template'];
 	$title = utf8tohtml($title, true);
 	 
-	 
     $template = str_replace(':link', $link, $template);
     $template = str_replace(':title', $title, $template);
 	$template = str_replace(':id', $id, $template);
@@ -3482,91 +3484,91 @@ function PrepareVliveLink($link, &$newLink){
     return true;
 }
 
-function PrepareVimeoLink($link, &$newLink){
-
+function PrepareVimeoLink($link, &$newLink)
+{
 	global $config;
-	
 
 	$pattern = "/https?:\/\/(?:www\\.)?vimeo\\.com\/([\d+]+)/";
     $id = null;
 
-    if(preg_match($pattern, $link, $m1))
+    if (preg_match($pattern, $link, $m1)) {
 		$id = $m1[1];
-	else
-        return false;
+	} else {
+		return false;
+	}
 
-    
 	$title = GetVimeoTitle($id);
 
-    if($title == NULL)
-        return false;
+    if ($title == NULL) {
+		return false;
+	}
 
     $template = $config['vimeo_link_template'];
 	$title = utf8tohtml($title, true);
-	 
-	 
     $template = str_replace(':link', $link, $template);
     $template = str_replace(':title', $title, $template);
 	$template = str_replace(':id', $id, $template);
-
 	$newLink = $template;
 	
     return true;
 }
 
-function GetVliveTitle($id){
-
-
+function GetVliveTitle($id)
+{
 	$html = CurlRequest('https://www.vlive.tv/video/' . $id);
 
-	if($html == null)
+	if($html == null) {
 		return null;
+	}
 
-	if(preg_match('/\"vlive_info\"[^<]+[^>]+>([^<]+)</', $html, $m))
+	if(preg_match('/\"vlive_info\"[^<]+[^>]+>([^<]+)</', $html, $m)) {
 		return $m[1];
+	}
 
-		
 	return null;
 }
 
-function GetVimeoTitle($id){
-
-
+function GetVimeoTitle($id)
+{
 	$json = CurlRequest('http://vimeo.com/api/v2/video/' . $id . '.json');
 	$data = json_decode($json, TRUE);
 
-	if(isset($data[0]['title']))
+	if(isset($data[0]['title'])) {
 		return $data[0]['title'];
+	}
 
 	return null;
 }
 
 
-function PrepareYoutubeLink($link, &$newLink){
-
+function PrepareYoutubeLink($link, &$newLink)
+{
 	global $config;
 	
-
     $pattern1 = "/https?:\/\/(?:www\\.)?(?:youtube\\.com\/).*(?:\\?|&)v=([\\w-]+)/";
     $pattern2 = "/https?:\/\/(?:www\\.)?youtu\\.be\/([\\w-]+)/";
 
 
     $id = null;
 
-    if(preg_match($pattern1, $link, $m1))
-        $id = $m1[1];
-    else
-        if(preg_match($pattern2, $link, $m1))
-            $id = $m1[1];
+    if(preg_match($pattern1, $link, $m1)) {
+		$id = $m1[1];
+	} else {
+        if(preg_match($pattern2, $link, $m1)) {
+			$id = $m1[1];
+		}
+	}
 
-    if($id == null)
-        return false;
+    if($id == null) {
+		return false;
+	}
 
     
     $info = GetYoutubeInfo($id);
 
-    if(!isset($info['items'][0]['snippet']['title']))
-        return false;
+    if(!isset($info['items'][0]['snippet']['title'])) {
+		return false;
+	}
 
     $template = $config['youtube_link_template'];
 	$title = utf8tohtml($info['items'][0]['snippet']['title'], true);
@@ -3579,15 +3581,15 @@ function PrepareYoutubeLink($link, &$newLink){
     return true;
 }
 
-function GetYoutubeInfo($id){
-
+function GetYoutubeInfo($id)
+{
 	global $config; 
 	
-
     $json = CurlRequest('https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,status&id='. $id . '&key=' . $config['youtube_api_key']);
  
-    if($json)
-        return json_decode($json, TRUE);
+    if($json) {
+		return json_decode($json, TRUE);
+	}
 
     return null;
 }
@@ -3596,13 +3598,11 @@ function CurlRequest($request, $timeout_ms=3000)
 {
 
     //Проверка на правильность URL 
-    if(!filter_var($request, FILTER_VALIDATE_URL))
-    {
+    if (!filter_var($request, FILTER_VALIDATE_URL)){
         return null;
     }
 
-    if(function_exists('curl_version'))
-    {
+    if (function_exists('curl_version')) {
 
         //Инициализация curl
         $ch = curl_init($request);
@@ -3616,109 +3616,107 @@ function CurlRequest($request, $timeout_ms=3000)
             CURLOPT_RETURNTRANSFER => true
 
         ));
-    
 
         $response = curl_exec($ch);
         curl_close($ch);
 
-        if ($response) 
-            return $response;
+        if ($response) {
+			return $response;
+		}
 
-
-    }
-    else
-    {
+    } else {
         //ini_set('default_socket_timeout', $timeout_ms);
         return file_get_contents($request);
     }
 
-
     return null;
 }
 
-function CreatePoolFromPost(&$post){
-
+function CreatePoolFromPost(&$post)
+{
 	global $config, $board;
 
 	$post['poll'] = NULL;
 
-	if(!$config['polls']['enable'])
+	if (!$config['polls']['enable']) {
 		return;
+	}
 
-	if(strpos($post['body_nomarkup'], 'poll(') === FALSE)
+	if (strpos($post['body_nomarkup'], 'poll(') === FALSE) {
 		return;
+	}
 
-
-	if(preg_match("/poll\(([^\)]+)\)/ms", $post['body_nomarkup'], $m)){
+	if (preg_match("/poll\(([^\)]+)\)/ms", $post['body_nomarkup'], $m)) {
 
 		$variants = explode(",", $m[1]);
 
-		if(count($variants)<1)
+		if (count($variants)<1) {
 			return;
+		}
 
 		$post['body'] = str_replace($m[0], "", $post['body']);
 		$post['body_nomarkup'] = str_replace($m[0], "", $post['body_nomarkup']);
 		
 		$poll=array();
 
-		for($i=0; $i<count($variants); $i++)
-		{
+		for ($i=0; $i<count($variants); $i++) {
 			$variant = $variants[$i];
 			$poll[] = array('text' => $variant, 'votes'=>0, 'percent'=> 0, 'ids'=> array());
 		}
 
 		$post['poll'] = $poll;
 	}
-
-
 }
 
 
 
 
-function TimeStatTouch($tag, $tagvalue=null, $duration_sec = 180){
-
+function TimeStatTouch($tag, $tagvalue=null, $duration_sec = 180)
+{
 
 	$array = cache::get($tag);
 
-	if(!is_array($array))
+	if(!is_array($array)) {
 		$array = array();
+	}
 
 	
 	$newArray = array();
 
-	foreach($array as $key => $value){
+	foreach ($array as $key => $value) {
 
 		if($value + $duration_sec > time()){
 			$newArray[$key]=$value;
 		}
 	}
 
-	if($tagvalue != null)
+	if($tagvalue != null) {
 		$newArray[$tagvalue]=time();
+	}
 
-	if(count($newArray) != count($array))
+	if(count($newArray) != count($array)) {
 		cache::set($tag, $newArray);
+	}
 
 	return count($newArray);
-
 }
 
 
-function ip_link($ip, $href = true) {
+function ip_link($ip, $href = true)
+{
 	return "<a id=\"ip\"" . ($href ? " href=\"?/IP/$ip\"" : "") . ">$ip</a>";
 }
 
 
-function postRate($board_uri, $post_id, $like = true){
-	
+function postRate($board_uri, $post_id, $like = true)
+{
 	global $config, $board, $mod;
 	
-	if(!openBoard($board_uri)){
+	if (!openBoard($board_uri)){
 		server_reponse('No board', array('success'=>false, 'error'=>'l_error_noboard'));
 	}
 
-	if(!$config['rating']['darknet'] && Session::$is_darknet){
+	if (!$config['rating']['darknet'] && Session::$is_darknet) {
 		server_reponse('Option is disabled for darknet', array('success'=>false, 'error'=>'l_disabled_for_darknet'));
 	}
 
@@ -3726,20 +3724,19 @@ function postRate($board_uri, $post_id, $like = true){
 	$query->bindValue(':id', $post_id, PDO::PARAM_INT);
 	$query->execute() or error(db_error($query));
 
-	if (!$post = $query->fetch(PDO::FETCH_ASSOC)){
+	if (!$post = $query->fetch(PDO::FETCH_ASSOC)) {
 		server_reponse('Post not found.', array('success'=>false, 'error'=>'l_error'));
 	} 
 
 	
 	// check taring is enable
-	if($post['thread'] == NULL && !$config['rating']['thread']){
+	if ($post['thread'] == NULL && !$config['rating']['thread']) {
 		server_reponse('Option has benn disabled', array('success'=>false, 'error'=>'l_error'));
 	} 
 
-	if($post['thread'] != NULL && !$config['rating']['post']){
+	if ($post['thread'] != NULL && !$config['rating']['post']) {
 		server_reponse('Option has been disabled', array('success'=>false, 'error'=>'l_error'));
 	}
-	
 
 	// check double liking
 	$query = prepare("SELECT * FROM `rating` WHERE `post_id`=:post_id AND `board`=:board AND `ip`=:ip");
@@ -3750,8 +3747,7 @@ function postRate($board_uri, $post_id, $like = true){
 	
 	$entry = $query->fetch(PDO::FETCH_ASSOC);
  
-
-	if($entry != FALSE){
+	if ($entry != FALSE) {
 		server_reponse('You have already voted.', array('success'=>false, 'error'=>'l_alreadyvoted'));
 	}
 
@@ -3772,7 +3768,7 @@ function postRate($board_uri, $post_id, $like = true){
 	$modifier = $like ? 'like' : 'dislike'; 
 
 	
-	if(!isset($post['modifiers'][$modifier])){
+	if (!isset($post['modifiers'][$modifier])) {
 		$post['body_nomarkup'] .= "\n<tinyboard $modifier>1</tinyboard>";
 	} else {
 		$value = $post['modifiers'][$modifier];
@@ -3798,29 +3794,6 @@ function postRate($board_uri, $post_id, $like = true){
 
 	server_reponse('Success.', array('success'=>true), '/' . $config['root'] . $board['uri']); 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -354,7 +354,7 @@ function mod_edit_board($boardName) {
 			modLog('Deleted board: ' . sprintf($config['board_abbreviation'], $board['uri']), false);
 			
 			// Delete posting table
-			$query = query(sprintf('DROP TABLE IF EXISTS ``posts_%s``', $board['uri'])) or error(db_error());
+			query(sprintf('DROP TABLE IF EXISTS ``posts_%s``', $board['uri'])) or error(db_error());
 			
 			// Clear reports
 			$query = prepare('DELETE FROM ``reports`` WHERE `board` = :id');
@@ -909,31 +909,38 @@ function mod_page_ip($ip) {
 	mod_page(sprintf('%s: %s', _('IP'), htmlspecialchars($ip)), 'mod/view_ip.html', $args, $args['hostname']);
 }
 
-function mod_page_ip_less($b, $id) {
+function mod_page_ip_less($b, $id)
+{
 	global $config, $mod;
+
 
 	if (!hasPermission($config['mod']['show_ip_less'], $b)) {
 		error($config['error']['noaccess']);
 	}
 
-	if (!openBoard($b))
+	if (!openBoard($b)) {
 		error('No board.');
+	}
+
+	$ip;
+	$iprange = false; 
 
 	$query = prepare(sprintf('SELECT `ip`,`range_ip_hash` FROM ``posts_%s`` WHERE `id` = :id', $b));
 	$query->bindValue(':id', $id);
 	$query->execute() or error(db_error($query));
 	
 	$result = $query->fetch(PDO::FETCH_ASSOC);
+ 
 
-	$iprange = false;
 	if ($result) {
 		$ip = $result['ip'];
 	} else {
 		error(_('Could not find that post.'));
 	}
 
-	if ($ip[0] != '!' && filter_var($ip, FILTER_VALIDATE_IP) === false)
+	if ($ip[0] != '!' && filter_var($ip, FILTER_VALIDATE_IP) === false) {
 		error("Invalid IP address.");
+	}
 	
 	if (isset($_POST['ban_id'], $_POST['unban'])) {
 		if (!hasPermission($config['mod']['unban']))
@@ -1452,7 +1459,7 @@ function mod_move($originBoard, $postID) {
 			$query = prepare('SELECT `target` FROM ``cites`` WHERE `target_board` = :board AND `board` = :board AND `post` = :post');
 			$query->bindValue(':board', $originBoard);
 			$query->bindValue(':post', $post['id'], PDO::PARAM_INT);
-			$query->execute() or error(db_error($qurey));
+			$query->execute() or error(db_error($query));
 			
 			// correct >>X links
 			while ($cite = $query->fetch(PDO::FETCH_ASSOC)) {
@@ -2265,13 +2272,13 @@ function mod_user_new() {
 	mod_page(_('New user'), 'mod/user.html', array('new' => true, 'boards' => listBoards(), 'token' => make_secure_link_token('users/new')));
 }
 
-function mod_users() {
+function mod_users()
+{
 	global $config;
 	
-	if (!hasPermission($config['mod']['manageusers']))
+	if (!hasPermission($config['mod']['manageusers'])) {
 		error($config['error']['noaccess']);
-
-	$usertable = [];
+	}
 
 	$users = query("SELECT `id`, `username`, `type`, `boards`, `email` FROM `mods` ORDER BY `type` DESC")->fetchAll(PDO::FETCH_ASSOC);
 
@@ -2289,18 +2296,21 @@ function mod_users() {
 }
 
 
-function mod_user_promote($uid, $action) {
+function mod_user_promote($uid, $action)
+{
 	global $config;
 	
-	if (!hasPermission($config['mod']['promoteusers']))
+	if (!hasPermission($config['mod']['promoteusers'])) {
 		error($config['error']['noaccess']);
+	}
 	
 	$query = prepare("SELECT `type`, `username` FROM ``mods`` WHERE `id` = :id");
 	$query->bindValue(':id', $uid);
 	$query->execute() or error(db_error($query));
 	
-	if (!$mod = $query->fetch(PDO::FETCH_ASSOC))
+	if (!$mod = $query->fetch(PDO::FETCH_ASSOC)) {
 		error($config['error']['404']);
+	}
 	
 	$new_group = false;
 	
@@ -2595,9 +2605,6 @@ function mod_reports() {
 		error($config['error']['noaccess']);
 	}
 	
-	// Limit reports to ONLY those in our scope.
-	$report_scope = $global ? "global" : "local";
-	
 	// Get REPORTS.
 	$query = prepare("SELECT * FROM ``reports`` WHERE " . (($mod["type"] < GLOBALVOLUNTEER) ? "board = :board AND" : "") . " ``".($global ? "global" : "local")."`` = TRUE  LIMIT :limit");
 	
@@ -2615,7 +2622,7 @@ function mod_reports() {
 	// Cut off here if we don't have any reports.
 	$reportCount = 0;
 	$reportHTML = '';
-	if( count( $reports ) > 0 ) {
+	if ( count( $reports ) > 0 ) {
 		
 		// Build queries to fetch content.
 		$report_queries = array();

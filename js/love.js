@@ -56,10 +56,10 @@ $(document).ready(function() {
 	loadMobileMenu();
 
 	let divs = document.getElementsByClassName('onload-flex');
-	for(let i=0; i<divs.length; i++)
+
+	for (let i=0; i<divs.length; i++) {
 		divs[i].style.display='flex';
-
-
+	}
 
 
 	rememberStuff();
@@ -77,8 +77,9 @@ $(document).on('new_post', function(e,post) {
 	var post_count = parseInt($('#ts-count').html())+1;
 	$('#ts-count').html(' ' +  post_count);
 
-	if(post_count>499)
+	if(post_count>499) {
 		checkBumpLimit();
+	}
 
 	makePollAjax(post);
  
@@ -189,8 +190,9 @@ function AddQuote(obj)
 {
 	var citateText = getSelectedText(true);
 
-	if(citateText == '')
+	if (citateText == '') {
 		citateText='>';
+	}
 
 	document.getElementById(obj).value += citateText;
 }

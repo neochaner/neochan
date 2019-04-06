@@ -1,3 +1,7 @@
+/** 
+ * global: store, config
+ */
+
 
 var lastMenuID=0;
 var POST_MENU_OPENED=false;
@@ -19,11 +23,12 @@ $(document).ready(function() {
 $(document).on(deleteHiddenPostsConfig.key, function(e, value) {
 	deleteHiddenPostsConfig.value = value;
 
-	if(!value)
+	if (!value){
 		$('.post').each(function(){
 			if($(this).css('display') == 'none')
 				$(this).show();
 		});
+	}
 
 	filter_reload();
 });
@@ -34,7 +39,7 @@ $(document).on(deleteHiddenPostsConfig.key, function(e, value) {
 
 $(document).ready(function(){
 
-	if(['general'].includes(config.active_page)){
+	if (['general'].includes(config.active_page)){
 		return;
 	}
 
@@ -59,18 +64,23 @@ $(document).on('change_post', function(e,post) {
 
 var hiddenPosts = [];
 
-function AddHidden(post){
-	if(!IsHidden(post))
+function AddHidden(post)
+{
+	if (!IsHidden(post)){
 		hiddenPosts.push(post);
+	}
 }	
 
-function IsHidden(post){
+function IsHidden(post)
+{
 
 	let length = hiddenPosts.length;
 
-	for(; length--;)
-		if(post === hiddenPosts[length])
+	for(; length--;){
+		if(post === hiddenPosts[length]){
 			return true;
+		}
+	}
 		
 	return false;
 }
@@ -79,9 +89,11 @@ function RemHidden(post){
 
 	let length = hiddenPosts.length;
 
-	for(; length--;)
-		if(post === hiddenPosts[length])
+	for(; length--;){
+		if(post === hiddenPosts[length]){
 			hiddenPosts.splice(length, 1);
+		}
+	}
 }
 
 
@@ -98,11 +110,11 @@ function filter_post(post, reload = false)
 	if(is_oppost)
 	{
 
-	}
-	else if(need_hide)
-	{
-		if(!is_oppost && deleteHiddenPostsConfig.value)
+	} else if(need_hide) {
+
+		if(!is_oppost && deleteHiddenPostsConfig.value){
 			post.style.display = 'none';
+		}
 		else
 		{
 			$(post).find('.post-body').hide();
@@ -114,9 +126,7 @@ function filter_post(post, reload = false)
 	else
 	{
 		
-		
-		if(reload)
-		{
+		if(reload){
 	 
 			let body = post.querySelector('.post-body');
 			var is_hidden = post.style.display == 'none' || body.style.display =='none';
@@ -169,54 +179,57 @@ function post_menu(event)
 	var post = $(event.target).closest('.post')[0];
 	var $post = $(post);
 	var trip = $post.find('.post-trip').text();
-	var hidden_post = $post.find('.post-body').css('display') == 'none';
 	var is_oppost = post.classList.contains('post_op');
 	var menu ="<div class='post-menu' id='post-menu' style='z-index: 2'><ul>";
 	var hiddenByThread = !is_oppost && isThreadHidden(post.dataset.board, post.dataset.thread);
 	var hiddenByTrip = trip.length < 2 ? false : isThreadHiddenByTrip(trip);
 	
 	// скрытие по номеру поста
-	if(!hiddenByThread && !is_oppost)
-	{
-		if(isPostHidden(post.dataset.board, post.dataset.post))
-			menu += "<li class='post-menu-item l_show_post' onclick=\"showPost('"+post.dataset.board+"', '"+post.dataset.post+"')\"></li>"
-		else	
-			menu += "<li class='post-menu-item l_hide_post' onclick=\"hidePost('"+post.dataset.board+"', '"+post.dataset.post+"')\"></li>"
+	if (!hiddenByThread && !is_oppost) {
 
+		if (isPostHidden(post.dataset.board, post.dataset.post)) {
+			menu += "<li class='post-menu-item l_show_post' onclick=\"showPost('"+post.dataset.board+"', '"+post.dataset.post+"')\"></li>"
+		} else	{
+			menu += "<li class='post-menu-item l_hide_post' onclick=\"hidePost('"+post.dataset.board+"', '"+post.dataset.post+"')\"></li>"
+		}
 	}
 	
 	// Скрытие по треду
-	if(is_oppost || config.active_page == 'mega' || hiddenByThread)
-	{
-		if(isThreadHidden(post.dataset.board, post.dataset.thread))
+	if (is_oppost || config.active_page == 'mega' || hiddenByThread) {
+
+		if(isThreadHidden(post.dataset.board, post.dataset.thread)) {
 			menu += "<li class='post-menu-item l_show_thread' onclick=\"showThread('"+post.dataset.board+"', '"+post.dataset.thread+"')\"></li>"
-		else
+		} else {
 			menu += "<li class='post-menu-item l_hide_thread' onclick=\"hideThread('"+post.dataset.board+"', '"+post.dataset.thread+"')\"></li>"
+		}
 	}
 	
 	
 	// СКРЫТИЕ ПО ТРИПКОДУ
-	if(!hiddenByThread && trip)
-	{
-		if(isTripHidden(trip))
+	if(!hiddenByThread && trip){
+
+		if(isTripHidden(trip)) {
 			menu += "<li class='post-menu-item l_show_trip' onclick=\"showTrip('"+trip+"')\"></li>"
-		else
-			menu += "<li class='post-menu-item l_hide_trip' onclick=\"hideTrip('"+trip+"')\"></li>" 
+		} else {
+			menu += "<li class='post-menu-item l_hide_trip' onclick=\"hideTrip('"+trip+"')\"></li>"
+		}
 	}
 	else if(!hiddenByThread && !is_oppost)// hide by anonimouse
 	{ 
-		if(isAnonHidden())
+		if(isAnonHidden()) {
 			menu += "<li class='post-menu-item l_show_anon' onclick=\"showAnon()\"></li>"
-		else
-			menu += "<li class='post-menu-item l_hide_anon' onclick=\"hideAnon()\"></li>" 
+		} else {
+			menu += "<li class='post-menu-item l_hide_anon' onclick=\"hideAnon()\"></li>"
+		}
 	}
 
 	
 	// СКРЫТИЕ ТРЕДА ПО ТРИПУ
-	if(!hiddenByThread && !hiddenByTrip && trip && is_oppost)
+	if(!hiddenByThread && !hiddenByTrip && trip && is_oppost) {
 		menu += "<li class='post-menu-item l_hide_thread_trip' onclick=\"hideThreadTrip('"+trip+"')\"></li>";
-	else if(!hiddenByThread && hiddenByTrip && trip && is_oppost)
+	} else if(!hiddenByThread && hiddenByTrip && trip && is_oppost) {
 		menu += "<li class='post-menu-item l_show_thread_trip' onclick=\"showThreadTrip('"+trip+"')\"></li>";
+	}
 
 	
 	
@@ -240,10 +253,11 @@ function post_menu(event)
     });
 }
 
-function post_menu_close(){
+function post_menu_close()
+{
 	let el = document.getElementsByClassName('post-id-open');
 	
-	if(el.length>0){
+	if (el.length>0) {
 		el[0].classList.remove('post-id-open');
 	}
 
@@ -262,8 +276,7 @@ function filter_reload()
 	var separators = $('hr');
 	var separator_index=0;
  
-	if(config.active_page == 'index')
-	{
+	if (config.active_page == 'index') {
 
 		var hideThreads = [];
 
@@ -285,11 +298,10 @@ function filter_reload()
 
 				$thread.find('.omit').hide();
 
-				if(deleteHiddenPostsConfig.value){
+				if (deleteHiddenPostsConfig.value) {
 					$thread.hide();
 					$thread.next().hide(); // separator
-				}
-				else{
+				} else {
 					$thread.show();
 					$thread.next().show();
 				}
@@ -297,24 +309,20 @@ function filter_reload()
 
 				var posts = $thread.find('.post');
 
-				for(var i=0; i<posts.length;i++)
-				{
+				for (var i=0; i<posts.length;i++) {
+
 					var post = $(posts[i]);
 					
-					if(post.hasClass('post_op'))
-					{
+					if (post.hasClass('post_op')) {
+
 						post.find('.post-body').hide();
 						post.find('.post-footer').hide();
-					}
-					else
-					{
+					} else {
 						post.hide();
 					}
 				}
 				
-			}
-			else
-			{
+			} else {
 
 				$thread.show();
 				$thread.next().show(); // separator
@@ -328,11 +336,11 @@ function filter_reload()
 
 
 
-		for(var i = 0; i < posts.length; i++) {
+		for (var i = 0; i < posts.length; i++) {
 
 			let curThread = posts[i].dataset.board + '_' + posts[i].dataset.thread;
 
-			if(!hideThreads.includes(curThread)){
+			if (!hideThreads.includes(curThread)) {
 				filter_post(posts[i], true);
 			}
 		}
@@ -354,8 +362,7 @@ function filter_reload()
 function report_toggle(board, thread, post)
 {
 
-    if($('#report_option').length != 0)
-    {
+    if ($('#report_option').length != 0) {
         $('#report_option').remove();
         return;
 	}
@@ -390,8 +397,7 @@ function send_report(board, thread, post)
     fdata.append( 'reason', reason);
 	fdata.append( 'json_response', 1);
 
-	if($('#report_global').prop('checked'))
-	{
+	if ($('#report_global').prop('checked')) {
 		fdata.append( 'global', 1);
 	}
  
@@ -423,14 +429,4 @@ function send_report(board, thread, post)
 
 
 } 
-
-
- 
- 
-
-
-
-
-
-
 

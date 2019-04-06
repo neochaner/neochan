@@ -1,3 +1,10 @@
+/*
+* global: config 
+* global: disable_replybox_float
+* global: plyr
+*
+*/
+
 var PLAYER_IS_READY = false;
 var PLAYER_IS_RESET = false;
 var PSTATE_NOT_INITIALIZED=-2;
@@ -31,17 +38,18 @@ var neotubeAccess=false;
 
 $(document).ready(function() {
 
-    if(!config.neotube)
+    if (!config.neotube) {
         return;
+    }
 
     savedCss[0] = $('.board').css('padding');
     savedCss[1] = $('hr').css('margin');
 
+    if (config.active_page == 'thread') {
 
-    if(config.active_page == 'thread'){
-
-        if(document.location.href.includes('#neotube'))  
+        if (document.location.href.includes('#neotube')) {
             neotubeSetup();
+        }
 
         $('#toggle-neotube').show();
     }
@@ -53,19 +61,22 @@ $(document).ready(function() {
 
 $(document).on('new_post', function(e,post) {
 
-    if(NTUBE_STATE == NSTATE_LOADED_SMALL)
+    if (NTUBE_STATE == NSTATE_LOADED_SMALL) {
         $(post).addClass('post-small');
+    }
 });
   
 $(window).resize(function() {
-    if(NTUBE_STATE != NSTATE_NOT_LOADED)
+    if (NTUBE_STATE != NSTATE_NOT_LOADED) {
         resizeNeotubePlayer();
+    }
 });
 
  
   
 
-function neotubeSetup(){
+function neotubeSetup()
+{
 
     neotubeAccess = false;
 
@@ -84,13 +95,11 @@ function neotubeSetup(){
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,
-        success: function(response, textStatus, xhr) {
+        success: function(response) {
     
-            //if(!response.success && response.error)
-            //    lalert(response);
-
-            if(response.success)
+            if (response.success) {
                 neotubeAccess = response.rights;
+            }
 
             initializeNeoTube();
      
@@ -110,19 +119,21 @@ function neotubeSetup(){
         1 = small size
         2 = medium size
 */
-function initializeNeoTube(size = 1){
+function initializeNeoTube(size = 1)
+{
 
-    if(NTUBE_STATE == NSTATE_LOADED_SMALL)
+    if (NTUBE_STATE == NSTATE_LOADED_SMALL) {
         return;
+    }
 
-    if(typeof (disable_replybox_float) != 'undefined'){
+    if (typeof (disable_replybox_float) != 'undefined') {
         disable_replybox_float(true);
     }
 
     NTUBE_STATE = NSTATE_LOADED_SMALL;
     POST_AUTO_SCROLL = true;
     POST_AUTO_SCROLL_BOTTOM=300;
-    autoLoadSec = 2;
+    window.autoLoadSec = 2;
 
     $('hr').css('margin', '');
     $('.threads-container').css('width', '300px'); 
@@ -155,7 +166,7 @@ function initializeNeoTube(size = 1){
 
     controls =  `<div class="plyr__controls">`;
 
-    if(neotubeAccess){
+    if (neotubeAccess) {
   
     controls += `
 
@@ -213,9 +224,6 @@ function initializeNeoTube(size = 1){
 
 
 
-
-
-
     player = new Plyr('#pplayer', { controls });
 
 
@@ -255,19 +263,21 @@ function initializeNeoTube(size = 1){
 
     playerDiv = $('#neotube').find('.plyr');
 
-    if(resizeInterval)
+    if (resizeInterval) {
         clearInterval(resizeInterval);
+    }
 
-    if(syncInterval)
+    if (syncInterval) {
         clearInterval(syncInterval);
+    }
 
     resizeInterval = setInterval(() => {
         
-        if(oldPLayerWidth){
+        if (oldPLayerWidth) {
 
             var width = playerDiv.css('width').replace('px', '');
 
-            if(width != oldPLayerWidth){
+            if (width != oldPLayerWidth) {
                 oldPLayerWidth = width;
                 resizeNeotubePlayer();
             }
@@ -280,12 +290,12 @@ function initializeNeoTube(size = 1){
 
 } 
 
-function removeNeoTube(){
-
+function removeNeoTube()
+{
     NTUBE_STATE = NSTATE_NOT_LOADED;
     config.replybox_close = false;
     POST_AUTO_SCROLL = false;
-    autoLoadSec = autoLoadSecDefault;
+    window.autoLoadSec = autoLoadSecDefault;
 
     $('.board').css('padding', savedCss[0]);
     $('hr').css('margin', savedCss[1]);
@@ -305,40 +315,36 @@ function removeNeoTube(){
 
     clearInterval(resizeInterval);
     clearInterval(syncInterval);
-    
 }
 
-function resizeNeotubePlayer(){
-
+function resizeNeotubePlayer()
+{
     var playerWidth = $(window).width() - $('.board').width() - 30;
     $('#neotube').width(playerWidth);
     $('#neotube-player').width(playerWidth);
 
-
-    //$('#neotube').width(playerWidth);
-    //$('#neotube-player').width(playerWidth);
-
-    if(!playerDiv)
+    if (!playerDiv) {
         return;
+    }
 
     $('.plyr-playlist-wrapper').css('left', playerDiv.css('left'));
     $('.plyr-playlist-wrapper').css('top', playerDiv.css('top'));
 
-
     var width = playerDiv.css('width').replace('px', '');
 
-    if(width >  playerWidth)
+    if (width >  playerWidth) {
         $('.plyr-playlist-wrapper').css('width', (playerWidth)+'px');
-    else 
+    } else {
         $('.plyr-playlist-wrapper').css('width', (width-11)+'px');
+    }
 
  
 }
 
-function toggleNeoTube() {
-
-    if(config.active_page == 'thread'){
-        switch(NTUBE_STATE){
+function toggleNeoTube() 
+{
+    if (config.active_page == 'thread') {
+        switch (NTUBE_STATE) {
             case NSTATE_NOT_LOADED:
                 neotubeSetup();
                 //initializeNeoTube();
@@ -351,8 +357,8 @@ function toggleNeoTube() {
 
 }
 
-function searchTubes(){
-
+function searchTubes()
+{
     var fdata = new FormData();        
     fdata.append( 'get_playlists',  '');
     fdata.append( 'board', config.board_uri);
@@ -362,12 +368,13 @@ function searchTubes(){
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,
-        success: function(response, textStatus, xhr) {
+        success: function(response) {
 
-            if(!response.success && response.error)
+            if(!response.success && response.error) {
                 lalert(response);
-            else if(response.html)
+            } else if(response.html) {
                 alert(response.html);
+            }
         },
         error: function(xhr, status, er) {
             alert(_T('Сервер вернул ошибку: ') + er);
@@ -381,8 +388,8 @@ function searchTubes(){
  
 
 
-function neotubeSkipCurrent(){
-
+function neotubeSkipCurrent()
+{
     $('#neotubeSkipCurrent').hide();
     setTimeout(function(){$('#neotubeSkipCurrent').show();}, 5000);
 
@@ -390,12 +397,14 @@ function neotubeSkipCurrent(){
 }
 
 
-function neotubeAddYoutubeVideo(){
+function neotubeAddYoutubeVideo()
+{
 
     var youtubeLink = prompt(_T("Введите ссылку на ролик Youtube"), '');
 
-    if (youtubeLink != null && youtubeLink == "") 
+    if (youtubeLink != null && youtubeLink == "") {
         return false;
+    }
 
     let thread_id = $('#thread_id').data('id');
 
@@ -414,14 +423,15 @@ function neotubeAddYoutubeVideo(){
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,
-        success: function(response, textStatus, xhr) {
+        success: function(response) {
     
-            if(!response.success && response.error)
+            if(!response.success && response.error) {
                 lalert(response);
+            }
 
-            if(response.success && response.playlist != null)
+            if(response.success && response.playlist != null) {
                 neotubeUpdatePlayList(response.playlist);
-     
+            }
         },
         error: function(xhr, status, er) {
             alert(_T('Сервер вернул ошибку: ') + er);
@@ -434,19 +444,20 @@ function neotubeAddYoutubeVideo(){
 }
 
 
-function neotubePlayEvent(){
+function neotubePlayEvent()
+{
    player.play();
    neotubePlayOrPause();
 }
 
-function neotubePauseEvent(){
+function neotubePauseEvent()
+{
    player.pause();
    neotubePlayOrPause();
 }
 
-function neotubePlayOrPause(){
-
-
+function neotubePlayOrPause()
+{
     let thread_id = $('#thread_id').data('id');
 
     var fdata = new FormData();        
@@ -462,13 +473,15 @@ function neotubePlayOrPause(){
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,
-        success: function(response, textStatus, xhr) {
+        success: function(response) {
 
-            if(!response.success && response.error)
+            if(!response.success && response.error) {
                 lalert(response);
+            }
 
-            if(response.success && response.playlist != null)
+            if(response.success && response.playlist != null) {
                 neotubeUpdatePlayList(JSON.parse(response.playlist));
+            }
  
         },
         error: function(xhr, status, er) {
@@ -484,7 +497,7 @@ function neotubePlayOrPause(){
 
 function neotubeUpdatePlayList(playList){
  
-    if(playList == null || playList.length == 0){
+    if (playList == null || playList.length == 0) {
         // stop video
         currentList = playList;
         activeTrack = null;
@@ -492,10 +505,11 @@ function neotubeUpdatePlayList(playList){
         return;
     }
 
-    if(JSON.stringify(currentList) == JSON.stringify(playList)){
+    if (JSON.stringify(currentList) == JSON.stringify(playList)) {
 
-        if(activeTrack == null || activeTrack.ended + 3 < getServerTime())
+        if (activeTrack == null || activeTrack.ended + 3 < getServerTime()) {
             return;
+        }
     }
 
 
@@ -505,42 +519,40 @@ function neotubeUpdatePlayList(playList){
     $plist.empty(); 
 
 
-    for(var i=0; i<playList.length; i++){
+    for (var i=0; i<playList.length; i++) {
 
-        if(playList[i].pause != -1)
+        if (playList[i].pause != -1) {
             is_paused = true;
+        }
 
-        if(playList[i].end < getServerTime() && !is_paused)
+        if (playList[i].end < getServerTime() && !is_paused) {
             continue;
+        }
 
         currentList.push(playList[i]);
-
 
         $plist.append("<li class=''><div class='track-item'><a href='#' data-type='youtube' data-video-id='"+ playList[i].id +"'><img class='plyr-miniposter' src='https://img.youtube.com/vi/"+playList[i].id+"/hqdefault.jpg'>"+secToTime(playList[i].duration) + '  ' + playList[i].title+"</a></div></li>");
 
     }
 
-    if(currentList.length == 0){
+    if (currentList.length == 0) {
         activeTrack = null;
         neotubeReset();
         return;
     }
 
-
     neotubeSync()
-
-
-
 }
 
 
 
-function neotubeSync(){
+function neotubeSync()
+{
 
     let serverTime = getServerTime();
     let currentTrack = getCurrentTrack();
 
-    if(currentTrack == null){
+    if (currentTrack == null) {
         return true;
     }
 
@@ -549,8 +561,9 @@ function neotubeSync(){
     var endTime =  currentTrack ? currentTrack.end - serverTime : 0;
     var isPaused = currentTrack && currentTrack.pause != -1;	
  
-    if(currentTrack && currentTrack.start < serverTime)
+    if (currentTrack && currentTrack.start < serverTime) {
          startTime = serverTime - currentTrack.start;
+    }
 
     
     var state = getPlayerState();
@@ -559,51 +572,34 @@ function neotubeSync(){
 
 
     //  LOADING 
-    if(state == PSTATE_NOT_INITIALIZED){
-        //setupPlayer(currentTrack, isPaused, startTime);
+    if(state == PSTATE_NOT_INITIALIZED) {
         return true;
-
-    } else if(state == PSTATE_INITIALIZATING){
+    } else if (state == PSTATE_INITIALIZATING) {
         return true;
     }
 
-
-
-
     // CHANGE TRACK
-    if(!isPaused && !isCurrentTrack(currentTrack)){
-        
+    if (!isPaused && !isCurrentTrack(currentTrack)) {
         activeTrack = currentTrack;
         neotubeLoadVideo(currentTrack, isPaused, startTime);
         return true;
     }
         
 
-
-
-
-	if(isPaused){
+	if (isPaused) {
 		
-		if(state == PSTATE_PLAYING){
+		if (state == PSTATE_PLAYING) {
 
             player.pause();
             player.currentTime = Math.round(currentTrack.pause);
         }
-
-        if(player.currentTime != Math.round(currentTrack.pause)){
-             
-            //player.currentTime = 0;// Math.round(currentTrack.pause);
-            //player.forward(currentTrack.pause);
-            //player.currentTime = Math.round(currentTrack.pause);
-        }
-    
         
 	}
-	else if(!isPaused && state == PSTATE_PAUSE){
+	else if(!isPaused && state == PSTATE_PAUSE) {
         player.play(); 
     }
     // check sync track
-    else if(isCurrentTrack(currentTrack)){
+    else if(isCurrentTrack(currentTrack)) {
 
         let currentSec =serverTime - currentTrack.start;
         let prip =  player.currentTime - currentSec;
@@ -613,7 +609,7 @@ function neotubeSync(){
 
     }
 	// video ended
-	else if(state == PSTATE_ENDED){
+	else if(state == PSTATE_ENDED) {
         
         if(endTime < 3){
             //setTimeout(syncThread, 1000);
@@ -633,21 +629,10 @@ function neotubeSync(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-function neotubeUploadFile(form){
-
+function neotubeUploadFile(form)
+{
 
     var fdata = new FormData(document.querySelector('#neotube-upload-form'))
-            
 
     let thread_id = $('#thread_id').data('id');
     fdata.append( 'action',  'upload_track');
@@ -656,7 +641,6 @@ function neotubeUploadFile(form){
     fdata.append( 'posts_id',  thread_id);
     fdata.append( 'trip',   localStorage.name);
     fdata.append( 'json_response', true);
-
 
 
 	var updateProgress = function(e) {
@@ -689,10 +673,9 @@ function neotubeUploadFile(form){
 		dataType: 'json'
 	}).done(function(response) {
 
-        if(!response.success && response.error)
+        if(!response.success && response.error) {
             lalert(response);
-        
-         
+        }
 
 	}).fail(function(jqXHR, textStatus, errorStatus) {
 
@@ -707,16 +690,10 @@ function neotubeUploadFile(form){
 
 
 
-
-
-
-
-
-    
-
 }
 
-function neotubeLoadVideo(currentTrack, isPaused, startTime){
+function neotubeLoadVideo(currentTrack, isPaused, startTime)
+{
 
     if(currentTrack.type == 'youtube'){
         player.source = {
@@ -745,29 +722,34 @@ function neotubeLoadVideo(currentTrack, isPaused, startTime){
 
     player.play();
 
-    if(startTime>0)
+    if (startTime>0) {
         player.currentTime = startTime;
+    }
 }
 
-function getCurrentTrack(){
+function getCurrentTrack()
+{
 
     let serverTime = getServerTime();
     let currentTrack = null;
 
-    for(var i=0; currentList && i<currentList.length; i++){
+    for (var i=0; currentList && i<currentList.length; i++){
 
-        if(currentList[i].pause != -1)
+        if (currentList[i].pause != -1) {
             return currentList[i];
+        }
 
-        if(currentTrack == null && currentList[i].start < serverTime && currentList[i].end > serverTime)
+        if (currentTrack == null && currentList[i].start < serverTime && currentList[i].end > serverTime) {
             currentTrack = currentList[i];
+        }
     }
 	
-	if(currentTrack == null){
+	if (currentTrack == null){
 		for(var i=0; currentList && i<currentList.length; i++){
 
-        if(currentTrack == null && (currentList[i].start < serverTime+1) && currentList[i].end > serverTime)
-            currentTrack = currentList[i];
+            if (currentTrack == null && (currentList[i].start < serverTime+1) && currentList[i].end > serverTime) {
+                currentTrack = currentList[i];
+            }
 		}
 	}
     
@@ -775,19 +757,20 @@ function getCurrentTrack(){
 }
 
 
-function isCurrentTrack(currentTrack){
-
-    if(!activeTrack)
+function isCurrentTrack(currentTrack)
+{
+    if (!activeTrack) {
         return false;
+    }
 
     return activeTrack.id == currentTrack.id;
 }
 
-function neotubeReset(){
-
- 
-    if(PLAYER_IS_RESET)
+function neotubeReset()
+{
+    if (PLAYER_IS_RESET) {
         return;
+    }
 
     PLAYER_IS_RESET = true;
 
@@ -809,8 +792,8 @@ function neotubeReset(){
 
 }
 
-function getPlayerState(){
-
+function getPlayerState()
+{
     if(!player)
         return PSTATE_NOT_INITIALIZED;
     
@@ -836,7 +819,8 @@ function getPlayerState(){
 
 } 
 
-function neotubeRemoveTrack(id){
+function neotubeRemoveTrack(id)
+{
 
     let thread_id = $('#thread_id').data('id');
 
@@ -855,13 +839,15 @@ function neotubeRemoveTrack(id){
         type: 'POST',
         contentType: 'multipart/form-data', 
         data: fdata,
-        success: function(response, textStatus, xhr) {
+        success: function(response) {
 
-            if(!response.success && response.error)
+            if (!response.success && response.error) {
                 lalert(response);
+            }
 
-                if(response.success && response.playlist != null)
+            if (response.success && response.playlist != null) {
                 neotubeUpdatePlayList(JSON.parse(response.playlist));
+            }
  
         },
         error: function(xhr, status, er) {
@@ -874,13 +860,12 @@ function neotubeRemoveTrack(id){
 
 }
 
-function secToTime(timesec){
-
+function secToTime(timesec)
+{
     let min = Math.floor(timesec/60);
     let mins = min.toString()
     let sec = timesec - (min*60);
     let secs = sec.toString()
 
     return '[' +  (min < 10 ? '0'+mins : mins) + ':' +  (sec < 10 ? '0'+secs : secs) + ']';
-
 }
