@@ -25,8 +25,6 @@ class ukko
 		global $config, $board;
 		$boards = listBoards();
 
-		syslog(1, json_encode($config['rating'], TRUE));
-
 		$body = '';
 		$overflow = array();
 		$board = array(
@@ -62,7 +60,6 @@ class ukko
 				$board['uri'] =  $post['board'];
 				openBoard($board['uri']);
 				$thread = new Thread($post, $mod ? '?/' : $config['root'], $mod);
-				syslog(1, json_encode($config['rating'], TRUE));
 
 				$posts = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `thread` = :id AND `deleted`=0 AND `hide`=0 ORDER BY `id` DESC LIMIT :limit", $post['board']));
 				$posts->bindValue(':id', $post['id']);
