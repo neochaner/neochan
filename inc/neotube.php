@@ -4,7 +4,6 @@ require_once 'inc/lib/webm/ffmpeg.php';
 
 class Neotube 
 {
-
 	public static $tmp_path;
     public static $cache_sec = 60;
     public static $paused_delete_sec = 60 * 60 * 24 * 3; // удаление видео поставленных на паузу
@@ -219,15 +218,17 @@ class Neotube
         global $config;
 
         $config['webm']['max_length'] = 9999999;
-        $file['tmp_name'] =   "tmp/$filename";
-        $file['path'] = "tmp/$filename"; 
-        $file['name'] = basename($filename);
 
-        $ext = pathinfo($file['tmp_name'], PATHINFO_EXTENSION);
+        $file = array(
+            'tmp_name' => "tmp/$filename",
+            'path' => "tmp/$filename",
+            'name' => basename($filename)
+        );
+
         $mime = mime_content_type($file['tmp_name']);
 
         if (!file_exists($file['tmp_name'])) {
-            server_reponse('Файл не найден');
+            server_reponse('File noy dound', array('success'=>false));
         }
 
         if (!in_array($mime, array('video/webm', 'video/mp4', 'video/x-matroska', 'application/octet-stream'))) {
@@ -262,31 +263,26 @@ class Neotube
             $list[0]['pause'] = $elapsed;
 
         } else {
-            
             // rebuild time...
-            for($i=0; $i<count($list); $i++){
+            for ($i=0, $l=count($list); $i<$l; $i++) {
 
-                if($i==0){
-                    
+                if ($i==0) {
                     $list[0]['start'] = time()-$list[0]['pause'];
                     $list[0]['end'] = $list[0]['start'] + $list[0]['duration'];
                     $list[0]['pause'] =-1;
-                }
-                else{
+                } else {
                     $lastEnd = $list[$i-1]['end']+2;
 
                     $list[$i]['start'] = $lastEnd;
                     $list[$i]['end'] = $lastEnd + $list[0]['duration'];
                 }
             }
-
         }
 
         $json = json_encode($list);
     
         self::setPlayList($json);
         return $json;
-
     }
     
     public static function setPlayList($json)

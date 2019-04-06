@@ -267,7 +267,6 @@ class Session {
 		}
 		
         $iv = $config['security_salt'] ?? 'none';
-        $output = false;
         $encrypt_method = "AES-256-CBC";
         $key = hash( 'sha256', $key );
         $iv = substr( hash( 'sha256', $iv ), 0, 16 );
@@ -284,7 +283,6 @@ class Session {
 		}
 			
         $iv = $config['security_salt'] ?? 'none';
-        $output = false;
         $encrypt_method = "AES-256-CBC";
         $key = hash( 'sha256', $key );
         $iv = substr( hash( 'sha256', $iv ), 0, 16 );
