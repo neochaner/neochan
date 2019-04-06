@@ -2,7 +2,8 @@
 require_once("inc/8chan-functions.php");
 require_once("inc/functions.php");
 
-require_once "lib/htmlpurifier-4.6.0/library/HTMLPurifier.auto.php";
+//require_once "lib/htmlpurifier-4.6.0/library/HTMLPurifier.auto.php";
+require_once "lib/htmlpurifier-4.10.0/library/HTMLPurifier.auto.php";
 
 
 function max_posts_per_hour($post)
@@ -26,7 +27,7 @@ function max_posts_per_hour($post)
 
 function filename_func($a)
 {
-  $f = basename($a['filename'], '.'.$a['extension']);
-  $f = str_replace(array("\0", "\n", "<", ">", "/", "&"), array("?", "?", "«", "»", "⁄", "and"), $f);
-  return $f;
+	$f = basename($a['filename'], '.'.$a['extension']);
+	$f = str_replace(array("\0", "\n", "<", ">", "/", "&"), array("?", "?", "«", "»", "⁄", "and"), $f);
+	return $f;
 }
