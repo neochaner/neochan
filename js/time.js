@@ -1,3 +1,6 @@
+/** global: config, serverTime,  */
+
+
 var loadPageTick = new Date().getTime();
 var optionLocalTimeKey = 'localTimeMode';
 var optionLocalTimeValue;
@@ -34,12 +37,13 @@ function timeReload(){
 
 	function D(dayNum, sym=2){
 
-		if(config.language == 'ru'){
-			if(sym==2)
+		if (config.language == 'ru') {
+			if (sym==2) {
 				return ([ "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"][dayNum]);
-			else 
+			} else {
 				return ([ "Вск", "Пнд", "Втр", "Срд", "Чтв", "Птн", "Суб", "Вск"][dayNum]);
-		} else{
+			}
+		} else {
 			return ([ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][dayNum]);
 		}
 	}
