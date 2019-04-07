@@ -18,6 +18,8 @@ if (isset($_POST['login'])) {
     mod_login();
 } else if (isset($_POST['register'])) {
 
+    server_response("Temporay Disabled", array());
+    
     $data = "<script src='https://www.google.com/recaptcha/api.js' async defer></script>";
     $data .= "<div class='g-recaptcha' ID='recaptcha' data-sitekey='{$config['captcha']['recaptcha_public_key']}'></div>";
 
@@ -34,14 +36,6 @@ if (isset($_POST['login'])) {
         json_response(array('invalid_password_1' => true));
     }
 
-    if (!isset($_POST['g-recaptcha-response'])) {
-        json_response(array('captcha' => true, 'data'=> $data));
-    }
-
-
-    if (!recaptcha_verify($_POST['g-recaptcha-response'])) {
-        json_response(array('captcha' => true, 'data'=> $data, 'alert'=> $config['error']['captcha']));
-    }
  
     $username =  $_POST['username'];
     $password =  $_POST['password']; 
