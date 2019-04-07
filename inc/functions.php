@@ -3121,35 +3121,7 @@ function prettify_textarea($s){
 	return str_replace("\t", '&#09;', str_replace("\n", '&#13;&#10;', htmlentities($s)));
 }
 
-class HTMLPurifier_URIFilter_NoExternalImages extends HTMLPurifier_URIFilter {
-	public $name = 'NoExternalImages';
-	public function filter(&$uri, $c, $context) {
-		global $config;
-		$ct = $context->get('CurrentToken');
 
-		if (!$ct || $ct->name !== 'img') return true;
-
-		if (!isset($uri->host) && !isset($uri->scheme)) return true;
-
-		if (!in_array($uri->scheme . '://' . $uri->host . '/', $config['allowed_offsite_urls'])) {
-			error('No off-site links in board announcement images.');
-		}
-
-		return true;
-	}
-}
-
-function purify_html($s) {
-	global $config;
-
-	$c = HTMLPurifier_Config::createDefault();
-	$c->set('HTML.Allowed', $config['allowed_html']);
-	$uri = $c->getDefinition('URI');
-	$uri->addFilter(new HTMLPurifier_URIFilter_NoExternalImages(), $c);
-	$purifier = new HTMLPurifier($c);
-	$clean_html = $purifier->purify($s);
-	return $clean_html;
-}
 
 function markdown($s) {
 	$pd = new Parsedown();
@@ -3160,36 +3132,6 @@ function markdown($s) {
 }
 
 
-function recaptcha_verify($answer)
-{
-
-	global $config;
-
-	if($answer == null || strlen($answer) < 3)
-	{
-		return false;
-	}
-
-
-	$post_data = http_build_query(array(
-			'secret' => $config['recaptcha_secret_key'],
-			'response' => $_POST['g-recaptcha-response'],
-			//'remoteip' => $_SERVER['REMOTE_ADDR']
-	));
-
-	$opts = array('http' =>array(
-	'method'  => 'POST',
-	'header'  => 'Content-type: application/x-www-form-urlencoded',
-	'content' => $post_data
-	));
-	
-	$context  = stream_context_create($opts);
-	$response = file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context);
-	$result = json_decode($response);
-
-	return $result->success;
-
-}
 
 function json_response($array)
 {

@@ -70,12 +70,6 @@ $pages = array(
 	'/settings/flags/(\%b)' 												=> 'flags',			// add/remove custom flags
 	'/settings/banners/(\%b)' 												=> 'banners',		// add/remove banners
 	'/settings/assets/(\%b)' 												=> 'assets',		// custom assets: spoiler, etc...
-
-	/*
-	'/settings/edit_pages(?:/?(\%b)?)'		=> 'secure_POST pages',
-	'/settings/edit_page/(\d+)'			=> 'secure_POST edit_page',
-	'/settings/edit_pages/delete/([a-z0-9]+)'	=> 'secure delete_page',
-	'/settings/edit_pages/delete/([a-z0-9]+)/(\%b)'	=> 'secure delete_page_board',*/
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
