@@ -1370,9 +1370,12 @@ srand(time());
 	$config['default_language'] = 'en';
 	$config['sup_languages']['ru'] = 'Русский';
 	$config['sup_languages']['en'] = 'English';
-	//$config['sup_languages']['de'] = 'Deutsch';
+	$config['sup_languages']['de'] = 'Deutsch';
+	$config['sup_languages']['pl'] = 'Polski';
+	$config['sup_languages']['jp'] = '日本語';
+	$config['sup_languages']['ko'] = '한국어';
 
-
+	 
 	// Timezone to use for displaying dates/tiems.
 	$config['timezone'] = 'UTC';
 	// The format string passed to strftime() for displaying dates.

@@ -24,6 +24,8 @@
     content:'You made a mistake when entering captcha.';
 }.l_back_page::before{
     content:'Back';
+}.l_back::before{
+    content:'Back'
 }.l_search::before{
     content:'Search';
 }
@@ -115,8 +117,6 @@
     content:'New Thread'
 }.l_search{
     content:'Search'
-}.l_back::before{
-    content:'Back'
 }.l_catalog::before{
     content:'Catalog'
 }.l_reply::before{
@@ -162,10 +162,7 @@
     content:'Edited'
 }
 
-/* Thread */
-.l_post_reply::before{
-    content:'Reply'
-}
+
 
 
 .l_youarebanned::before{
@@ -194,7 +191,7 @@
 .l_footer_text::before{
     display: block;
 	white-space: pre;
-    content: 'All rights and copyrights on this page belong to rightsholders. All comments are owned by the persons who sent them.\AIf you found the prohibited information, please let us know by e-mail admin@neochan.ru'
+    content: 'All rights and copyrights on this page belong to rightsholders. All comments are owned by the persons who sent them.\AIf you found the prohibited information, please let us know by admin e-mail'
 }
 
 
@@ -223,15 +220,15 @@
 
 
 .l_mod_settings::before{
-	content: 'Setings'
+	content: 'Settings'
 }.l_mod_banners::before{
 	content: 'Banners'
 }.l_mod_flags::before{
-	content: 'Flag'
+	content: 'Flags'
 }.l_mod_assets::before{
-	content: 'Asset'
+	content: 'Assets'
 }.l_mod_volunteers::before{
-	content: 'Volunters'
+	content: 'Volunteers'
 }.l_mod_tags::before{
 	content: 'Tags'
 }.l_mod_pages::before{
@@ -268,36 +265,3 @@
 }.l_btn_appeal::before{
 	content: 'Send appeal'
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-d
-
-
-
-
-
-
-
-
-
-
-
-
-
-

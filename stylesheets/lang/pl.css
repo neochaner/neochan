@@ -1,0 +1,242 @@
+@charset "utf-8";
+
+.l_anonymous::before{
+    content:'Anonimowy';
+}
+
+.l_error_noboard::before{
+    content:'Nie znaleziono.';
+}.l_error_noaccess::before{
+    content:'Brak dostępu.';
+}.l_error_process_file::before{
+    content:'Błąd podczas przetwarzania pliku.';
+}.l_error_extension_not_supported::before{
+    content:'Rozszerzenie nie jest obsługiwane.';
+}
+
+.l_disabled_for_darknet{
+    content:'Opcja wyłączona dla tor/i2p.';
+}
+ 
+.l_enter_captcha::before{
+    content:'CAPTCHĘ';
+}.l_captcha_mistype::before{
+    content:'Źle przepisałeś CAPTCHĘ.';
+}.l_back::before{
+    content:'Wróć'
+}.l_back_page::before{
+    content:'Wróć';
+}.l_search::before{
+    content:'Szukaj';
+}
+
+.l_custom_js::before{
+    content:'Niestandardowy JS';
+}.l_custom_css::before{
+    content:'Niestandardowy CSS';
+}
+ 
+
+
+.l_btn_Submit::before{
+    content:'Wyślij';
+}.l_btn_Login::before{
+    content:'Logowanie';
+}.l_btn_Save::before{
+    content:'Zachowaj';
+}.l_btn_Cancel::before{
+    content:'Anuluj';
+}
+
+ 
+
+.l_board_control::before{
+    content:'Moderacji' 
+}.l_login_out::before{
+    content:'Wyloguj' 
+}.l_login_label::before{
+    content:'Nazwa Użytkownika' 
+}.l_passwd_label::before{
+    content:'hasło' 
+}.l_option::before{
+    content:'Opcje' 
+}.l_option_cp::before{
+    content:'Crypto-posting'; 
+}.l_optionSave::before{
+    content:'zapisać' 
+}.l_optionLoad::before{
+    content:'obciążenie' 
+}.l_login::before{
+    content:'Upoważnienie' 
+}.l_sitetheme::before{
+    content:'Styl' 
+}.l_language::before{
+    content:'Język' 
+}.l_test_mode::before{
+    content:'Tryb testowania' 
+}.l_relative::before{
+    content:'Pokaż czas względny' 
+}.l_nsfm::before{
+    content:'Ukryj obrazki' 
+}.l_video_vol::before{
+    content:'Głośność' 
+}.l_view_thread::before{
+    content:'Wyświetl wątek';
+}.l_tripmask::before {
+    content: 'Ukryj pole tripcode';
+}.l_DisableHideStyle::before{
+    content: 'Nie zaznaczaj ukrytych postów';
+}.l_delHiddenPosts::before {
+    content: 'Usuń ukryte posty';
+}.l_notify::before {
+    content: 'Włącz powiadomienia';
+}.l_login_enter::before{
+    content:'Zaloguj' 
+}.l_login_reg::before{
+    content:'Zarejestrować' 
+} 
+
+
+
+.l_vote_success::before{
+    content:'Głosowałem!' 
+}.l_alreadyvoted::before{
+    content:'Głosowałeś już.' 
+}.l_poll_notfound::before{
+    content:'Nie znaleziono głosowanie.' 
+}.l_invalidvote::before{
+    content:'Nieprawidłowy wariant.' 
+}.l_invalidpost::before{
+    content:'Nieprawidłowy wpis.' 
+}
+ 
+
+ 
+ 
+.l_new_theread::before{
+    content:'Nowy Wątek'
+}.l_search{
+    content:'Szukaj'
+}.l_catalog::before{
+    content:'Katalog'
+}.l_reply::before{
+    content:'Odpowiadać'
+}.l_sortby::before{
+    content:'Sortuj wg: '
+}.l_sortbysize::before{
+    content:'Rozmiar: '
+}
+
+
+
+/* Шапка */
+.l_latest_threads::before{
+    content:'Najnowsze wątki'
+}
+
+
+/* Меню поста  */
+.l_show_post::before{
+    content:'Pokaż post'
+}.l_hide_post::before{
+    content:'Ukryj post'
+}.l_show_thread::before{
+    content:'Pokaż wątek'
+}.l_hide_thread::before{
+    content:'Ukryj wątek'
+}.l_show_trip::before{
+    content:'Pokaż trip'
+}.l_hide_trip::before{
+    content:'Ukryj trip'
+}.l_show_anon::before{
+    content:'Pokaż anonimowy'
+}.l_hide_anon::before{
+    content:'Ukryj anonimowy'
+}.l_report::before{
+    content:'Raport'
+}.l_hide_thread_trip::before{
+    content: 'Ukryj wątek przez podróż';
+}.l_show_thread_trip::before{
+    content: 'Pokaż wątek według podróży';
+}.l_edited::before{
+    content:'Edytowane'
+}
+
+
+.l_youarebanned::before{
+    content:'Jesteś zbanowany!'
+}.l_youarebanned_on::before{
+    content:'board: '
+}.l_youarebanned_allboard::before{
+    content:'Jesteś zablokowany: '
+}.l_permanent_ban::before{
+    content:'Wygasa: na zawsze'
+}.l_banexpires::before{
+    content:'Wygasa: '
+}.l_reason::before{
+    content:'Powód: '
+}.l_ban_appiried::before{
+    content:'Status: Stosowany...'
+}.l_ban_apperdenied::before{
+    content:'Status: pojawia się odmowa...'
+}
+
+.l_board_notubes::before{
+    content: 'Synctubes nie znaleziono w tym momencie';
+}
+
+
+.l_footer_text::before{
+    display: block;
+	white-space: pre;
+    content: 'Wszystkie prawa i prawa autorskie na tej stronie należą do posiadaczy praw. Wszystkie komentarze są własnością osób, które je wysłały Jeśli znalazłeś zabronione informacje, daj nam znać przez admin e-mail'
+}
+
+
+
+.l_mod_settings::before{
+	content: 'Settings'
+}.l_mod_banners::before{
+	content: 'Banery'
+}.l_mod_flags::before{
+	content: 'Flagi'
+}.l_mod_assets::before{
+	content: 'Majątek'
+}.l_mod_volunteers::before{
+	content: 'Wolontariusze'
+}.l_mod_tags::before{
+	content: 'Tagi'
+}.l_mod_pages::before{
+	content: 'Strony'
+}.l_return_to_dashboard::before{
+    content: 'Wróć do pulpitu nawigacyjnego'
+}.l_mod_save_changes::before{
+    content: 'Zapisz zmiany'
+}
+
+
+
+
+
+
+.l_you_are_banned::before{
+    content: 'Jesteś zbanowany!'
+}.l_you_were_banned::before{
+    content: 'Zostałeś zbanowany.'
+}.l_you_were_banned_opmod::before{
+    content: 'Zostałeś zbanowany (zakaz wątku).'
+}.l_you_are_banned_opmod::before{
+    content: 'Twórca wątków zablokował Cię.'
+}.l_you_id::before{
+    content: 'Twój identyfikator: '
+}.l_you_banned_post::before{
+	content: 'Zostałeś zablokowany na następujący post'
+}.l_you_submitted_appeal::before{
+	content: 'Złożyłeś odwołanie od tego zakazu'
+}.l_appeal_still_pending::before{
+	content: 'Nadal trwa.'
+}.l_you_may_apeeal::before{
+	content: 'Możesz odwołać się od zakazu. Wpisz poniżej swoje uzasadnienie.'
+}.l_btn_appeal::before{
+	content: 'Wyślij odwołanie'
+}

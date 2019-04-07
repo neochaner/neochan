@@ -1,40 +1,243 @@
-
 @charset "utf-8";
 
-
-
-.l_option::before{
-    content:'Настройка' 
-}.l_sitetheme::before{
-    content:'Тема' 
-}.l_language::before{
-    content:'Язык' 
-}.l_relative::before{
-    content:'Относительное время' 
-}.l_nsfm::before{
-    content:'Скрывать картинки' 
-}.l_test_mode::before{
-    content:'Тестовый режим' 
-}.l_video_vol::before{
-    content:'Громкость плеера' 
-}.l_tripmask::before {
-    content: 'Маскировать трипкод';
-}.l_delHiddenPosts::before {
-    content: 'Delete hidden posts';
-}.l_notify::before {
-    content: 'Enable notifications';
+.l_anonymous::before{
+    content:'Anonym';
 }
+
+.l_error_noboard::before{
+    content:'Board not found.';
+}.l_error_noaccess::before{
+    content:'No access.';
+}.l_error_process_file::before{
+    content:'Verarbeitungsfehler.';
+}.l_error_extension_not_supported::before{
+    content:'Erweiterung wird nicht unterstützt.';
+}
+
+.l_disabled_for_darknet{
+    content:'Option deaktiviert für tor/i2p.';
+}
+ 
+.l_enter_captcha::before{
+    content:'captcha';
+}.l_captcha_mistype::before{
+    content:'Captcha inkorrekt.';
+}.l_back::before{
+    content:'Zurück'
+}.l_back_page::before{
+    content:'Zurück';
+}.l_search::before{
+    content:'Search';
+}
+
+.l_custom_js::before{
+    content:'Benutzer JS';
+}.l_custom_css::before{
+    content:'Benutzer CSS';
+}
+ 
+
+
+.l_btn_Submit::before{
+    content:'Einreichen';
+}.l_btn_Login::before{
+    content:'Login';
+}.l_btn_Save::before{
+    content:'Speichern';
+}.l_btn_Cancel::before{
+    content:'Abbrechen';
+}
+
+ 
+
+.l_board_control::before{
+    content:'Mäßigung' 
+}.l_login_out::before{
+    content:'Ausloggen' 
+}.l_login_label::before{
+    content:'nutzername' 
+}.l_passwd_label::before{
+    content:'passwort' 
+}.l_option::before{
+    content:'Optionen' 
+}.l_option_cp::before{
+    content:'Crypto-posting'; 
+}.l_optionSave::before{
+    content:'sparen' 
+}.l_optionLoad::before{
+    content:'laden' 
+}.l_login::before{
+    content:'Authorization' 
+}.l_sitetheme::before{
+    content:'Stil' 
+}.l_language::before{
+    content:'Sprache' 
+}.l_test_mode::before{
+    content:'Test mode' 
+}.l_relative::before{
+    content:'Relative zeit' 
+}.l_nsfm::before{
+    content:'Bilder ausblenden' 
+}.l_video_vol::before{
+    content:'Volumen' 
+}.l_view_thread::before{
+    content:'Thread anzeigen';
+}.l_tripmask::before {
+    content: 'Tripcode-Feld ausblenden';
+}.l_DisableHideStyle::before{
+    content: 'Nicht hervorheben versteckt posts';
+}.l_delHiddenPosts::before {
+    content: 'Versteckte beiträge löschen';
+}.l_notify::before {
+    content: 'Benachrichtigungen aktivieren';
+}.l_login_enter::before{
+    content:'Einloggen' 
+}.l_login_reg::before{
+    content:'Registrieren' 
+} 
+
+
+
+.l_vote_success::before{
+    content:'Gewählt!' 
+}.l_alreadyvoted::before{
+    content:'Sie haben bereits abgestimmt.' 
+}.l_poll_notfound::before{
+    content:'Umfrage nicht gefunden.' 
+}.l_invalidvote::before{
+    content:'Ungültige variante.' 
+}.l_invalidpost::before{
+    content:'Ungültiger beitrag.' 
+}
+ 
 
  
  
 .l_new_theread::before{
-    content:'Создать тред'
+    content:'Neues Faden'
 }.l_search{
-    content:'Поиск'
-}.l_back::before{
-    content:'Назад'
+    content:'Suche'
 }.l_catalog::before{
-    content:'Каталог'
+    content:'Katalog'
 }.l_reply::before{
-    content:'Ответ'
+    content:'Antworten'
+}.l_sortby::before{
+    content:'Sortiere nach: '
+}.l_sortbysize::before{
+    content:'Größe: '
+}
+
+
+
+/* Шапка */
+.l_latest_threads::before{
+    content:'Aktuelle fäden'
+}
+
+
+/* Меню поста  */
+.l_show_post::before{
+    content:'Post show'
+}.l_hide_post::before{
+    content:'Post verbergen'
+}.l_show_thread::before{
+    content:'Show faden'
+}.l_hide_thread::before{
+    content:'Hide faden'
+}.l_show_trip::before{
+    content:'Show trip'
+}.l_hide_trip::before{
+    content:'Hide trip'
+}.l_show_anon::before{
+    content:'Show anonym'
+}.l_hide_anon::before{
+    content:'Hide anonym'
+}.l_report::before{
+    content:'Bericht'
+}.l_hide_thread_trip::before{
+    content: 'Hide thread by trip';
+}.l_show_thread_trip::before{
+    content: 'Show thread by trip';
+}.l_edited::before{
+    content:'Bearbeitet'
+}
+
+
+.l_youarebanned::before{
+    content:'Zugang gesperrt'
+}.l_youarebanned_on::before{
+    content:'board: '
+}.l_youarebanned_allboard::before{
+    content:'You are banned on: '
+}.l_permanent_ban::before{
+    content:'Läuft ab: für immer'
+}.l_banexpires::before{
+    content:'Läuft ab: '
+}.l_reason::before{
+    content:'Grund: '
+}.l_ban_appiried::before{
+    content:'Status: Angewendet...'
+}.l_ban_apperdenied::before{
+    content:'Status: erscheinen abgelehnt...'
+}
+
+.l_board_notubes::before{
+    content: 'Synctubes not found at this moment';
+}
+
+
+.l_footer_text::before{
+    display: block;
+	white-space: pre;
+    content: 'All rights and copyrights on this page belong to rightsholders. All comments are owned by the persons who sent them.\AIf you found the prohibited information, please let us know by e-mail admin@neochan.ru'
+}
+
+
+
+
+.l_mod_settings::before{
+	content: 'Optionen'
+}.l_mod_banners::before{
+	content: 'Banner'
+}.l_mod_flags::before{
+	content: 'Flaggen'
+}.l_mod_assets::before{
+	content: 'Masse'
+}.l_mod_volunteers::before{
+	content: 'Freiwillige'
+}.l_mod_tags::before{
+	content: 'Stichworte'
+}.l_mod_pages::before{
+	content: 'Seiten'
+}.l_return_to_dashboard::before{
+    content: 'Zurück zum Dashboard'
+}.l_mod_save_changes::before{
+    content: 'Änderungen Speichern'
+}
+
+
+
+
+
+
+.l_you_are_banned::before{
+    content: 'Zugang gesperrt!'
+}.l_you_were_banned::before{
+    content: 'Du wurdest verboten.'
+}.l_you_were_banned_opmod::before{
+    content: 'Du wurdest verboten (Threadverbot).'
+}.l_you_are_banned_opmod::before{
+    content: 'Der Thread-Ersteller hat Sie verboten.'
+}.l_you_id::before{
+    content: 'Ihre ID: '
+}.l_you_banned_post::before{
+	content: 'Du wurdest für den follgenden Post gebannt'
+}.l_you_submitted_appeal::before{
+	content: 'Du hast bereits eine Beschwerde gegen diesen Bann eingereicht am'
+}.l_appeal_still_pending::before{
+	content: 'Antwort steht noch aus.'
+}.l_you_may_apeeal::before{
+	content: 'Du kannst dich über diesen Bann beschweren. Bitte nenne hier deinen Grund.'
+}.l_btn_appeal::before{
+	content: 'Berufung senden'
 }
