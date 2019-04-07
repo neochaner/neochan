@@ -3154,7 +3154,7 @@ function json_response_add($key, $value)
 	$json_response_array[$key] = $value;
 }
 
-function server_reponse($html_error, $array, $back_page_link = null){
+function server_response($html_error, $array, $back_page_link = null){
 
 	global $config, $board,  $json_response_array;
 
@@ -3655,11 +3655,11 @@ function postRate($board_uri, $post_id, $like = true)
 	global $config, $board, $mod;
 	
 	if (!openBoard($board_uri)){
-		server_reponse('No board', array('success'=>false, 'error'=>'l_error_noboard'));
+		server_response('No board', array('success'=>false, 'error'=>'l_error_noboard'));
 	}
 
 	if (!$config['rating']['darknet'] && Session::$is_darknet) {
-		server_reponse('Option is disabled for darknet', array('success'=>false, 'error'=>'l_disabled_for_darknet'));
+		server_response('Option is disabled for darknet', array('success'=>false, 'error'=>'l_disabled_for_darknet'));
 	}
 
 	$query = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `id` = :id", $board['uri']));
@@ -3667,17 +3667,17 @@ function postRate($board_uri, $post_id, $like = true)
 	$query->execute() or error(db_error($query));
 
 	if (!$post = $query->fetch(PDO::FETCH_ASSOC)) {
-		server_reponse('Post not found.', array('success'=>false, 'error'=>'l_error'));
+		server_response('Post not found.', array('success'=>false, 'error'=>'l_error'));
 	} 
 
 	
 	// check taring is enable
 	if ($post['thread'] == NULL && !$config['rating']['thread']) {
-		server_reponse('Option has benn disabled', array('success'=>false, 'error'=>'l_error'));
+		server_response('Option has benn disabled', array('success'=>false, 'error'=>'l_error'));
 	} 
 
 	if ($post['thread'] != NULL && !$config['rating']['post']) {
-		server_reponse('Option has been disabled', array('success'=>false, 'error'=>'l_error'));
+		server_response('Option has been disabled', array('success'=>false, 'error'=>'l_error'));
 	}
 
 	// check double liking
@@ -3690,7 +3690,7 @@ function postRate($board_uri, $post_id, $like = true)
 	$entry = $query->fetch(PDO::FETCH_ASSOC);
  
 	if ($entry != FALSE) {
-		server_reponse('You have already voted.', array('success'=>false, 'error'=>'l_alreadyvoted'));
+		server_response('You have already voted.', array('success'=>false, 'error'=>'l_alreadyvoted'));
 	}
 
 	$thread_id = $post['thread'] == NULL ? $post['id'] : $post['thread'];
@@ -3734,7 +3734,7 @@ function postRate($board_uri, $post_id, $like = true)
 	// rebuild index in board
 	buildIndex();
 
-	server_reponse('Success.', array('success'=>true), '/' . $config['root'] . $board['uri']); 
+	server_response('Success.', array('success'=>true), '/' . $config['root'] . $board['uri']); 
 }
 
 

@@ -177,7 +177,7 @@ switch ($_POST['action']) {
         if(substr($_POST['link'], 0, 4) != 'http'){
 
             if(!Neotube::uploadLocalTrack($_POST['link']))
-                server_reponse('Fail change playlist', array('success'=> false));
+                server_response('Fail change playlist', array('success'=> false));
             
             $json = Neotube::getPlaylist(); 
             json_response(array('success'=>  $json != null, 'playlist' => $json, 'time'=> time()+1));
@@ -185,7 +185,7 @@ switch ($_POST['action']) {
         }
 
         if(!Neotube::addYoutubeLink( $_POST['link'])) {
-            server_reponse('Fail change playlist', array('success'=> false));
+            server_response('Fail change playlist', array('success'=> false));
         }
 
         $json = Neotube::getPlaylist(); 

@@ -189,7 +189,7 @@ class Neotube
         $mime = mime_content_type($file['tmp_name']);
 
         if(!in_array($mime, array('video/webm', 'video/mp4')))
-            server_reponse('Тип файла [' . $mime . '] не поддерживается', array('success'=>false, 'error'=>'l_error_extension_not_supported'));
+            server_response('Тип файла [' . $mime . '] не поддерживается', array('success'=>false, 'error'=>'l_error_extension_not_supported'));
 
         if(move_uploaded_file($file['tmp_name'], getcwd() . '/' . $newPath)){
  
@@ -201,11 +201,11 @@ class Neotube
 
             if (!$result) {
                 unlink($newPath);
-                server_reponse('Произошла ошибка при обработке файла', array('success'=>false, 'error'=>'l_error_process_file'));
+                server_response('Произошла ошибка при обработке файла', array('success'=>false, 'error'=>'l_error_process_file'));
             }
             
         } else {
-            server_reponse('FAIL', array('success'=>false, 'error'=>'l_error_process_file'));
+            server_response('FAIL', array('success'=>false, 'error'=>'l_error_process_file'));
         }
     
         return true;
@@ -228,11 +228,11 @@ class Neotube
         $mime = mime_content_type($file['tmp_name']);
 
         if (!file_exists($file['tmp_name'])) {
-            server_reponse('File noy dound', array('success'=>false));
+            server_response('File noy dound', array('success'=>false));
         }
 
         if (!in_array($mime, array('video/webm', 'video/mp4', 'video/x-matroska', 'application/octet-stream'))) {
-            server_reponse("Тип файла [ $mime ] не поддерживается", array('success'=>false, 'error'=>'l_error_extension_not_supported'));
+            server_response("Тип файла [ $mime ] не поддерживается", array('success'=>false, 'error'=>'l_error_extension_not_supported'));
         }
 
         if ($mime == 'application/octet-stream') {
@@ -243,7 +243,7 @@ class Neotube
 
 
         if (!self::addPlaylistFile($file)) {
-            server_reponse('Произошла ошибка при обработке файла', array('success'=>false, 'error'=>'l_error_process_file'));
+            server_response('Произошла ошибка при обработке файла', array('success'=>false, 'error'=>'l_error_process_file'));
         }
         
         return true;

@@ -347,7 +347,7 @@ if(isset($_GET['rate']))
 
 	if(Session::getAntispamState() == 0){
 		$html = "Вам необходимо пройти\n<a href='/antispam.php?board={$_POST['board']}'>антиспам проверку</a>";
-		server_reponse($html, array('success'=> false, 'need_antispam_check'=> $html));
+		server_response($html, array('success'=> false, 'need_antispam_check'=> $html));
 	}  
 
 
@@ -355,7 +355,7 @@ if(isset($_GET['rate']))
 	if(($config['captcha']['enabled_for_post'] && !$post['op']) || ($config['captcha']['enabled_for_thread'] && $post['op'])){
 
 		if (!chanCaptcha::check()) {
-				server_reponse("l_captcha_mistype", array('success'=> false, 'l_captcha_mistype'=> true), $_SERVER['HTTP_REFERER']);
+				server_response("l_captcha_mistype", array('success'=> false, 'l_captcha_mistype'=> true), $_SERVER['HTTP_REFERER']);
 		}
 	}
 
@@ -1447,7 +1447,7 @@ elseif (isset($_POST['user_edit']))
 		$user_access = Session::getIdentity() == $post['ip'] && strlen($post['ip']) >= 2;
 
 		if(!$user_access && !$mod_request)
-			server_reponse('No access', array('error' => 'Доступ запрещён'));
+			server_response('No access', array('error' => 'Доступ запрещён'));
 
 
 		if(!$mod_request && time() > $post['time']+(60*3))

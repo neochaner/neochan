@@ -76,11 +76,11 @@ if (isset($_POST['login'])) {
     global $config, $board;
 
     if (!isset($_REQUEST['board']) || !openBoard($_REQUEST['board'])) {
-        server_reponse('No board', array('success'=>false, 'error'=>'l_error_noboard'));
+        server_response('No board', array('success'=>false, 'error'=>'l_error_noboard'));
     }
 
     if (Session::isAllowVote()) {
-        server_reponse('No access', array('success'=>false, 'error'=>'l_error_noaccess'));
+        server_response('No access', array('success'=>false, 'error'=>'l_error_noaccess'));
     }
 
     $query = prepare(sprintf("SELECT * FROM `posts_%s` WHERE `id` = :id", $board['uri']));
@@ -90,19 +90,19 @@ if (isset($_POST['login'])) {
     if ($post = $query->fetch(PDO::FETCH_ASSOC)) {
 
         if (is_string($post['poll']) == NULL) {
-            server_reponse('Poll not found', array('success'=>false, 'error'=>'l_poll_notfound'));
+            server_response('Poll not found', array('success'=>false, 'error'=>'l_poll_notfound'));
         }
 
         $post['poll'] = json_decode($post['poll'], TRUE);
         $vote = (int)$_REQUEST['vote'];
 
         if (count($post['poll']) <= $vote) {
-            server_reponse('Invalid vote number', array('success'=>false, 'error'=>'l_invalidvote'));
+            server_response('Invalid vote number', array('success'=>false, 'error'=>'l_invalidvote'));
         }
 
         // check double vote
         if (in_array(Session::getIdentity(), $post['poll'][$vote]['ids'])) {
-            server_reponse('Already voted', array('success'=>false, 'error'=>'l_alreadyvoted'));
+            server_response('Already voted', array('success'=>false, 'error'=>'l_alreadyvoted'));
         }
         
         $post['poll'][$vote]['ids'][] = Session::getIdentity();
@@ -126,19 +126,19 @@ if (isset($_POST['login'])) {
         buildThread($post['thread'] ? $post['thread'] : (int)$_REQUEST['post']); 
 
         if (isset($_REQUEST['media']) && (int)$_REQUEST['media'] == 1) {
-            server_reponse('Already voted!', array('success'=>true, 'info'=>'l_alreadyvoted'));
+            server_response('Already voted!', array('success'=>true, 'info'=>'l_alreadyvoted'));
         }
 
-        server_reponse('Voted!', array('success'=>true, 'info'=>'l_vote_success'));
+        server_response('Voted!', array('success'=>true, 'info'=>'l_vote_success'));
     } else {
-        server_reponse('Invalid post', array('success'=>false, 'error'=>'l_invalidpost'));
+        server_response('Invalid post', array('success'=>false, 'error'=>'l_invalidpost'));
     }
 
 }
 else if (isset($_POST['get_playlists'], $_POST['board'])){
 
     if (!isset($_POST['board']) || !openBoard($_POST['board'])) {
-        server_reponse('No board', array('success'=>false, 'error'=>'l_error_noboard'));
+        server_response('No board', array('success'=>false, 'error'=>'l_error_noboard'));
     }
 
     Neotube::init($_POST['board'], '0');
