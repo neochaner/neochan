@@ -64,30 +64,23 @@ class Session {
 		global $config;
 
 		$www_cap = $config['captcha']['antispam']['enable_www'];
-		$darknet_cap = $config['captcha']['antispam']['enable_www'];
+		$darknet_cap = $config['captcha']['antispam']['enable_darknet'];
+
+		if(self::$is_darknet && $darknet_cap > 0){
+			return ($darknet_cap > self::$data['capchas_left']) ? 0 : 1; 
+		}
 		
-		if ($www_cap == 0 && $darknet_cap == 0) {
-			return -1;
+		if(!self::$is_darknet && $www_cap > 0){
+			return ($www_cap > self::$data['capchas_left']) ? 0 : 1; 
 		}
 
-		if ($www_cap > 0 && !self::$is_darknet) {
-			return ($www_cap > self::$data['capchas_left']) ? 0 : 1;
-		}
-
-		if ($darknet_cap > 0 && self::$is_darknet) {
-			return ($darknet_cap > self::$data['capchas_left']) ? 0 : 1;
-		}
-
-
+		return -1;
 	}
 
+	/* Загружает информацию о пройденных проверках из кэша или базы данных */
 	public static function load()
 	{
 
-		if (!self::$initialized) {
-			self::init();
-		}
-  
 		if (self::$cookie_id == 0) {
 			return;
 		}
@@ -118,10 +111,6 @@ class Session {
 	{
 		global $config, $pdo;
 
-		if (!self::$initialized) {
-			self::init();
-		}
-
 		if (self::$cookie_id == 0) {
 			self::$cookie_key = 'cookie' . bin2hex(random_bytes(18));
 			self::$data['create'] = time(); 
@@ -147,10 +136,6 @@ class Session {
 
 	public static function captchaSolved()
 	{
-		if (!self::$initialized) {
-			self::init();
-		}
-
 		self::$data['capchas_left']++;
 		self::save();
 	}
@@ -159,12 +144,7 @@ class Session {
 	{
 		global $config;
 
-		if (!self::$initialized) {
-			self::init();
-		}
-
 		if (self::$is_onion || self::$is_i2p) {
-
 			return self::$data['capchas_left'] >= $config['tor']['need_capchas'];
 		}
 		
@@ -175,10 +155,6 @@ class Session {
 	{
 
 		global $config;
-
-		if (!self::$initialized) {
-			self::init();
-		}
 
 		if (!$config['polls']['enable']) {
 			return false;
@@ -203,10 +179,6 @@ class Session {
 	{
 		global $config;
 
-		if (!self::$initialized) {
-			self::init();
-		}
-
 		if (self::$is_onion || self::$is_i2p) {
 			return self::$cookie_key;
 		}
@@ -225,10 +197,6 @@ class Session {
 	public static function getIdentityRange()
 	{
 		global $config;
-
-		if (!self::$initialized) {
-			self::init();
-		}
 
 		if (self::$is_onion || self::$is_i2p) {
 			return self::$cookie_key;
@@ -293,6 +261,8 @@ class Session {
 
 
 }
+
+Session::init();
 
 
 

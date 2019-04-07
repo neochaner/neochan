@@ -356,6 +356,7 @@ class Bans
 		$query->bindValue(':mod', $mod_id);
 		$query->bindValue(':time', time());
 
+
 		if ($reason !== '') {
 			$reason = escape_markup_modifiers($reason);
 			markup($reason);
