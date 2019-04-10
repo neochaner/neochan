@@ -5,9 +5,9 @@
 
 
 {% if mod and mod.type == 0 and post.thread != NULL %}
-<a class="button btn-sm" href="?/{{ board.dir }}res/{{ post.thread }}.html/delete/{{ post.id }}/{{ mod.token }}">{{ config.mod.link_delete }}</a>
-<a class="button btn-sm" href="?/{{ board.dir }}res/{{ post.thread }}.html/ban/{{ post.id }}/{{ mod.token }}">{{ config.mod.link_ban }}</a>
-<a class="button btn-sm" href="?/{{ board.dir }}res/{{ post.thread }}.html/ban_delete/{{ post.id }}/{{ mod.token }}">{{ config.mod.link_bandelete }}</a>
+<a class="button btn-sm" title='Delete' href="?/{{ board.dir }}res/{{ post.thread }}.html/delete/{{ post.id }}/{{ mod.token }}">{{ config.mod.link_delete }}</a>
+<a class="button btn-sm" title='Ban' href="?/{{ board.dir }}res/{{ post.thread }}.html/ban/{{ post.id }}/{{ mod.token }}">{{ config.mod.link_ban }}</a>
+<a class="button btn-sm" title='Delete and ban' href="?/{{ board.dir }}res/{{ post.thread }}.html/ban_delete/{{ post.id }}/{{ mod.token }}">{{ config.mod.link_bandelete }}</a>
 {% endif %}
 
 

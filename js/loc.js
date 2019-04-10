@@ -35,6 +35,9 @@ var langData = [
 	['Success'			, 'Готово'			, 'Erfolg'			  , 'Sukces'	  , '成功'				   , '성공'],
 	['An error has occurred', 'Произошла ошибка', 'Ein Fehler ist aufgetreten'	  , 'Wystąpił błąd'		   , 'エラーが発生しました'		, '오류가 발생했습니다'],
 
+	['Delete'			, 'Удалить'				, 'Löschen'				 , 'Kasować'		, '削除する'	, '지우다'],
+	['Ban'				, 'Бан'					, 'Ban'					 , 'Ban'			, 'ブロック'	, '블록'],
+	['Delete and ban'	, 'Удалить и забанить'	, 'Löschen und verbieten', 'Usuń i zablokuj', '削除して禁止' , '삭제 및 금지'],
 	 
 	[' (You)'			, ' (Вы)'			, ' (Sie)'			  , ' (Ty)'		  , ' (君は)'			   , ' (당신)'],
 
