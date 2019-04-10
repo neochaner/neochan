@@ -1,3 +1,10 @@
+/** 
+ * Локализация
+ * 
+ * global: config 
+ 
+*/
+
 var langData = [
 	// lang list
 	['en', 'ru', 'de', 'pl', 'jp', 'ko'],
@@ -54,7 +61,7 @@ var langData = [
 function _T(text)
 {
 
-	if(text.length == 0 || text[0] == ':')
+	if(text.length === 0 || text[0] == ':')
 		return text;
 
 	var langIndex = langData[0].indexOf(config.language);
@@ -64,8 +71,7 @@ function _T(text)
 			return langData[i][langIndex];
 		}
 	}
-
-	console.log('unkhown translate : ' + text);
+ 
 	return text;
 }
 
