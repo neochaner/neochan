@@ -1580,7 +1580,6 @@ hr{
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    z-index: 100;
 }
 .modal input[type=number]{
     width:5em
