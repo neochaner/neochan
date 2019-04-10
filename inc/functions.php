@@ -44,6 +44,10 @@ register_shutdown_function('fatal_error_handler');
 mb_internal_encoding('UTF-8');
 
 loadConfig();
+Session::init();
+
+
+
 
 function init_locale($locale='en', $error='error') {
 	if ($locale === 'en') 

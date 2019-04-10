@@ -17,7 +17,6 @@ class Session {
 	public static $is_onion; 
 	public static $is_i2p;
 	public static $is_darknet;
-	public static $is_exit_node;
 	public static $initialized = false;
 
 	public static function init() 
@@ -85,26 +84,27 @@ class Session {
 			return;
 		}
 		
+		// load from cache
 		$data = cache::get('cookie_' . self::$cookie_id);
 
-		if (!is_array($data)) {
-
-			$query = prepare("SELECT `data` FROM `cookie` WHERE `id` = :id");
-			$query->bindValue(':id', self::$cookie_id, PDO::PARAM_INT);
-			$query->execute() or error(db_error($query));
-
-			$db_data = $query->fetch(PDO::FETCH_ASSOC);
-
-			if ($db_data) {  
-				self::$data = json_decode($db_data['data'], TRUE);
-				cache::set('cookie_' . self::$cookie_id, self::$data, self::$cache_time);
-			} else {
-				self::$cookie_id = 0;
-			}
-
-		} else {
+		if(is_array($data)){
 			self::$data = $data;
+			return;
 		}
+
+		// load from base
+		$query = prepare("SELECT `data` FROM `cookie` WHERE `id` = :id");
+		$query->bindValue(':id', self::$cookie_id, PDO::PARAM_INT);
+		$query->execute() or error(db_error($query));
+		$db_data = $query->fetch(PDO::FETCH_ASSOC);
+
+		if ($db_data) {  
+			self::$data = json_decode($db_data['data'], TRUE);
+			cache::set('cookie_' . self::$cookie_id, self::$data, self::$cache_time);
+		} else {				
+			self::$cookie_id = 0;
+		}
+
 	}
 
 	public static function save()
@@ -144,7 +144,7 @@ class Session {
 	{
 		global $config;
 
-		if (self::$is_onion || self::$is_i2p) {
+		if (self::$is_darknet) {
 			return self::$data['capchas_left'] >= $config['tor']['need_capchas'];
 		}
 		
@@ -160,7 +160,7 @@ class Session {
 			return false;
 		}
 
-		if ((self::$is_i2p || self::$is_onion) && !$config['polls']['darknet_enable']) {
+		if (self::$is_darknet && !$config['polls']['darknet_enable']) {
 			return false;
 		}
 
@@ -179,7 +179,7 @@ class Session {
 	{
 		global $config;
 
-		if (self::$is_onion || self::$is_i2p) {
+		if (self::$is_darknet) {
 			return self::$cookie_key;
 		}
 
@@ -198,7 +198,7 @@ class Session {
 	{
 		global $config;
 
-		if (self::$is_onion || self::$is_i2p) {
+		if (self::$is_darknet) {
 			return self::$cookie_key;
 		}
 
@@ -226,7 +226,7 @@ class Session {
 		return $key;
 	}
 	
-	public static function encrypt($string, $key = NULL)
+	private static function encrypt($string, $key = NULL)
 	{
 		global $config;
 
@@ -242,7 +242,7 @@ class Session {
         return base64_encode( openssl_encrypt( $string, $encrypt_method, $key, 0, $iv ) );
     }
 
-	public static function decrypt($string, $key = NULL)
+	private static function decrypt($string, $key = NULL)
 	{
 		global $config;
 
@@ -261,9 +261,7 @@ class Session {
 
 
 }
-
-Session::init();
-
+ 
 
 
 
