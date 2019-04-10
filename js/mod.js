@@ -10,7 +10,7 @@ $(document).ready(function(){
         return;
  
     //var enable_control = "<a class='control post-control post-opmod-control' title='"+_T('Модерировать тред')+"' onclick=\"enable_opmod()\"><i class='fa fa-shield'></i></a>";
-    var enable_watch_deleted = "<a class='control post-control' id='watch_hell' title='"+_T('Просмотр удалённых постов')+"' onclick=\"show_deleted_posts()\"><i class='fa fa-minus-circle'></i></a>";
+    var enable_watch_deleted = "<a class='control post-control' id='watch_hell' title='"+_T('Show deleted posts')+"' onclick=\"show_deleted_posts()\"><i class='fa fa-minus-circle'></i></a>";
 
     $('.post_op').find('.post-controls').append(enable_watch_deleted);
 
@@ -36,21 +36,6 @@ $(document).ready(function(){
 
 
 
-/*
-$(document).on('new_post', function(e, post) {
- 
-    if(enable_opmode_state)
-        enablePostModControls(post);
-});
-
-
-$(document).on('change_post', function(e, post) {
- 
-    if(enable_opmode_state)
-        enablePostModControls(post);
-});
-
-*/
 
 function enablePostModControls(post)
 {

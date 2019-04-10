@@ -61,7 +61,7 @@
 }.l_option::before{
     content:'옵션' 
 }.l_option_cp::before{
-    content:'Crypto-posting'; 
+    content:'암호 테스트'; 
 }.l_optionSave::before{
     content:'구하다' 
 }.l_optionLoad::before{
@@ -85,7 +85,7 @@
 }.l_tripmask::before {
     content: '여행 코드 숨기기';
 }.l_DisableHideStyle::before{
-    content: '숨겨진 게시물을 강조 표시하지 않습니다.';
+    content: '숨겨진 게시물을 강조 표시하지';
 }.l_delHiddenPosts::before {
     content: '숨겨진 게시물 삭제';
 }.l_notify::before {
@@ -95,7 +95,6 @@
 }.l_login_reg::before{
     content:'레지스터' 
 } 
-
 
 
 .l_vote_success::before{

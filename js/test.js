@@ -1,10 +1,10 @@
 
 $(document).ready(function() {
-	menu_add_checkbox("testKey", false, 'l_test_mode', _T('Тестовый режим'));
+	/*menu_add_checkbox("testKey", false, 'l_test_mode', _T('Тестовый режим'));
 	
 	$(document).on('testKey', function(e, value) {	
 		console.log('testMenu : ' + value);
-	});
+	});*/
 	
 });
 

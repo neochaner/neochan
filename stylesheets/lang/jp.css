@@ -23,9 +23,9 @@
 }.l_captcha_mistype::before{
     content:'CAPTCHAに失敗しました';
 }.l_back::before{
-    content:'バック'
+    content:'戻る'
 }.l_back_page::before{
-    content:'バック';
+    content:'戻る';
 }.l_search::before{
     content:'サーチ';
 }
@@ -61,9 +61,9 @@
 }.l_option::before{
     content:'オプション' 
 }.l_option_cp::before{
-    content:'Crypto-posting'; 
+    content:'暗号テスト'; 
 }.l_optionSave::before{
-    content:'保存する' 
+    content:'保存' 
 }.l_optionLoad::before{
     content:'負荷' 
 }.l_login::before{

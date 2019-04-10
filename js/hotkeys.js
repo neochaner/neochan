@@ -10,7 +10,7 @@ $(document).ready(function(){
 
         if((e.keyCode == 37 || e.keyCode == 39) && !document.activeElement.className.startsWith('reply-body'))
         {
-                player.playNext(e.keyCode == 37);
+            player.playNext(e.keyCode == 37);
         }
 
         if(e.keyCode == 27)

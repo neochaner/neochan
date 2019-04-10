@@ -1,8 +1,7 @@
 /** 
  * global: store, config
  */
-
-
+ 
 var lastMenuID=0;
 var POST_MENU_OPENED=false;
 var anonymous_user ='anonymous_user';
@@ -368,13 +367,13 @@ function report_toggle(board, thread, post)
 	}
 
 	var div = "<div id='report_option' class='report' style='margin:0 0 20px 0;'>" +
-    "<label class='option-label'>"+_T('Причина')+"</label>" +
+    "<label class='option-label'>"+_T('Reason')+"</label>" +
 	"<input id='report_reason' type='text'>"+
-	"<label class='checktainer_xs ml15' >"+_T('копия админу')+
+	"<label class='checktainer_xs ml15' style='display:none'>"+_T('global')+
 	"<input type='checkbox' id='report_global'><span class='checkmark_xs'></span>"+
 	"</label>"+
 
-    "<input class='button ml10' value='"+_T('Отправить')+"' onclick=\"send_report('"+board+"','"+thread+"', '"+post+"', )\" readonly></div>";
+    "<input class='button ml10' value='"+_T('Send')+"' onclick=\"send_report('"+board+"','"+thread+"', '"+post+"', )\" readonly></div>";
   
 	var reply =  getPost(board, thread, post)
     $(div).insertAfter(reply)
@@ -414,14 +413,14 @@ function send_report(board, thread, post)
             else if (response.error) 
                 alert(_T(response.error));
 			else if (response.fail) 
-                alert(_T('Произошла ошибка'));
+                alert(_T('An error has occurred'));
             else if(response.success)
-				alert(_T('Репорт отправлен'));
+				alert(_T('Success'));
 			else
 				alert(_T(response));
 		},
 		error: function(xhr, status, er) {
-			alert(_T('Сервер вернул ошибку: ') + er);
+			alert(_T('Server error: ') + er);
 		},
 		contentType: false,
 		processData: false

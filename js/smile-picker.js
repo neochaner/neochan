@@ -1,3 +1,12 @@
+/*
+	Добавляет кнопку выбора смайлов в форму ответа
+*/
+
+ 
+addLocaleString({'en':'Smile Box', 'ru':'Вставить смайл', 'de':'Smile Box', 'pl':'Smile Box', 'jp':'スマイルボックス', 'ko': '스마일 박스'});
+addLocaleString({'en':'show more', 'ru':'показать больше', 'de':'zeig mehr', 'pl':'pokaż więcej', 'jp':'もっと見せる', 'ko': '자세히보기'});
+
+
 
 var MAX_FAV_SMILES = 48;
 var smilePickerState = -1;
@@ -65,10 +74,10 @@ var csmiles = {
 	'star_gold' : {'favorite':true, 'pack': [ ]}
 	};
 
- 
 
+ 
 $(document).ready(function(){
-	$('<div class="control reply-footer-control reply-smile-picker" data-tippy-content="'+_T('Вставить смайл')+'" onclick="toggleSmilePicker()"><i class="fa fa-smile-o" style="font-size:19px"></i></div>').insertBefore('.reply-footer-controls .reply-dragger');
+	$('<div class="control reply-footer-control reply-smile-picker" data-tippy-content="'+_T('Smile Box')+'" onclick="toggleSmilePicker()"><i class="fa fa-smile-o" style="font-size:19px"></i></div>').insertBefore('.reply-footer-controls .reply-dragger');
 	tippy('.reply-smile-picker');
 });
 
@@ -155,7 +164,7 @@ function loadSmilePicker(){
 
 		
 		if(csmiles[key].hasOwnProperty('other')){
-			tabs += '<div id="btn-more-'+(index-1)+'" class="button" style="display: block!important;margin:2px 8px" onclick="showMoreSmiles(\''+key+'\', '+(index-1)+')">'+_T('показать больше')+'</div>';
+			tabs += '<div id="btn-more-'+(index-1)+'" class="button" style="display: block!important;margin:2px 8px" onclick="showMoreSmiles(\''+key+'\', '+(index-1)+')">'+_T('show more')+'</div>';
 		}
 		
 		tabs += "</ul>";

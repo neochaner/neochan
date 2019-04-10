@@ -33,7 +33,7 @@ function rating(e, value){
 				lalert(response.message); 
 		},
 		error: function(xhr, status, er) {
-			alert(_T('Сервер вернул ошибку: ') + er);
+			alert(_T('Server error: ') + er);
 		},
 		contentType: false,
 		processData: false
@@ -63,9 +63,7 @@ function replybox_submit(form) {
 	var formData = new FormData(form);
 	var dontResetForm = false;
 
-	var btn_text = (typeof(NTUBE_STATE) !== 'undefined' && NTUBE_STATE >= 1) ? '..' : _T('Ждём') ;
-
- 
+	var btn_text = (typeof(NTUBE_STATE) !== 'undefined' && NTUBE_STATE >= 1) ? '..' : _T('Wait') ;
 
 	formData.append('json_response', '1');
 	formData.append('ticks', getServerTime());
@@ -188,7 +186,7 @@ function replybox_submit(form) {
 			}
 		}
 		 
-		$(form).find('.reply-send-button').val(_T('Отправить'));
+		$(form).find('.reply-send-button').val(_T('Send'));
 		$(form).find('.reply-send-button').removeAttr('disabled');
  
 		

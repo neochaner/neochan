@@ -48,11 +48,11 @@
 <footer class="post-footer">
 <div class="post-controls" {% if index %} style='display: none;'{% endif %}>
 	{% if config.opmod.enable %}
-	<a class="control post-control post-opmod-control" href="/usermod.php?/{{ board.uri }}/res/{{ post.id }}.html/"><i class="fa fa-shield"></i></a>
+	<a class="control post-control post-opmod-control" title="OP Moderation" href="/usermod.php?/{{ board.uri }}/res/{{ post.id }}.html/"><i class="fa fa-shield"></i></a>
 	{% endif %}
 	<a class="control post-control post-ban-control"><i class="fa fa-gavel"></i></a>
 	<a class="control post-control post-quote-control" onclick="cite(event)"><i class="fa fa-reply"></i></a> 
-	<a class="control post-control" id="toggle-neotube" title="Кинотеатр" onclick="toggleNeoTube()" style='display: none'><i class="fa fa-film"></i></a>
+	<a class="control post-control" id="toggle-neotube" title="Neotube" onclick="toggleNeoTube()" style='display: none'><i class="fa fa-film"></i></a>
 </div>
 
 <div class="post-backlinks" {% if index %} style='display: none;'{% endif %}>

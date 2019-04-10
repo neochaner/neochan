@@ -32,6 +32,13 @@ var resizeInterval = false;
 var syncInterval=false;
 var neotubeAccess=false;
 
+addLocaleString({'en' : 'Play', 'ru': 'Воспроизвести'});
+addLocaleString({'en' : 'Pause', 'ru': 'Пауза'});
+addLocaleString({'en' : 'Next', 'ru': 'Следующее видео'});
+addLocaleString({'en' : 'Fullscreen', 'ru': 'Полноэкранный режим'});
+addLocaleString({'en' : 'Upload video', 'ru': 'Загрузить видео'}); 
+addLocaleString({'en' : 'Add Youtube video', 'ru': 'Добавить Youtube видео'});
+addLocaleString({'en' : 'Enter Youtube url', 'ru': 'Введите ссылку на ролик Youtube'});
 
 
 $(document).ready(function() {
@@ -53,8 +60,6 @@ $(document).ready(function() {
     }
   
     $('#btn-neotube').show();
-    
-
 });
 
 $(document).on('new_post', function(e,post) {
@@ -103,7 +108,7 @@ function neotubeSetup()
      
         },
         error: function(xhr, status, er) {
-            alert(_T('Сервер вернул ошибку: ') + er);
+            alert(_T('Server error: ') + er);
         },
         contentType: false,
         processData: false
@@ -170,23 +175,23 @@ function initializeNeoTube(size = 1)
 
     <button type="button" class="plyr__control" aria-label="Play, {title}" data-plyr="play" onclick="neotubePlayOrPause()">
         <i class="fa fa-lg fa-play" role="presentation" id='pl-play'></i>
-        <span class="plyr__tooltip" role="tooltip" id='plt-play'>`+_T('Воспроизвести')+`</span>
+        <span class="plyr__tooltip" role="tooltip" id='plt-play'>`+_T('Play')+`</span>
     </button>
 
     <button type="button" class="plyr__control" onclick="neotubeSkipCurrent()" id='neotubeSkipCurrent'>
         <svg role="presentation"><use xlink:href="#plyr-fast-forward"></use></svg>
-        <span class="plyr__tooltip" role="tooltip">`+_T('Следующее видео')+`</span>
+        <span class="plyr__tooltip" role="tooltip">`+_T('Next')+`</span>
     </button>
     <button type="button" class="plyr__control" onclick="neotubeAddYoutubeVideo()">
     <i class='fa fa-lg fa-youtube'></i>
-    <span class="plyr__tooltip" role="tooltip">`+_T('Добавить Youtube видео')+`</span>
+    <span class="plyr__tooltip" role="tooltip">`+_T('Add Youtube video')+`</span>
     </button>
 
     <button type="button" class="plyr__control">
     <form id='neotube-upload-form' enctype="multipart/form-data" action="/opmod.php" method="POST">
     <label class='hide_upload'><input type="file" name="file" id='neotube-file'>
            <i class='fa fa-lg fa-upload' style='cursor:pointer'></i>
-           <span class="plyr__tooltip" role="tooltip">`+_T('Загрузить видео')+`</span>
+           <span class="plyr__tooltip" role="tooltip">`+_T('Upload video')+`</span>
     </label>
     </form>
     </button>`;
@@ -214,8 +219,8 @@ function initializeNeoTube(size = 1)
     <button type="button" class="plyr__control" data-plyr="fullscreen">
         <svg class="icon--pressed" role="presentation"><use xlink:href="#plyr-exit-fullscreen"></use></svg>
         <svg class="icon--not-pressed" role="presentation"><use xlink:href="#plyr-enter-fullscreen"></use></svg>
-        <span class="label--pressed plyr__tooltip" role="tooltip">`+_T('Полноэкранный режим')+`</span>
-        <span class="label--not-pressed plyr__tooltip" role="tooltip">`+_T('Полноэкранный режим')+`</span>
+        <span class="label--pressed plyr__tooltip" role="tooltip">`+_T('Fullscreen')+`</span>
+        <span class="label--not-pressed plyr__tooltip" role="tooltip">`+_T('Fullscreen')+`</span>
     </button>
 </div>
 `;
@@ -248,13 +253,13 @@ function initializeNeoTube(size = 1)
     player.on('play', event => {
 
         $('#pl-play').removeClass('fa-play').addClass('fa-pause');
-        $('#plt-play').html(_T('Пауза'));
+        $('#plt-play').html(_T('Pause'));
     });
 
     player.on('pause', event => {
 
         $('#pl-play').removeClass('fa-pause').addClass('fa-play');
-        $('#plt-play').html(_T('Воспроизвести'));
+        $('#plt-play').html(_T('Play'));
     });
 
 
@@ -375,7 +380,7 @@ function searchTubes()
             }
         },
         error: function(xhr, status, er) {
-            alert(_T('Сервер вернул ошибку: ') + er);
+            alert(_T('Server error: ') + er);
         },
         contentType: false,
         processData: false
@@ -398,7 +403,7 @@ function neotubeSkipCurrent()
 function neotubeAddYoutubeVideo()
 {
 
-    var youtubeLink = prompt(_T("Введите ссылку на ролик Youtube"), '');
+    var youtubeLink = prompt(_T("Enter Youtube url"), '');
 
     if (youtubeLink != null && youtubeLink == "") {
         return false;
@@ -432,7 +437,7 @@ function neotubeAddYoutubeVideo()
             }
         },
         error: function(xhr, status, er) {
-            alert(_T('Сервер вернул ошибку: ') + er);
+            alert(_T('Server error: ') + er);
         },
         contentType: false,
         processData: false
@@ -483,7 +488,7 @@ function neotubePlayOrPause()
  
         },
         error: function(xhr, status, er) {
-            /*alert(_T('Сервер вернул ошибку: ') + er);*/
+            /*alert(_T('Server error: ') + er);*/
         },
         contentType: false,
         processData: false
@@ -648,7 +653,7 @@ function neotubeUploadFile(form)
 			percentage = Math.round(e.position * 100 / e.total);
 		}
 
-		//$(form).find('.reply-send-button').val((_T('Ждём')+'... (#%)').replace('#', percentage));
+		//$(form).find('.reply-send-button').val((_T('Wait')+'... (#%)').replace('#', percentage));
 	};
 
 	$.ajax({
@@ -847,7 +852,7 @@ function neotubeRemoveTrack(id)
  
         },
         error: function(xhr, status, er) {
-            /*alert(_T('Сервер вернул ошибку: ') + er);*/
+            /*alert(_T('Server error: ') + er);*/
         },
         contentType: false,
         processData: false

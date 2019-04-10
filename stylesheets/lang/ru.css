@@ -59,7 +59,7 @@
 }.l_option::before{
     content:'Настройка' 
 }.l_option_cp::before{
-    content:'Шифрование'; 
+    content:'Крипто-Тест'; 
 }.l_optionSave::before{
     content:'импорт' 
 }.l_optionLoad::before{

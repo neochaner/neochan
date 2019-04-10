@@ -17,7 +17,7 @@ $(document).on('new_own_post', function(e, post, board, post_id) {
     {
 
         $post.find('.post-quote-control').after(
-         "<a class='control post-edit post-edit-control' title='"+_T('Редактировать пост')+"' onclick=\"edit_request('get_body', '"+post.dataset.board+"', '"+post.dataset.thread+"', '"+post.dataset.post+"', '')\"><i class='fa fa-pencil'></i></a>");
+         "<a class='control post-edit post-edit-control' title='"+_T('Edit')+"' onclick=\"edit_request('get_body', '"+post.dataset.board+"', '"+post.dataset.thread+"', '"+post.dataset.post+"', '')\"><i class='fa fa-pencil'></i></a>");
 
         setTimeout(function(){ remove_edit_option(post.dataset.board, post.dataset.thread, post.dataset.post) }, edit_sec*1000);
 
@@ -33,8 +33,8 @@ $(document).on('new_own_post', function(e, post, board, post_id) {
 			
 				var href = $file.find('.post-file-link').attr('href');
 				
-				var delCtrl = "<a class='control-image post-edit-control' title='"+_T('Удалить файл')+"' onclick=\"edit_request('delete_file', '"+post.dataset.board+"', '"+post.dataset.thread+"', '"+post.dataset.post+"', '"+hash+"')\"><i class='fa fa-trash'></i></a>";
-				var hideCtrl ="<a class='control-image post-edit-control ml30' title='"+_T('Спойлер')+"' onclick=\"edit_request('spoiler_file', '"+post.dataset.board+"', '"+post.dataset.thread+"', '"+post.dataset.post+"', '"+hash+"')\"><i class='fa fa-eye-slash'></i></a>";
+				var delCtrl = "<a class='control-image post-edit-control' title='"+_T('Delete file')+"' onclick=\"edit_request('delete_file', '"+post.dataset.board+"', '"+post.dataset.thread+"', '"+post.dataset.post+"', '"+hash+"')\"><i class='fa fa-trash'></i></a>";
+				var hideCtrl ="<a class='control-image post-edit-control ml30' title='"+_T('Spoiler')+"' onclick=\"edit_request('spoiler_file', '"+post.dataset.board+"', '"+post.dataset.thread+"', '"+post.dataset.post+"', '"+hash+"')\"><i class='fa fa-eye-slash'></i></a>";
 			 
 				$file.find('.post-file-info').after(delCtrl+hideCtrl);
 				 
@@ -92,7 +92,7 @@ function edit_request(action, board, thread_id , post_id, text, skip_do_confirm 
 
     if(!skip_do_confirm && action == 'delete_file'){
 
-        alert(_T('Удалить файл?'), true, function(){
+        alert(_T('Are you sure?'), true, function(){
             edit_request(action, board, thread_id , post_id, text, skip_do_confirm= true);
         });
 
@@ -149,12 +149,12 @@ function edit_request(action, board, thread_id , post_id, text, skip_do_confirm 
             else if (response.fail) 
                 alert(_T(response.fail));
             else if (response.wrong_trip) 
-                alert(_T('Неверный трипкод'));
+                alert(_T('Access Denied'));
             else 
                 alert(_T(response.fail));
 		},
 		error: function(xhr, status, er) {
-			alert(_T('Сервер вернул ошибку: ') + er);
+			alert(_T('Server error: ') + er);
 		},
 		contentType: false,
 		processData: false

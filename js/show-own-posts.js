@@ -55,7 +55,7 @@ var update_own = function()
 
         if(!link_text.includes('('))
         {
-		      plinks[i].innerHTML +=  _T(' (Вы)');
+		      plinks[i].innerHTML +=  _T(' (You)');
           is_answer = true; 
         }
       }

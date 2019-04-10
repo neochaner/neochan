@@ -1075,13 +1075,6 @@ srand(time());
 	$config['additional_javascript'][] = 'js/base.js';  
 	$config['additional_javascript'][] = 'js/loc.js';  
 
-	if($config['encryption']['enable']){
-		$config['additional_javascript'][] = 'js/vendor/jsencrypt.min.js';  
-		$config['additional_javascript'][] = 'js/vendor/crypto-js.min.js';  
-		$config['additional_javascript'][] = 'js/crypto.js';  
-	}
-
-
 
 	$config['additional_javascript'][] = 'js/time.js';
 
@@ -1118,6 +1111,13 @@ srand(time());
 	$config['additional_javascript'][] = 'js/filter.js';
 	$config['additional_javascript'][] = 'js/vendor/tippy.all.js';
 	$config['additional_javascript'][] = 'js/tooltips.js';
+
+	if($config['encryption']['enable']){
+		$config['additional_javascript'][] = 'js/vendor/jsencrypt.min.js';  
+		$config['additional_javascript'][] = 'js/vendor/crypto-js.min.js';  
+		$config['additional_javascript'][] = 'js/crypto.js';  
+	}
+
 	$config['additional_javascript'][] = 'js/tripcode-mask.js';
 	$config['additional_javascript'][] = 'js/user_jscss.js'; 
 	
@@ -1134,7 +1134,7 @@ srand(time());
 
 	$config['additional_javascript'][] = 'js/neotube.js'; 
 
-
+ 
  
 
 	// Method to use for determing the max filesize. 

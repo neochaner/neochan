@@ -57,7 +57,7 @@
 	<a class="button mr5 l_catalog" href="{{ board.url }}catalog.html"></a>
 	<a class="button mr5 l_reply" onclick='lastReply()'></a>
 	<!--<img src='/static/img/loading30.gif' id='loading' style='text-align:right;float:right;display:none;'></img>!-->
-	<span class='update-text' title="обновить тред" id='update_text' onclick='manualLoad()'></span>
+	<span class='update-text' title="update" id='update_text' onclick='manualLoad()'></span>
 	<i class="fa fa-spinner fa-pulse fa-fw" id='spinner' style="display:none;margin-left:10px"></i>
 
 	<i id='thread-info'>
@@ -67,7 +67,7 @@
 		<i class='t-num' id='ts-online'></i>
 	</i>
 	{% endif %}
-	<i class='t-stat' title='постов в треде'>
+	<i class='t-stat' title='post count'>
 		<i class='t-icon fa fa-comment'></i>
 		<i class='t-num' id='ts-count'> {{ post_count }}</i>
 	</i>

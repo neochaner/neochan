@@ -208,7 +208,7 @@ function api(array, link = '/api.php'){
 	  
 		},
 		error: function(xhr, status, er) {
-			alert(_T('Сервер вернул ошибку: ') + er);
+			alert(_T('Server error: ') + er);
 		},
 		contentType: false,
 		processData: false

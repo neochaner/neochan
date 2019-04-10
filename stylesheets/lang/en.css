@@ -61,7 +61,7 @@
 }.l_option::before{
     content:'Options' 
 }.l_option_cp::before{
-    content:'Crypto-posting'; 
+    content:'Crypto-Test'; 
 }.l_optionSave::before{
     content:'save' 
 }.l_optionLoad::before{

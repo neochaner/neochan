@@ -102,7 +102,7 @@ function checkBumpLimit()
 			let line = document.createElement('div');
 			line.classList.add('infoline');
 			line.id = 'bump-limit-info';
-			line.innerText = _T('БАМПЛИМИТ');
+			line.innerText = _T('BUMPLIMIT');
 
 			posts[499].parentNode.insertBefore(line, posts[499].nextSibling);
 		
