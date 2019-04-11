@@ -94,7 +94,11 @@
     content:'로그인' 
 }.l_login_reg::before{
     content:'레지스터' 
-} 
+}.l_antispam_1::before{
+    content:'You need to pass an ' 
+}.l_antispam_2::before{
+    content:'antispam check' 
+}
 
 
 .l_vote_success::before{

@@ -94,7 +94,11 @@
     content:'Zaloguj' 
 }.l_login_reg::before{
     content:'Zarejestrować' 
-} 
+}.l_antispam_1::before{
+    content:'Musisz przejść ' 
+}.l_antispam_2::before{
+    content:'sprawdzenie antyspamu' 
+}
 
 
 

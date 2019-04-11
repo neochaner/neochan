@@ -94,7 +94,11 @@
     content:'Sign In' 
 }.l_login_reg::before{
     content:'Register' 
-} 
+}.l_antispam_1::before{
+    content:'You need to pass an ' 
+}.l_antispam_2::before{
+    content:'antispam check' 
+}
 
 
 

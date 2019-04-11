@@ -94,7 +94,11 @@
     content:'Einloggen' 
 }.l_login_reg::before{
     content:'Registrieren' 
-} 
+}.l_antispam_1::before{
+    content:'Sie müssen eine ' 
+}.l_antispam_2::before{
+    content:'Antispamprüfung bestehen' 
+}
 
 
 

@@ -92,6 +92,10 @@
     content:'Войти' 
 }.l_login_reg::before{
     content:'Регистрация' 
+}.l_antispam_1::before{
+    content:'Вам необходимо пройти ' 
+}.l_antispam_2::before{
+    content:'антиспам проверку' 
 }
 
 .l_vote_success::before{

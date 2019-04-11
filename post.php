@@ -346,7 +346,7 @@ if(isset($_GET['rate']))
 	Session::load();
 
 	if(Session::getAntispamState() == 0){
-		$html = "Вам необходимо пройти\n<a href='/antispam.php?board={$_POST['board']}'>антиспам проверку</a>";
+		$html = "<p class='l_antispam_1'><a class='l_antispam_2' href='/antispam.php?board={$_POST['board']}'></a></p>";
 		server_response($html, array('success'=> false, 'need_antispam_check'=> $html));
 	}  
 
