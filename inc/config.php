@@ -160,7 +160,7 @@ $config['report_captcha'] = false;
 $config['captcha']['antispam']['enable_www'] = 0;
 
 // Enable special antispam check for tor/onion users (value = captcha count)
-$config['captcha']['antispam']['enable_darknet'] = 0;
+$config['captcha']['antispam']['enable_darknet'] = 3;
 
 
 $config['captcha']['antispam']['max_posts'] = 5;
