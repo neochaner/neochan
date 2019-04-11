@@ -1319,7 +1319,6 @@ hr{
     display: block;
     width: 36px;
     height: 26px;
-    background: url(/static/logo3.png);
     background-size: cover;
     margin-top: 1px;
 }

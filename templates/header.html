@@ -5,10 +5,10 @@
 {% include config.custom_header %}
 {% else %}
 <header class="header">
-<a class="header-item header-logo" href="/" title="Home"><i class="logo"></i></a>
+<a class="header-item header-logo" href="/" title="Home"><i class="logo" style="background-image: url({{ config.header.logo }})"></i></a>
 
 
-{% for name, uri in config.menu_pages %}
+{% for name, uri in config.header.pages %}
 	{% if name|slice(0, 2) == 'l_' %}
 		<a class="view-pc  header-item header-board {{ name }}" href="{% if mod %}/{{ config.file_mod }}?{% endif %}{{ uri }}"></a>
 	{% else %}
@@ -20,7 +20,7 @@
 <div class="view-mobile mobile-menu">
 	<select onchange="location = this.value;">
 			<option></option>
-		{% for name, uri in config.menu_pages %}
+		{% for name, uri in config.header.pages %}
 			{% if name|slice(0, 2) == 'l_' %}
 			<option value="{% if mod %}/{{ config.file_mod }}?{% endif %}{{ uri }}" class="{{name}} localize"></option>
 			{% else %}

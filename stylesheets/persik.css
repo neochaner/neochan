@@ -1284,7 +1284,6 @@ hr{
     display: block;
     width: 32px;
     height: 22px;
-    background: url(/static/logo3.png);
     background-size: cover;
 }
 .header-spacer{

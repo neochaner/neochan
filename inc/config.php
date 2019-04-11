@@ -73,6 +73,22 @@ defined('TINYBOARD') or exit;
 	$config['allow_create_userboards_from_darknet'] = false;
 	$config['allow_create_userboards_timeout'] = 10; // in minutes
 	
+/*
+ * ====================
+ *   HEADER 
+ * ====================
+ * */
+$config['header']['logo'] = '/static/logo3.png';
+$config['header']['pages'] = array(
+	// name or css class (localization) =>	ссылка
+	"l_latest_threads" 					=> '/all/',
+	"/b"								=> '/b/',
+	"/kpop"								=> '/kpop/',
+	"/jp"								=> '/jp/',
+	"/mu"								=> '/mu/'
+);
+
+
 
 	
 /*
@@ -363,26 +379,6 @@ $config['opmod']['public_bans'] = true;
 
 
 $config['tippy_tooltips'] = true;
-
-
-/*
- * ====================
- *  Дополнительные страницы
- * ====================
- */
-$config['menu_pages'] = array(
-
-	// имя или класс в css локализации 	=>	ссылка
-	"l_latest_threads" 					=> '/all/',
-	"/b"								=> '/b/',
-	"/kpop"								=> '/kpop/',
-	"/jp"								=> '/jp/',
-	"/mu"								=> '/mu/'
-
-
-);
-
-
 
 
 /* 
