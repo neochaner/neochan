@@ -75,7 +75,7 @@ defined('TINYBOARD') or exit;
 	
 /*
  * ====================
- *   HEADER 
+ *   PERSONALIZATION 
  * ====================
  * */
 $config['header']['logo'] = '/static/logo3.png';
@@ -89,7 +89,11 @@ $config['header']['pages'] = array(
 );
 
 
+$config['favicon']['normal'] = 'static/favicon.ico';
+$config['favicon']['new'] = 'static/favicon-new.ico';
+$config['favicon']['you'] = 'static/favicon-you.ico';
 
+ 
 	
 /*
  * ====================
@@ -1711,9 +1715,6 @@ srand(time());
 	// $config['url_stylesheet'] = 'http://static.example.org/style.css'; // main/base stylesheet
 	// $config['url_javascript'] = 'http://static.example.org/main.js';
 
-	// Website favicon.
-	$config['url_favicon'] = 'static/favicon.ico';
-	
 	// Try not to build pages when we shouldn't have to.
 	$config['try_smarter'] = true;
 

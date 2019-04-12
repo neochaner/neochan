@@ -10,7 +10,7 @@
 
 <title>/{{ board.uri }}/ - {{ board.subtitle }}</title>
 
-{% if config.url_favicon %}<link rel="shortcut icon" href="{{ config.root }}{{ config.url_favicon }}">{% endif %}
+<link rel="shortcut icon" href="{{ config.root }}{{ config.favicon.normal }}" />
 </head>
 <body> 
 {% include 'header.html' %}

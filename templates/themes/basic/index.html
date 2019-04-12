@@ -6,7 +6,7 @@
 	<title>{{ settings.title }}</title>
 	{% if config.meta_keywords %}<meta name="keywords" content="{{ config.meta_keywords }}">{% endif %}
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
-	{% if config.url_favicon %}<link rel="shortcut icon" href="{{ config.url_favicon }}">{% endif %}
+	<link rel="shortcut icon" href="{{ config.root }}{{ config.favicon.normal }}" />
 	<link rel="stylesheet" media="screen" href="{{ config.url_stylesheet }}">
 	{% if config.default_stylesheet.1 != '' %}<link rel="stylesheet" type="text/css" id="stylesheet" href="{{ config.uri_stylesheets }}{{ config.default_stylesheet.1 }}">{% endif %}
 </head>

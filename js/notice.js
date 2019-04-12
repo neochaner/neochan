@@ -4,9 +4,9 @@ var notice_timer;
 var new_posts = 0;
 var new_you_posts = 0;
 
-var icon_new = config.root+"static/favicon-new.ico";
-var icon_you = config.root+"static/favicon-you.ico";
-var icon_default = config.root+"static/favicon.ico";
+var icon_new = config.root+config.fav_new;
+var icon_you = config.root+config.fav_you;
+var icon_normal = config.root+config.fav_norm;
 
 
 var noticeConfig = {
@@ -171,7 +171,7 @@ function title_notice_stop()
 {
 	new_you_posts=0;
     new_posts=0;
-    makeIcon(icon_default);
+    makeIcon(icon_normal);
     document.title = saved_title;
 }
 

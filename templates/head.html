@@ -12,7 +12,7 @@
 {% if board and not board.indexed %}<meta name="robots" content="noindex" />{% endif %}
 
 
-{% if config.url_favicon %}<link rel="shortcut icon" href="{{ config.root }}{{ config.url_favicon }}">{% endif %}
+<link rel="shortcut icon" href="{{ config.root }}{{ config.favicon.normal }}" />
 
 <!-- CSS  -->
 
@@ -35,6 +35,9 @@
 		max_images : {{ config.max_images }}, 
 		theme : "{{ config.default_theme }}",  
 		language : "{{ config.default_language }}",
+		fav_norm : "{{ config.favicon.normal }}",
+		fav_new : "{{ config.favicon.new }}",
+		fav_you : "{{ config.favicon.you }}",
 		neotube : {% if config.neotube.enable %}true{% else %}false{% endif %},
 		watch_deleted : {% if config.allow_watch_deleted %}true{% else %}false{% endif %},
 		mod : {% if mod %}true{% else %}false{% endif %},
