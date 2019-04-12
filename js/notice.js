@@ -1,3 +1,8 @@
+/**
+ * 
+ * 
+ *  global: config */
+
 var has_focus = true;
 var saved_title='';
 var notice_timer;
@@ -18,8 +23,7 @@ var noticeConfig = {
 $(document).ready(function(){
 
 
-	if (("Notification" in window)) 
-	{
+	if (("Notification" in window)) {
 		noticeConfig.value = menu_add_checkbox(noticeConfig.key, getKey(noticeConfig.key, false) , 'l_notify');
 	}
 
@@ -52,16 +56,18 @@ $(document).on(noticeConfig.key, function(e, value)
 {
     noticeConfig.value = value;
 	
-	if(value)
-	{	
+	if (value) {	
 
-		if(Notification.permission.toLowerCase() === "granted")
+		if (Notification.permission.toLowerCase() === "granted") {
 			return false;
+		}
 	
 		Notification.requestPermission(function(permission){
 			
-		if(permission !== 'granted')
-			noticeConfig.key = false;
+			if (permission !== 'granted') {
+				noticeConfig.key = false;
+			}
+			
 			setKey(noticeConfig.key , false);
 		});
 	}
@@ -70,8 +76,9 @@ $(document).on(noticeConfig.key, function(e, value)
 
 
 $(document).on('new_post', function(e,post) {	
-	if(!is_my_reply(config.board_uri, post.dataset.post))
+	if (!is_my_reply(config.board_uri, post.dataset.post)) {
 		notice_new_reply(post, false);
+	}
 });
 
 $(document).on('new_answer', function(e,post) {	
@@ -99,9 +106,7 @@ function makeIcon(ico)
 function notice_new_reply(post, answer)
 {
 
-    if(!has_focus)
-    {
-
+    if (!has_focus) {
 
 		var $post = $(post);
 		var div_trip = $post.find('.post-trip');
@@ -110,30 +115,26 @@ function notice_new_reply(post, answer)
 		var is_oppost = post.classList.contains('post_op'); 
 		var need_hide = is_oppost ? store.isThread(post.dataset.thread) :  store.hideCheck(post.dataset.board, post.dataset.thread, post.dataset.post, is_anonymous, trip);
 
-		if(need_hide)
-		{
+		if(need_hide) {
 			return false;
 		}
 
 		$(post).addClass('post_notice');
 
-		if(answer)
-		{ 
+		if (answer) { 
 			makeIcon(icon_you);
 			new_you_posts++;
-		}
-		else
-		{
+		} else {
 			new_posts++;
 			document.title = "( " + new_posts + " ) "+saved_title;
 
-			if(new_you_posts==0)
+			if(new_you_posts==0) {
 				makeIcon(icon_new);
+			}
 		}
 
 
-		if(noticeConfig.value)
-		{
+		if (noticeConfig.value) {
 
 			var message = $(post).find('.post-message').text();
 			var tripDiv  = $(post).find('.post-trip');
@@ -141,8 +142,7 @@ function notice_new_reply(post, answer)
 			var img = $(post).find('img');
 			var icon = window.location.origin + '/static/logo3.png';
 
-			if(img.length != 0)
-			{
+			if (img.length != 0) {
 				icon = img[0].src;
 			}
 			
@@ -151,7 +151,6 @@ function notice_new_reply(post, answer)
 				body: message.replace(/>>\d+/, ''), 
 				dir: 'auto', 
 				icon: icon 
-		
 			});
 
 			notification.onclick = function(e) {
@@ -159,8 +158,6 @@ function notice_new_reply(post, answer)
 				window.focus();
 				this.close();
 			}
-
-
 		}
  
     }
@@ -179,8 +176,9 @@ function post_notice_stop()
 { 
 	var divs = $('.post_notice');
  
-	if(divs.length == 0)
+	if (divs.length == 0) {
 		return true;
+	}
 
 	$(divs[0]).removeClass('post_notice')
 	setTimeout(post_notice_stop, 2000);
