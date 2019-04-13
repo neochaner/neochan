@@ -203,8 +203,6 @@ $config['tor']['need_capchas'] = 5;
  *  I2P settings
  * ====================
  */
-$config['i2p_service_ip'] = '127.0.0.3';
-
 $config['i2p_service_ips']= ['127.0.0.3'];
 
 /*
