@@ -83,11 +83,13 @@ function loadConfig() {
 	}
 
 
-	if (isset($config['cache_config']) && 
+	if (
+		isset($config['cache_config']) && 
 	    $config['cache_config'] &&
-            $config = Cache::get('config_' . $boardsuffix ) ) {
-		$events = Cache::get('events_' . $boardsuffix );
+		$config = Cache::get('config_' . $boardsuffix ) 
+		) {
 
+		$events = Cache::get('events_' . $boardsuffix );
 		define_groups();
 
 		if (file_exists('inc/instance-functions.php')) {
@@ -95,11 +97,11 @@ function loadConfig() {
 		}
 
 		if ($config['locale'] != $current_locale) {
-                	$current_locale = $config['locale'];
-                	init_locale($config['locale'], $error);
-        	}
-	}
-	else {
+            $current_locale = $config['locale'];
+            init_locale($config['locale'], $error);
+		}
+		
+	} else {
 		$config = array();
 	// We will indent that later.
 
@@ -136,8 +138,9 @@ function loadConfig() {
 		$config[$key] = array();
 	}
 
-	if (!file_exists('inc/instance-config.php'))
+	if (!file_exists('inc/instance-config.php')) {
 		error('Posting is down momentarily. Please try again later.');
+	}
 
 	// Initialize locale as early as possible
 
@@ -146,8 +149,7 @@ function loadConfig() {
 
 	if (file_exists($fn = 'tmp/cache/locale_' . $boardsuffix ) ) {
 		$config['locale'] = file_get_contents($fn);
-	}
-	else {
+	} else {
 		$config['locale'] = 'en';
 
 		$configstr = file_get_contents('inc/instance-config.php');
@@ -171,11 +173,14 @@ function loadConfig() {
 	}
 
 	require 'inc/config.php';
-	require 'inc/instance-config.php';
+	require 'inc/instance-config.php';	
 
 	if (isset($board['dir']) && file_exists($board['dir'] . '/config.php')) {
 		require $board['dir'] . '/config.php';
-
+	}
+	
+	if ($config['cache']['enabled']) {
+		require_once 'inc/cache.php';
 	}
 
 	if ($config['locale'] != $current_locale) {
@@ -293,9 +298,6 @@ function loadConfig() {
 
 	if ($config['syslog'])
 		openlog('tinyboard', LOG_ODELAY, LOG_SYSLOG); // open a connection to sysem logger
-
-	if ($config['cache']['enabled'])
-		require_once 'inc/cache.php';
 
 	if (in_array('webm', $config['allowed_ext_files'])) {
 		require_once 'inc/lib/webm/posthandler.php';
