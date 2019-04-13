@@ -3962,19 +3962,18 @@ if(isset($_POST['blotter']) && !empty($_POST['blotter'])){
 		 
 		file_put_contents('stylesheets/board/'.$b.'.css', $clean_css);*/
  
-
-		file_put_contents($b.'/config.php', $config_file);
  
-
 		$_config = $config;
 
 
 		unset($config['wordfilters']);
- 
+  
+		$php_code = str_replace('flags.php', "$b/flags.php", $config_file);
+		$eval_code = preg_replace('/^\<\?php$/m', '', $php_code);
 
-		file_put_contents($b . '/config.php', str_replace('flags.php', "$b/flags.php", preg_replace('/^\<\?php$/m', '', $config_file)));
 
-		eval(str_replace('flags.php', "$b/flags.php", preg_replace('/^\<\?php/m', '', $config_file)));
+		file_put_contents($b . '/config.php', $php_code);
+		eval($eval_code);
 
 
 
