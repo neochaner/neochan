@@ -698,24 +698,8 @@ if(isset($_GET['rate']))
 	
 	if (($config['country_flags'] && (!$config['allow_no_country'] || $config['force_flag'])) || ($config['country_flags'] && $config['allow_no_country'] && !isset($_POST['no_country']))) {
 		
-		$country_code = '';
-		$country_name = '';
-
-		if(isset($config['geoip_cloudflare_enable'], $_SERVER['GEOIP_COUNTRY_CODE'], $_SERVER['GEOIP_COUNTRY_NAME']) && $config['geoip_cloudflare_enable']){
-			$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
-			$country_name = $_SERVER['HTTP_CF_IPCOUNTRY'];
-			
-			if($country_code == 'T1'){
-				$country_name = 'Tor';
-			}
-			// need parse country_name ....
-		}
-
-		if(isset($config['geoip_nginx_enable'], $_SERVER['GEOIP_COUNTRY_CODE'], $_SERVER['GEOIP_COUNTRY_NAME']) && $config['geoip_nginx_enable']){
-			$country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
-			$country_name = $_SERVER['GEOIP_COUNTRY_NAME'];
-		}
-
+		$country_code = Session::$country_code;
+		$country_name = Session::$country_name;
 
 		if(empty($country_code) || empty($country_name)){
 
