@@ -89,15 +89,27 @@
 }.l_notify::before {
     content: 'Включить уведомления';
 }.l_login_enter::before{
-    content:'Войти' 
+    content:'Войти';
 }.l_login_reg::before{
-    content:'Регистрация' 
+    content:'Регистрация';
 }.l_antispam_1::before{
-    content:'Вам необходимо пройти ' 
+    content:'Вам необходимо пройти ';
 }.l_antispam_2::before{
-    content:'антиспам проверку' 
+    content:'антиспам проверку';
+}.l_antispam_title::before{
+    content:'Антиспам проверка';
+}.l_antispam_dont::before{
+    content:'Вам не нужно проходить проверку.';
+}.l_antispam_block::before{
+    content:'На данной доске запрещён постинг из тора.';
+}.l_antispam_done::before{
+    content:'Вы уже прошли антиспам проверку.';
+}.l_antispam_desc::before{
+    content:'К сожалению, вам нужно пройти антиспам проверку, куки должны быть включены.';
+}.l_antispam_left::before{
+    content:'Осталось решить капч: ';
 }
-
+ 
 .l_vote_success::before{
     content:'Ваш голос учтён.' 
 }.l_alreadyvoted::before{

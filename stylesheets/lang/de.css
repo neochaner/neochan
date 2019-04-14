@@ -98,6 +98,18 @@
     content:'Sie müssen eine ' 
 }.l_antispam_2::before{
     content:'Antispamprüfung bestehen' 
+}.l_antispam_title::before{
+    content:'Antispam Verification';
+}.l_antispam_dont::before{
+    content:'You do not need to pass an antispam check.';
+}.l_antispam_block::before{
+    content:'Tor/I2P posting is prohibited on this board.';
+}.l_antispam_done::before{
+    content:'You have already passed anti-spam check';
+}.l_antispam_desc::before{
+    content:'Sorry, you need to pass an antispam check, cookies must be enabled.';
+}.l_antispam_left::before{
+    content:'It remains to solve captcha: ';
 }
 
 

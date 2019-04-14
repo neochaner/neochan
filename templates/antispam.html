@@ -11,7 +11,7 @@
 <main class="main">
 
 <section class="board" id="threads">
-<h1 class="page-title"><a href="{{ board.url }}" style="text-decoration: none;">Проходная Darknet</a></h1>
+<h1 class="page-title l_antispam_title"></h1>
 <hr>
 
 <section class="threads-container" id="thread-container">
@@ -19,23 +19,21 @@
 
  
 <center>
-
 {% if is_darknet == false %}
-<p> Вам не нужно проходить проверку. </p>
-<br />
-<a href="{{ back_link }}">Назад</a>
+	<p class='l_antispam_dont'></p>
+	<br />
+	<a class='l_back' href="{{ back_link }}"></a>
 {% elseif config.tor_posting == false %}
-<p> На данной доске запрещён постинг из тора. </p>
-<br />
-<a href="{{ back_link }}">Назад</a>
+	<p class='l_antispam_block'></p>
+	<br />
+	<a class='l_back' href="{{ back_link }}"></a>
 {% elseif allow_post == true  %}
-<p> Вы прошли проверку. Больше вводить капчу не нужно.</p>
-<br />
-<a href="{{ back_link }}">Назад</a>
+	<p class='l_antispam_done'></p>
+	<br />
+	<a class='l_back' href="{{ back_link }}"></a>
 {% else %}
 
- 
-	<p>Пользователям onion/i2p необходимо вводить капчу, куки должны быть включены.</p>
+	<p class='l_antispam_desc'></p>
 </center>
 
 <br/>
@@ -45,12 +43,12 @@
 	
 	{% include 'captcha.html' %}
 
-	Осталось решить капч:  {{ captchas_need - captchas_left }}.
+	<p class='l_antispam_left'> {{ captchas_need - captchas_left }}.</p>
  
 	{% if solved_message %}	<br/>{{solved_message}}{% endif %}
 
 	<ul style="padding:5px;list-style:none">
-		<li><input type="submit" value="Отправить"></li>
+		<li><input class='theme-button' type="submit" value="Next"></li>
 	</ul>
 
 
@@ -59,22 +57,11 @@
 	{% endif %}
 
 
- 	{% endif %}
+{% endif %}
 	</form>
 </center> 
-
-
-
-
-
-
-    
-
 </article>
 </section>
-
-
-
 
 
 {% include 'footer.html' %}
