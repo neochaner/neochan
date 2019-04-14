@@ -7,16 +7,7 @@
 *
 *  You can copy values from config.php (defaults) and paste them here.
 */
-	// Note - you may want to change some of these in secrets.php instead of here
-	// See the secrets.example.php file
-	$config['db']['server'] = 'localhost';
-	$config['db']['database'] = 'neochan';
-	$config['db']['prefix'] = '';
-	$config['db']['user'] = 'root';
-	$config['db']['password'] = '';
-	$config['timezone'] = 'UTC';
 
-	
 	
 	$config['cookies']['mod'] = 'mod';
 	$config['cookies']['salt'] = '';
@@ -67,76 +58,13 @@
 	// Board shit
 	$config['max_links'] = 40;
 	$config['poster_id_length'] = 5;
-	$config['url_banner'] = 'https://banners.neochan.ru';
-	$config['additional_javascript_compile'] = true;
-	//$config['default_stylesheet'] = array('Notsuba', 'notsuba.css');
-	//$config['additional_javascript'][] = 'js/jquery.min.js';
-	$config['additional_javascript'][] = 'js/jquery-3.1.0.min.js';
-	$config['additional_javascript'][] = 'js/plyr.polyfilled.min.js';
-	$config['additional_javascript'][] = 'js/audio-player.js';
- 
-
-	$config['additional_javascript'][] = 'js/code_tags/run_prettify.js';
-	
-	// Fileboard
-    //$config['additional_javascript'][] = 'js/fileboard.js';
-	//$config['font_awesome_css'] = '/netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css';
-	
-	
-	$config['stylesheets_board'] = true;
-	$config['markup'][] = array("/^[ |\t]*==(.+?)==[ |\t]*$/m", "<span class=\"heading\">\$1</span>");
-	$config['markup'][] = array("/\[spoiler\](.+?)\[\/spoiler\]/", "<span class=\"spoiler\">\$1</span>");
-	$config['markup'][] = array("/~~(.+?)~~/", "<s>\$1</s>");
-	$config['markup'][] = array("/__(.+?)__/", "<u>\$1</u>");
-	$config['markup'][] = array("/###([^\s']+)###/", "<a href='/boards.html#\$1'>###\$1###</a>");
-	
+	$config['url_banner'] = 'https://banners.neochan.ru';	
 	$config['markup_paragraphs'] = true;
 	$config['markup_rtl'] = true;
-	
-	$config['boards'] = array(array('<i class="fa fa-home" title="Home"></i> home' => '/', '<i class="fa fa-tags" title="Boards"></i> board list' => 'https://neochan.ru/boards.html', '<i class="fa fa-question" title="FAQ"></i> faq' => 'https://8ch.net/faq.html', '<i class="fa fa-random" title="Random"></i> random' => 'https://8ch.net/random.php', '<i class="fa fa-plus" title="New board"></i> create' => 'https://neochan.ru/create.php', '<i class="fa fa-ban" title="Public ban list"></i> bans' => 'https://neochan.ru/bans.html', '<i class="fa fa-search" title="Search"></i> search' => 'https://8ch.net/search.php', '<i class="fa fa-cog" title="Manage board"></i> manage' => '/mod.php', ), array( '<i class="fa fa-recycle" title="Claim a board"></i></i>'=>'https://8ch.net/claim.html', '<i class="fa fa-bug" title="File a bug report"></i></i>'=>'https://8ch.net/sudo/catalog.html', '<i class="fa fa-check-circle-o" aria-hidden="true" title="Presolve the captcha!"></i>'=>'https://8ch.net/dnsbls_bypass.php'));
-	//$config['boards'] = array(array('<i class="fa fa-home" title="Home"></i>' => '/', '<i class="fa fa-tags" title="Boards"></i>' => '/boards.html', '<i class="fa fa-question" title="FAQ"></i>' => '/faq.html', '<i class="fa fa-random" title="Random"></i>' => '/random.php', '<i class="fa fa-plus" title="New board"></i>' => '/create.php', '<i class="fa fa-search" title="Search"></i>' => '/search.php', '<i class="fa fa-cog" title="Manage board"></i>' => '/mod.php', '<i class="fa fa-quote-right" title="Chat"></i>' => 'https://qchat.rizon.net/?channels=#8chan'), array('b', 'meta', 'int'), array('v', 'a', 'tg', 'fit', 'pol', 'tech', 'mu', 'co', 'sp', 'boards'), array('<i class="fa fa-twitter" title="Twitter"></i>'=>'https://twitter.com/infinitechan', '<i class="fa fa-refresh" title="Claim a board"></i></i>'=>'https://8ch.net/claim.html', '<i class="fa fa-bug" title="File a bug report"></i></i>'=>'https://8ch.net/sudo/catalog.html'));
-	
 
-
-	$config['search']['enable'] = false;
-	
 	$config['syslog'] = true;
 	
-	$config['hour_max_threads'] = 10;
-	$config['filters'][] = array(
-		'condition' => array(
-			'custom' => 'max_posts_per_hour'
-		),
-		'action' => 'reject',
-		'message' => 'On this board, to prevent raids the number of threads that can be created per hour is limited. Please try again later, or post in an existing thread.'
-	);
 
-	$config['languages'] = array(
-		'ch' => "汉语",
-		'cz' => "Čeština",
-		'dk' => "Dansk",
-		'de' => "Deutsch",
-		'eo' => "Esperanto",
-		'en' => "English",
-		'es' => "Español",
-		'fi' => "Suomi",
-		'fr' => "Français",
-		'hu' => "Magyar",
-		'it' => "Italiano",
-		'ja' => "日本語",
-		'jbo' => "Lojban",
-		'lt' => "Lietuvių Kalba",
-		'lv' => "Latviešu Valoda",
-		'no' => "Norsk",
-		'nl' => "Nederlands Vlaams",
-		'pl' => "Polski",
-		'pt' => "Português",
-		'ru' => "Русский",
-		'sk' => "Slovenský Jazyk",
-		'tw' => "Taiwanese",
-	);
-
-	
 $config['hash_masked_ip'] = true;
 $config['force_subject_op'] = false;
 $config['min_links'] = 0;

@@ -701,6 +701,7 @@ if(isset($_GET['rate']))
 		$country_code = Session::$country_code;
 		$country_name = Session::$country_name;
 
+ 
 		if(empty($country_code) || empty($country_name)){
 
 			require 'inc/lib/geoip/geoip.inc';

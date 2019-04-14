@@ -56,7 +56,6 @@ class Session {
 			}
 		}
 
-		 
 		if (isset($config['geoip_cloudflare_enable'], $_SERVER['HTTP_CF_IPCOUNTRY']) && $config['geoip_cloudflare_enable']){
 			
 			self::$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
@@ -208,8 +207,10 @@ class Session {
 
 		switch ($config['security_mode']) {
 			case 1:
-				return '!s1' . self::encrypt(self::$ip, $config['security_salt']);
+				$hash = sha1(sha1(self::$ip) . $config['secure_salt']);
+				return '!s1' .  substr($hash, 0, 16);
 			case 2:
+				// now no used
 				return '!s2' . self::encrypt(self::$ip);
 			default:
 				return self::$ip;
@@ -219,20 +220,7 @@ class Session {
 
 	public static function getIdentityRange()
 	{
-		global $config;
-
-		if (self::$is_darknet) {
-			return self::$cookie_key;
-		}
-
-		switch ($config['security_mode']) {
-			case 1:
-				return '!r1' . self::encrypt(self::$ip_range, $config['security_salt']);
-			case 2:
-				return '!r2' . self::encrypt(self::$ip_range);
-			default:
-				return self::$ip_range;
-		}
+		return self::getIdentity();
 	}
 
 	private static function getKey()
@@ -257,7 +245,7 @@ class Session {
 			$key = self::getKey();
 		}
 		
-        $iv = $config['security_salt'] ?? 'none';
+        $iv = $config['secure_salt'] ?? 'none';
         $encrypt_method = "AES-256-CBC";
         $key = hash( 'sha256', $key );
         $iv = substr( hash( 'sha256', $iv ), 0, 16 );
@@ -273,7 +261,7 @@ class Session {
 			$key = self::getKey();
 		}
 			
-        $iv = $config['security_salt'] ?? 'none';
+        $iv = $config['secure_salt'] ?? 'none';
         $encrypt_method = "AES-256-CBC";
         $key = hash( 'sha256', $key );
         $iv = substr( hash( 'sha256', $iv ), 0, 16 );

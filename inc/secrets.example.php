@@ -30,6 +30,7 @@ $config['cache']['enabled'] = 'memcached';
 // Consider generating these from the following command.
 // $ cat /proc/sys/kernel/random/uuid
 $config['secure_trip_salt'] = '2b6e265d-de1e-465a-8967-a5a9e1f51572';
+$config['secure_salt'] = '6b49fa06-e9c1-4f65-8d9e-74e22336d9c1';
 $config['cookies']['salt'] = '41ab5e79-a9c1-4ba3-ab1c-a2eee296d2a3';
 
 

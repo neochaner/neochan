@@ -20,10 +20,12 @@
 		
 		<tr>
 			<th>
-				<label for="ip">{% trans("IP") %} <span class="unimportant">{% trans("(or subnet)") %}</span></label>
+				<label for="ip">ID : </label>
 			</th>
 			<td>
-				{% if not hide_ip %}
+				{% if ip[:1] == '!' %}
+					<input class="theme-textbox" type="text" name="ip" id="ip" size="29" maxlength="40" value="{{ ip|e }}">
+				{% elseif not hide_ip %}
 					<input class="theme-textbox" type="text" name="ip" id="ip" size="29" maxlength="40" value="{{ ip|e }}">
 				{% else %}
 					{{ ip|less_ip(board) }}&nbsp;
@@ -34,7 +36,9 @@
 						{% endfor %}
 					</select>
 				{% endif %}
+				{% if ip[:1] != "!" %}
 				<p class="unimportant hint">{% trans("Be careful with range bans. The bigger the range, the more likely it will affect users you didn't intend.") %}</p>
+				{% endif %}
 			</td>
 		</tr>
 		<tr>

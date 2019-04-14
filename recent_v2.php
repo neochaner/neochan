@@ -20,90 +20,17 @@ if($boards == null){
 }
 
  
-if (!isset($_GET['disable_mod']) && isset($_COOKIE[$config['cookies']['mod']]))
+if (!isset($_GET['disable_mod']) && isset($_COOKIE[$config['cookies']['mod']])) {
     check_login();
+}
 
  
-
-if(isset($_GET['rebuild_all']))
-{
-    $boards = listBoards();
-
-    foreach($boards as $board)
-    {
-
-        $query = prepare("SELECT * FROM `posts_{$board['uri']}`");
-        $query->execute() or error(db_error($query));
-        $data = $query->fetchAll(PDO::FETCH_ASSOC);
-        
-        foreach($data as $post)
-        {
-
-            $template = get_post_template($post);
-            $mtime = ($post['edited_at'] && $post['time'] < $post['edited_at']) ? $post['edited_at'] :  $post['time'];
-
-   
-            $query = prepare("UPDATE `posts_{$board['uri']}` SET `template`=:t, `changed_at`=:mtime WHERE id=:id");
-            $query->bindValue(":t", $template, PDO::PARAM_STR);
-            $query->bindValue(':id', $post['id'], PDO::PARAM_INT);
-            $query->bindValue(':mtime', $mtime, PDO::PARAM_INT);
-            $query->execute() or error(db_error($query));
-
-      
-        }
-    }
-
-    exit;
-}
-
-
-
-
-
-
-if(isset($_GET['active_page']) && $_GET['active_page'] == 'mega')
-{
-	
-    $boards = explode(',', $_GET['board']);
-    $default_times = array();
-    $default_posts = array();
-
-    foreach($boards as $b)
-    {
-
-        if(!in_array($b, $boards))
-            exit;
-
-        $default_times[] = 0;
-        $default_posts[] = 0;
-    }
-
-
-    $indexTimes = isset($_GET['time']) ? explode(',',$_GET['time']) : $default_times;
-    $indexPosts = isset($_GET['post']) ? explode(',',$_GET['post']) : $default_posts;
-
-    $allPosts=array();
-
-
-    for($i=0; $i < count($boards); $i++)
-    {
-        $posts = GetBoard($boards[$i], (int)$indexTimes[$i], (int)$indexPosts[$i]);
-        $allPosts = array_merge($allPosts, $posts);
-    }
-
-    $result = array('posts'=> $allPosts, 'post_len'=> count($allPosts));
-    echo json_encode($result);
-	
-}
-
-else if(isset($_GET['thread']) && isset($_GET['board']) && in_array($_GET['board'], $boards ))
-{
+if (isset($_GET['thread']) && isset($_GET['board']) && in_array($_GET['board'], $boards )) {
 
     $indexTime = isset($_GET['time']) ? (int)$_GET['time'] : 0;
     $indexPost = isset($_GET['post']) ? (int)$_GET['post'] : 0;
 
-    $data = isset($mod) && $mod['type'] > USER ?
-     GetModThread($_GET['board'], $_GET['thread'], $indexTime, $indexPost) : GetThread($_GET['board'], $_GET['thread'], $indexTime, $indexPost);
+    $data = GetThread($_GET['board'], $_GET['thread'], $indexTime, $indexPost);
 
     $posts = array();
 
@@ -159,46 +86,6 @@ function GetThread($board, $thread, $indexTime, $indexPost){
     }
 
     return  $posts;
-}
-
-function GetModThread($board_uri, $thread, $indexTime, $indexPost){
-
-    global $mod, $board, $config;
-
-    if(!openBoard($board_uri))
-        return array();
-
-
-    $query = prepare("SELECT * FROM `posts_$board_uri` WHERE `thread`=:thread OR `id`=:thread ORDER BY `changed_at` DESC");
-    $query->bindValue(':thread', $thread, PDO::PARAM_INT);
-    $query->execute() or error(db_error($query));
-    $data = $query->fetchAll(PDO::FETCH_ASSOC);
-    $data = ProcessPosts($data, $board);
-
-    $posts = array();
-
-    foreach($data as $post)
-    {
-
-        $po = new Post($post, '?/', $mod);
-        $template = $po->build();
-        
-        $mpost = array(
-            'id'=> $post['id'],
-            'template'=> $template,
-            'changed_at'=> $post['changed_at'],
-            'hide'=> $post['hide'],
-            'deleted'=> $post['deleted'],
-            'thread'=> $post['thread'],
-            'time'=> $post['time'],
-        );
-
-        $posts[] = $mpost;
-    
-    }
-    
-    $posts = ProcessPosts($posts, $board_uri);
-    return $posts;
 }
  
 function GetBoard($board, $indexTime=0, $indexPost=0){
