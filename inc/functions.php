@@ -3083,7 +3083,6 @@ function less_ip($ip, $board = '') {
 	global $config;
 
 	if ($ip[0] == '!') {
-		syslog(0, json_encode($ip));
 		return substr(sha1(sha1($ip . $board)  . $config['secure_trip_salt']), 0, 10);
 	}
 

@@ -51,7 +51,7 @@ defined('TINYBOARD') or exit;
 	$config['has_installed'] = '.installed';
 
 	// Use syslog() for logging all error messages and unauthorized login attempts.
-	$config['syslog'] = false;
+	$config['syslog'] = true;
 
 	// Use `host` via shell_exec() to lookup hostnames, avoiding query timeouts. May not work on your system.
 	// Requires safe_mode to be disabled.
@@ -447,13 +447,13 @@ $config['tippy_tooltips'] = true;
 	$config['spam']['hidden_inputs_max'] = 12;
 
 	// How many times can a "hash" be used to post?
-	$config['spam']['hidden_inputs_max_pass'] = 12;
+	$config['spam']['hidden_inputs_max_pass'] = 128;
 
 	// How soon after regeneration do hashes expire (in seconds)?
-	$config['spam']['hidden_inputs_expire'] = 60 * 60 * 3; // three hours
+	$config['spam']['hidden_inputs_expire'] = 60 * 60 * 4; // four hours
 	
 	// Whether to use Unicode characters in hidden input names and values.
-	$config['spam']['unicode'] = true;
+	$config['spam']['unicode'] = false;
 
 	// These are fields used to confuse the bots. Make sure they aren't actually used by Tinyboard, or it won't work.
 	$config['spam']['hidden_input_names'] = array(
@@ -523,11 +523,11 @@ $config['tippy_tooltips'] = true;
 	 */
 
 	// Minimum time between between each post by the same IP address.
-	$config['flood_time'] = 10;
+	$config['flood_time'] = 7;
 	// Minimum time between between each post with the exact same content AND same IP address.
-	$config['flood_time_ip'] = 120;
+	$config['flood_time_ip'] = 30;
 	// Same as above but by a different IP address. (Same content, not necessarily same IP address.)
-	$config['flood_time_same'] = 30;
+	$config['flood_time_same'] = 2;
 
 	// Minimum time between posts by the same IP address (all boards).
 	$config['filters'][] = array(
@@ -657,8 +657,10 @@ $config['tippy_tooltips'] = true;
 	// Strip combining characters from Unicode strings (eg. "Zalgo").
 	$config['strip_combining_chars'] = true;
 
+	// Minimum post body length.
+	$config['min_body'] = 0;
 	// Maximum post body length.
-	$config['max_body'] = 1800;
+	$config['max_body'] = 3200;
 	// Maximum number of newlines. (0 for unlimited)
 	$config['max_newlines'] = 0;
 	// Maximum number of post body lines to show on the index page.
@@ -666,6 +668,8 @@ $config['tippy_tooltips'] = true;
 	// Maximum number of characters to show on the index page.
 	$config['body_truncate_char'] = 2500;
 
+	
+	$config['min_links'] = 0;
 	// Typically spambots try to post many links. Refuse a post with X links?
 	$config['max_links'] = 50;
 	// Maximum number of cites per post (prevents abuse, as more citations mean more database queries).
@@ -711,6 +715,8 @@ $config['tippy_tooltips'] = true;
 	$config['auto_unicode'] = true;
 	// Whether to turn URLs into functional links.
 	$config['markup_urls'] = true;
+	
+	$config['markup_paragraphs'] = true;
 
 	// Optional URL prefix for links (eg. "http://anonym.to/?").
 	$config['link_prefix'] = ''; 
@@ -731,7 +737,7 @@ $config['tippy_tooltips'] = true;
 	// $config['wordfilters'][] = array('/ca[rt]/', 'dog', true); // 'true' means it's a regular expression
 
 	// Always act as if the user had typed "noko" into the email field.
-	$config['always_noko'] = false;
+	$config['always_noko'] = true;
 
 
 	// Example: Custom secure tripcode.
@@ -763,8 +769,8 @@ $config['tippy_tooltips'] = true;
 	// Prevent users from uploading files.
 	$config['disable_images'] = false;
 
-	// When true, the sage won't be displayed
-	$config['hide_sage'] = false;
+	// When false, the sage won't be displayed
+	$config['show_sages'] = true;
 
 	// Использовать геолокацию nginx если возможно (установка флажков)
 	$config['geoip_nginx_enable'] = false; 
@@ -806,7 +812,6 @@ $config['tippy_tooltips'] = true;
 	
 	// Отображать статистику сколько человек онлайн
 	$config['allow_online'] = false;
-
 
 	
 /*
@@ -1179,12 +1184,14 @@ srand(time());
 	 *					   instead of `convert` for resizing GIFs. It's faster and resulting animated
 	 *					   thumbnails have less artifacts than if resized with ImageMagick.
 	 */
-	$config['thumb_method'] = 'gd';
+	$config['thumb_method'] = 'convert';
 
 
 	// Command-line options passed to ImageMagick when using `convert` for thumbnailing. Don't touch the
 	// placement of "%s" and "%d".
-	$config['convert_args'] = '-size %dx%d %s -thumbnail %dx%d -auto-orient +profile "*" %s';
+	$config['convert_args'] = '-size %dx%d %s -thumbnail %dx%d -auto-orient +profile "*" %s'; 
+	$config['convert_args'] = '-size %dx%d %s -thumbnail %dx%d -quality 85%% -background \'#d6daf0\' -alpha remove -auto-orient +profile "*" %s';
+	
 
 	// Strip EXIF metadata from JPEG files.
 	$config['strip_exif'] = false;
@@ -1276,10 +1283,10 @@ srand(time());
 	$config['minimum_copy_resize'] = false;
 
 	// Maximum image upload size in bytes.
-	$config['max_filesize'] = 100 * 1024 * 1024; // 100MB
+	$config['max_filesize'] = 1024 * 1024 * 100; // 100MB
 	// Maximum image dimensions.
 	$config['max_width'] = 10000;
-	$config['max_height'] = $config['max_width'];
+	$config['max_height'] = 10000;
 	// Reject duplicate image uploads.
 
 	// при загрузке md5 файла будет проверятся по стоп-листу
@@ -1298,14 +1305,14 @@ srand(time());
 	$config['image_reject_repost_in_thread'] = false;
 
 	// Display the aspect ratio of uploaded files.
-	$config['show_ratio'] = false;
+	$config['show_ratio'] = true;
 	// Display the file's original filename.
 	$config['show_filename'] = false;
 
 	// WebM Settings
-	$config['webm']['use_ffmpeg'] = false;
-	$config['webm']['allow_audio'] = false;
-	$config['webm']['max_length'] = 120;
+	$config['webm']['use_ffmpeg'] = true;
+	$config['webm']['allow_audio'] = true;
+	$config['webm']['max_length'] =  60 * 120;;
 	$config['webm']['ffmpeg_path'] = 'ffmpeg';
 	$config['webm']['ffprobe_path'] = 'ffprobe';
 
@@ -1335,7 +1342,7 @@ srand(time());
 	// Maximum amount of threads to display per page.
 	$config['threads_per_page'] = 10;
 	// Maximum number of pages. Content past the last page is automatically purged.
-	$config['max_pages'] = 50;
+	$config['max_pages'] = 64;
 	// Replies to show per thread on the board index page.
 	$config['threads_preview'] = 3;
 	// Same as above, but for stickied threads.
@@ -1395,7 +1402,7 @@ srand(time());
 	$config['tor_ip_hash'] = '$2a$07$qFmQx6sdNCcVeTknVtBSUOgylNGQokMgcxRsQ/1lb1Vz9jvckO6j2';
 
 	// Number of characters in the poster ID (maximum is 40).
-	$config['poster_id_length'] = 4;
+	$config['poster_id_length'] = 5;
 
 	// Show thread subject in page title.
 	$config['thread_subject_in_title'] = true;
@@ -1642,6 +1649,7 @@ srand(time());
  *  Directory/file settings
  * =========================
  */
+	$config['root'] = '/';
 
 	// The root directory, including the trailing slash, for Tinyboard.
 	// Examples: '/', 'http://boards.chan.org/', '/chan/'.
@@ -1652,8 +1660,7 @@ srand(time());
 		$config['root']	 = str_replace('\\', '/', dirname($request_uri)) == '/'
 			? '/' : str_replace('\\', '/', dirname($request_uri)) . '/';
 		unset($request_uri);
-	} else
-		$config['root'] = '/'; // CLI mode
+	} 
 
 	// The scheme and domain. This is used to get the site's absolute URL (eg. for image identification links).
 	// If you use the CLI tools, it would be wise to override this setting.
@@ -1787,10 +1794,12 @@ srand(time());
 	// Do DNS lookups on IP addresses to get their hostname for the moderator IP pages (?/IP/x.x.x.x).
 	$config['mod']['dns_lookup'] = true;
 	// How many recent posts, per board, to show in ?/IP/x.x.x.x.
-	$config['mod']['ip_recentposts'] = 5;
+	$config['mod']['ip_recentposts'] = 25;
+	
+	$config['mod']['ip_less_recentposts'] = 25;
 
 	// Number of posts to display on the reports page.
-	$config['mod']['recent_reports'] = 10;
+	$config['mod']['recent_reports'] = 100;
 	// Number of actions to show per page in the moderation log.
 	$config['mod']['modlog_page'] = 350;
 	// Number of bans to show per page in the ban list.
@@ -2144,7 +2153,17 @@ srand(time());
  *  Other/uncategorized
  * ====================
  */
+	$config['early_404'] = false;
+	$config['early_404_page'] = 5;
+	$config['early_404_replies'] = 10;
 
+	$config['cron_bans'] = true;
+	$config['hash_masked_ip'] = true;
+	$config['mask_db_error'] = true;
+	$config['katex'] = false;
+	$config['enable_antibot'] = false;
+ 
+ 
 	// Meta keywords. It's probably best to include these in per-board configurations.
 	// $config['meta_keywords'] = 'chan,anonymous discussion,imageboard,tinyboard';
 
