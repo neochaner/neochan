@@ -1455,7 +1455,12 @@ function deletePost($id, $error_if_doesnt_exist=true, $rebuild_after=true, $real
 					delete_fat_file($f);
 					
 					@file_unlink($config['dir']['img_root'] . $board['dir'] . $config['dir']['img'] . $f->file);
-					@file_unlink($config['dir']['img_root'] . $board['dir'] . $config['dir']['thumb'] . $f->thumb);
+
+					if($f->thumb == 'spoiler' && isset($f->thumbExtension)) {
+						@file_unlink($config['dir']['img_root'] . $board['dir'] . $config['dir']['thumb'] . $f->file_id . '.' . $f->thumbExtension);
+					} else {
+						@file_unlink($config['dir']['img_root'] . $board['dir'] . $config['dir']['thumb'] . $f->thumb);
+					}
 				}
 			}
 		}
