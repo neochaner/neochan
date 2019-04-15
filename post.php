@@ -1327,7 +1327,6 @@ if(isset($_GET['rate']))
 		openBoard($ban['board']);
 	}
 
-	
 	$bans = Bans::find(Session::getIdentity());
 	foreach ($bans as $_ban) {
 		if ($_ban['id'] == $ban_id) {

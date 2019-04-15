@@ -1406,7 +1406,7 @@ function rebuildPost($id)
 }
 
 // Delete a post (reply or thread)
-function deletePost($id, $error_if_doesnt_exist=true, $rebuild_after=true, $real_delete = false) {
+function deletePost($id, $error_if_doesnt_exist=true, $rebuild_after=true, $real_delete = true) {
 	global $board, $config;
 
 	// Select post and replies (if thread) in one query
@@ -1521,7 +1521,7 @@ function clean($pid = false) {
 	$query->execute() or error(db_error($query));
 
 	while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
-		deletePost($post['id'], false, false, true);
+		deletePost($post['id'], false, false);
 		if ($pid) modLog("Automatically deleting thread #{$post['id']} due to new thread #{$pid}");
 	}
 
@@ -1534,7 +1534,7 @@ function clean($pid = false) {
 		
 		while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
 			if ($post['reply_count'] < $config['early_404_replies']) {
-				deletePost($post['thread_id'], false, false, true);
+				deletePost($post['thread_id'], false, false);
 				if ($pid) modLog("Automatically deleting thread #{$post['thread_id']} due to new thread #{$pid} (early 404 is set, #{$post['thread_id']} had {$post['reply_count']} replies)");
 			}
 		}
