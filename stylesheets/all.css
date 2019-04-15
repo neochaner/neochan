@@ -502,7 +502,7 @@
     max-width: 300px!important;
 }
 
-.post-small img {
+.post-small img :not(.flag) {
     height: auto!important;
     width: 100px!important;
 }
