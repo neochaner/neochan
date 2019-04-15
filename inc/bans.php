@@ -452,7 +452,7 @@ class Bans
 	{
 		if ($from_board) {
 			$query = prepare('SELECT * FROM `bans` WHERE `appeal_state`=1 AND `board`=:board');
-			$query->bindValue(':board', $board, PDO::PARAM_STR);
+			$query->bindValue(':board', $from_board, PDO::PARAM_STR);
 		} else {
 			$query = prepare('SELECT * FROM `bans` WHERE `appeal_state`=1');
 		}
