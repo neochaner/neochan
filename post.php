@@ -1366,11 +1366,6 @@ if(isset($_GET['rate']))
 elseif (isset($_POST['user_edit']))
 {
 
-
-
-
-
-
 	if(!isset($_POST['board'], $_POST['id'], $_POST['action']))
 		error($config['error']['wrong params']);
 
@@ -1428,7 +1423,6 @@ elseif (isset($_POST['user_edit']))
 		if(!$user_access && !$mod_request)
 			server_response('No access', array('error' => 'Доступ запрещён'));
 
-
 		if(!$mod_request && time() > $post['time']+(60*3))
 			json_response(array('error' => 'Истекло время редактирования'));
 
@@ -1438,13 +1432,11 @@ elseif (isset($_POST['user_edit']))
 		if(!$mod_request && strpos($post['body_nomarkup'], 'roll(') !== false)
 			json_response(array('error' => 'Нельзя редактировать ролл'));
 			
-		if($action == 'get_body')
-		{
+		if ($action == 'get_body') {
 			json_response(array('get_post_success' => true, 'source' => $post['body_nomarkup']));
 		}
 		
-		if($action == 'set_body')
-		{
+		if ($action == 'set_body') {
 
 			if (mb_strlen($_POST['text']) > $config['max_body'])
 				error($config['error']['toolong_body']);
@@ -1460,16 +1452,14 @@ elseif (isset($_POST['user_edit']))
 			json_response(array('save_post_success' => true));
 		}
 
-		if($action == 'delete_file' || $action == 'spoiler_file')
-		{ 
+		if ($action == 'delete_file' || $action == 'spoiler_file') { 
 		  
 
 			$files = json_decode($post['files']);
 
 			foreach ($files as $i => $f) {
 
-				if ($file !== false && $f->hash == $_POST['text']) 
-				{
+				if ($file !== false && $f->hash == $_POST['text']) {
 
 					if ($action == 'delete_file'){
 			
@@ -1485,14 +1475,14 @@ elseif (isset($_POST['user_edit']))
 						unset($files[$i]->thumb);
 						$files[$i]->file = 'deleted';
 
-					}
-					else if($action == 'spoiler_file'){
+					} else if($action == 'spoiler_file') {
 
 						if($f->thumb == 'spoiler'){
-							$f->thumb = $f->file_id . '.' . $f->extension;
-							$f->thumb_path = '/' . $config['dir']['thumb'] . $f->file_id . '.' . $f->extension;
+							$f->thumb = $f->file_id . '.' . $f->thumbExtension;
+							$f->thumb_path = '/' . $config['dir']['thumb'] . $f->file_id . '.' . $f->thumbExtension;
 						}
 						else{
+							$f->thumbExtension = array_reverse(explode('.', $f->thumb))[0];
 							$f->thumb = 'spoiler';
 							$f->thumb_path = 'spoiler';
 						}
