@@ -386,12 +386,6 @@ function define_groups() {
 	ksort($config['mod']['groups']);
 }
 
-function create_antibot($board, $thread = null) {
-	require_once dirname(__FILE__) . '/anti-bot.php';
-
-	return _create_antibot($board, $thread);
-}
-
 function rebuildThemes($action, $boardname = false) {
 	global $config, $board, $current_locale, $error;
 
@@ -1445,11 +1439,6 @@ function deletePost($id, $error_if_doesnt_exist=true, $rebuild_after=true, $real
 			@file_unlink($board['dir'] . $config['dir']['res'] . sprintf($config['file_page50'], $post['id']));
 			@file_unlink($board['dir'] . $config['dir']['res'] . sprintf('%d.json', $post['id']));
 
-			$antispam_query = prepare('DELETE FROM ``antispam`` WHERE `board` = :board AND `thread` = :thread');
-			$antispam_query->bindValue(':board', $board['uri']);
-			$antispam_query->bindValue(':thread', $post['id']);
-			$antispam_query->execute() or error(db_error($antispam_query));
-
 			$isThreadDelete = true;
 
 		} elseif ($query->rowCount() == 1) {
@@ -1457,18 +1446,16 @@ function deletePost($id, $error_if_doesnt_exist=true, $rebuild_after=true, $real
 			$rebuild = &$post['thread'];
 		}
 
-
 		if ($post['files']) {
 			// Delete file
 			foreach (json_decode($post['files']) as $i => $f) 
 			{
 				if (isset($f->file, $f->thumb) && $f->file !== 'deleted') 
-				{	
+				{
 					delete_fat_file($f);
 					
 					@file_unlink($config['dir']['img_root'] . $board['dir'] . $config['dir']['img'] . $f->file);
 					@file_unlink($config['dir']['img_root'] . $board['dir'] . $config['dir']['thumb'] . $f->thumb);
-				 
 				}
 			}
 		}
@@ -1511,7 +1498,6 @@ function deletePost($id, $error_if_doesnt_exist=true, $rebuild_after=true, $real
 	$query->execute() or error(db_error($query));
 
 
-	
 	if ($rebuild && $rebuild_after) {
 
 		if(!$isThreadDelete)
@@ -1954,9 +1940,6 @@ function buildIndex($global_api = "yes") {
 	buildSitePages();
 
 	$pages = getPages();
-	if (!$config['try_smarter']) {
-		$antibot = create_antibot($board['uri']);
-	}
 
 	if ($config['api']['enabled']) {
 		$api = new Api();
@@ -1974,8 +1957,10 @@ function buildIndex($global_api = "yes") {
 
 
 		$content = index($page);
-		if (!$content)
+
+		if (!$content) {
 			break;
+		}
 
 		// json api
 		if ($config['api']['enabled']) {
@@ -1987,21 +1972,19 @@ function buildIndex($global_api = "yes") {
 		}
 
 		if ($config['api']['enabled'] && $global_api != "skip" && $config['try_smarter'] && isset($build_pages)
-			&& !empty($build_pages) && !in_array($page, $build_pages) )
+			&& !empty($build_pages) && !in_array($page, $build_pages) ) {
 			continue;
+		}
 
 		if ($config['try_smarter']) {
-			$antibot = create_antibot($board['uri'], 0 - $page);
 			$content['current_page'] = $page;
 		}
-		$antibot->reset();
+
 		$content['pages'] = $pages;
 		$content['pages'][$page-1]['selected'] = true;
 		$content['btn'] = getPageButtons($content['pages']);
-		$content['antibot'] = $antibot;
-		
-		file_write($filename, Element('index.html', $content));
 
+		file_write($filename, Element('index.html', $content));
 	}
 
 	if ($page < $config['max_pages']) {
@@ -2717,7 +2700,6 @@ function buildThread($id, $return = false, $mod = false)
 	
 	$post_count = $thread->postCount();
 	$hasnoko50 = $post_count >= $config['noko50_min'];
-	$antibot = $mod || $return ? false : create_antibot($board['uri'], $id);
 
 	$body = Element('thread.html', array(
 		'board' => $board,
@@ -2729,7 +2711,6 @@ function buildThread($id, $return = false, $mod = false)
 		'mod' => $mod,
 		'hasnoko50' => $hasnoko50,
 		'isnoko50' => false,
-		'antibot' => $antibot,
 		'boardlist' => createBoardlist($mod),
 		'return' => ($mod ? '?' . $board['url'] . $config['file_index'] : $config['root'] . $board['dir'] . $config['file_index'])
 	));

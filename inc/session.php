@@ -65,6 +65,7 @@ class Session {
 				self::$is_onion = true;
 				self::$is_darknet = true;
 			}
+			
 		} elseif (!self::$is_darknet && isset($config['geoip_nginx_enable'], $_SERVER['GEOIP_COUNTRY_CODE'], $_SERVER['GEOIP_COUNTRY_NAME']) && $config['geoip_nginx_enable']){
 			self::$country_code = $_SERVER['GEOIP_COUNTRY_CODE'];
 			self::$country_name = $_SERVER['GEOIP_COUNTRY_NAME'];

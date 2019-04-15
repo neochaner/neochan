@@ -4,7 +4,7 @@
  */
 $init_time = microtime(true);
 require "./inc/functions.php";
-require "./inc/anti-bot.php";
+
 
 // Fix for magic quotes
 if (get_magic_quotes_gpc())
@@ -388,13 +388,7 @@ if(isset($_GET['rate']))
 		if ($post['raw'] && !hasPermission($config['mod']['rawhtml'], $board['uri']))
 			error($config['error']['noaccess']);
 	}
-	
-	if (!$post['mod']) {
-		$post['antispam_hash'] = checkSpam(array($board['uri'], isset($post['thread']) ? $post['thread'] : ($config['try_smarter'] && isset($_POST['page']) ? 0 - (int)$_POST['page'] : null)));
-		if ($post['antispam_hash'] === true && $config['enable_antibot'])
-			error($config['error']['spam']);
-	}
-	
+
 	if ($config['robot_enable'] && $config['robot_mute']) {
 		checkMute();
 	}
@@ -1221,11 +1215,7 @@ if(isset($_GET['rate']))
 			deletePost($dpost['id'], false, false);
 		}
 	}
-	
-	if (isset($post['antispam_hash'])) {
-		incrementSpamHash($post['antispam_hash']);
-	}
-	
+
 	if (isset($post['tracked_cites']) && !empty($post['tracked_cites'])) {
 		$insert_rows = array();
 		foreach ($post['tracked_cites'] as $cite) {
@@ -1325,14 +1315,19 @@ if(isset($_GET['rate']))
 
 } elseif (isset($_POST['appeal'])) {
 	
- 
+
 	Session::load();
 
 	if (!isset($_POST['ban_id']))
-		error(Vi::$config['error']['bot']);
+		error($config['error']['bot']);
 
-	$ban_id = (int)$_POST['ban_id'];
+	$ban = Bans::get_ban((int)$_POST['ban_id']);
 
+	if($ban['board'] != NULL) {
+		openBoard($ban['board']);
+	}
+
+	
 	$bans = Bans::find(Session::getIdentity());
 	foreach ($bans as $_ban) {
 		if ($_ban['id'] == $ban_id) {

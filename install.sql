@@ -15,25 +15,6 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `antispam`
---
-
-CREATE TABLE IF NOT EXISTS `antispam` (
-  `board` varchar(58) CHARACTER SET utf8 NOT NULL,
-  `thread` int(11) DEFAULT NULL,
-  `hash` char(40) COLLATE ascii_bin NOT NULL,
-  `created` int(11) NOT NULL,
-  `expires` int(11) DEFAULT NULL,
-  `passed` smallint(6) NOT NULL,
-  PRIMARY KEY (`hash`),
-  KEY `board` (`board`,`thread`),
-  KEY `expires` (`expires`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii COLLATE=ascii_bin;
-
-
 
 
 CREATE TABLE IF NOT EXISTS cookie (

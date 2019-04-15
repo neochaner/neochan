@@ -146,6 +146,7 @@ class Bans
 	public static function find($criteria, $board = false, $get_mod_info = false, $id = false)
 	{
 		global $config;
+		syslog(1, "ip=$criteria");
 
 		$query = prepare('SELECT ``bans``.*' . ($get_mod_info ? ', `username`' : '') . ' FROM ``bans``
 		' . ($get_mod_info ? 'LEFT JOIN ``mods`` ON ``mods``.`id` = `creator`' : '') . '

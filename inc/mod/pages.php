@@ -385,10 +385,6 @@ function mod_edit_board($boardName) {
 			$query->bindValue(':board', $board['uri']);
 			$query->execute() or error(db_error($query));
 			
-			$query = prepare('DELETE FROM ``antispam`` WHERE `board` = :board');
-			$query->bindValue(':board', $board['uri']);
-			$query->execute() or error(db_error($query));
-			
 			// Remove board from users/permissions table
 			$query = query('SELECT `id`,`boards` FROM ``mods``') or error(db_error());
 			while ($user = $query->fetch(PDO::FETCH_ASSOC)) {
@@ -1996,6 +1992,7 @@ function mod_deletebyip($boardName, $post, $global = false)
 	$threads_to_rebuild = array();
 	$threads_deleted = array();
 	while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
+
 		openBoard($post['board']);
 		
 		deletePost($post['id'], false, false);
@@ -2003,7 +2000,7 @@ function mod_deletebyip($boardName, $post, $global = false)
 		rebuildThemes('post-delete', $board['uri']);
 
 		buildIndex();
-
+		
 		if ($post['thread'])
 			$threads_to_rebuild[$post['board']][$post['thread']] = true;
 		else

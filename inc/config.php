@@ -2161,7 +2161,6 @@ srand(time());
 	$config['hash_masked_ip'] = true;
 	$config['mask_db_error'] = true;
 	$config['katex'] = false;
-	$config['enable_antibot'] = false;
  
  
 	// Meta keywords. It's probably best to include these in per-board configurations.
