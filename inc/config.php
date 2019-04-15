@@ -1228,6 +1228,8 @@ srand(time());
 	$config['allowed_ext'][] = 'jpeg';
 	$config['allowed_ext'][] = 'gif';
 	$config['allowed_ext'][] = 'png';
+	$config['allowed_ext'][] = 'webm';
+	$config['allowed_ext'][] = 'mp4'; 
 	// $config['allowed_ext'][] = 'svg';
 
 	// Ошибки при ресайзер изображения будут скрыты 
