@@ -89,6 +89,17 @@ function check() {
 							<td  class='s-value'>{% trans %}Poster ID's{% endtrans %}</td>
 						</tr>
 
+						<tr>
+							<td class='s-key'>
+							<label class="checktainer_xs">
+							<input type="checkbox" name="rating_thread"{% if config.rating.thread %} checked{% endif %}>
+							<span class="checkmark_xs"></span>
+							</label></td>
+							<td class='s-value'>Enable rating for threads</td>
+						</tr>
+
+
+
 
 						<tr>
 							<td class='s-key'>

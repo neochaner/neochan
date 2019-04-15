@@ -3653,6 +3653,7 @@ function mod_settings($b) {
 		$force_image_op = $imgboard && isset($_POST['force_image_op']) ? 'true' : 'false';
 		$disable_images = $txtboard ? 'true' : 'false';
 		$poster_ids = isset($_POST['poster_ids']) ? 'true' : 'false';
+		$rating_thread = isset($_POST['rating_thread']) ? 'true' : 'false';
 		$show_sages = isset($_POST['show_sages']) ? 'true' : 'false';
 		$auto_unicode = isset($_POST['auto_unicode']) ? 'true' : 'false';
 		$strip_combining_chars = isset($_POST['strip_combining_chars']) ? 'true' : 'false';
@@ -3858,6 +3859,7 @@ function mod_settings($b) {
 		$config_file = <<<EOT
 <?php
 \$config['country_flags'] = $country_flags;
+\$config['rating']['thread'] = $rating_thread;
 \$config['field_disable_name'] = $field_disable_name;
 \$config['force_anon_thread'] = $force_anon_thread;
 \$config['force_image_op'] = $force_image_op;
