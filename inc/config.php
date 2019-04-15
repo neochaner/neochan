@@ -1340,7 +1340,7 @@ srand(time());
  */
 
 	// Maximum amount of threads to display per page.
-	$config['threads_per_page'] = 10;
+	$config['threads_per_page'] = 15;
 	// Maximum number of pages. Content past the last page is automatically purged.
 	$config['max_pages'] = 64;
 	// Replies to show per thread on the board index page.
