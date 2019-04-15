@@ -81,7 +81,7 @@
 }.l_video_vol::before{
     content:'ボリューム' 
 }.l_view_thread::before{
-    content:'スレッドを見る';
+    content:'全部読む';
 }.l_tripmask::before {
     content: 'トリップコードフィールドを隠す';
 }.l_DisableHideStyle::before{
