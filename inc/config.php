@@ -929,11 +929,6 @@ srand(time());
 
 	$config['markup'][] = array('/[\x{200B}-\x{200D}\x{FEFF}]/u', '');
 
-	$config['markup'][] = array("/\[$ban_code\]/", "<div class='post-ban'>");
-	$config['markup'][] = array("/\[\/$ban_code\]/", "</div>");
-	$config['markup'][] = array("/\[$unban_code\]/", "<div class='post-unban'>");
-	$config['markup'][] = array("/\[\/$unban_code\]/", "</div>");
- 
 
 	// "Wiki" markup syntax ($config['wiki_markup'] in pervious versions):
 	//$config['markup'][] = array("/\[spoiler\](&gt;(?!&gt;)[^\n]+)([^\[]*)\[\/spoiler\]/", "<del><span class='quote'>\$1</span>\$2</del>");
