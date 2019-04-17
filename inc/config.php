@@ -441,69 +441,15 @@ $config['tippy_tooltips'] = true;
 	 * See also: http://tinyboard.org/docs/?p=Your_request_looks_automated
 	 *
 	 */
-
-	// Number of hidden fields to generate.
-	$config['spam']['hidden_inputs_min'] = 4;
-	$config['spam']['hidden_inputs_max'] = 12;
-
-	// How many times can a "hash" be used to post?
-	$config['spam']['hidden_inputs_max_pass'] = 128;
-
-	// How soon after regeneration do hashes expire (in seconds)?
-	$config['spam']['hidden_inputs_expire'] = 60 * 60 * 4; // four hours
 	
 	// Whether to use Unicode characters in hidden input names and values.
 	$config['spam']['unicode'] = false;
+ 
 
-	// These are fields used to confuse the bots. Make sure they aren't actually used by Tinyboard, or it won't work.
-	$config['spam']['hidden_input_names'] = array(
-		'user',
-		'username',
-		'login',
-		'search',
-		'q',
-		'url',
-		'firstname',
-		'lastname',
-		'text',
-		'message'
-	);
-
-	// Always update this when adding new valid fields to the post form, or EVERYTHING WILL BE DETECTED AS SPAM!
-	$config['spam']['valid_inputs'] = array(
-		'hash',
-		'board',
-		'thread',
-		'mod',
-		'name',
-		'email',
-		'subject',
-		'post',
-		'body',
-		'password',
-		'sticky',
-		'lock',
-		'raw',
-		'embed',
-		'captcha_cookie',
-		'captcha_text',
-		'spoiler',
-		'page',
-		'file_url',
-		'json_response',
-		'user_flag',
-		'no_country',
-		'tag'
-	);
+ 
 
 	// Разрешает посетителям просматривать удалённые посты 
 	$config['allow_watch_deleted'] = true;
-
-
-
-
-
-
 
 
 	/*
