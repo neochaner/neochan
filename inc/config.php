@@ -924,16 +924,6 @@ srand(time());
 		});
  
 
-
-	// SECRET MARKUP
-	/* Специальные теги, для использования только вичаном. Должны начинаться с SECTAG_ */
-	$config['private_markup_ban'] 	= "SECTAG_Gx123456";
-	$config['private_markup_unban'] = "SECTAG_Gx1234567";
-
-	$ban_code=$config['private_markup_ban'];
-	$unban_code=$config['private_markup_unban'];
-
-
 	$config['markup'][] = array('/[\x{200B}-\x{200D}\x{FEFF}]/u', '');
 
 	$config['markup'][] = array("/\[$ban_code\]/", "<div class='post-ban'>");
