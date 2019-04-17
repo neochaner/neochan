@@ -586,6 +586,9 @@ $config['tippy_tooltips'] = true;
  *  Post settings
  * ====================
  */
+
+	// old update thread system
+	$config['modern_update_system'] = false;
  
 	// Do you need a body for your reply posts?
 	$config['force_body'] = false;
@@ -1026,10 +1029,8 @@ srand(time());
 	$config['additional_javascript'][] = 'js/post-hover-tree.js';   
 	$config['additional_javascript'][] = 'js/ajax.js';
 
-	if(true) // new threaqd update system (recent2.php)
-		$config['additional_javascript'][] = 'js/reload.js';
-	else	// old system (request html and parse page)
-		$config['additional_javascript'][] = 'js/reload.modern.js';
+	$config['additional_javascript'][] = $config['modern_update_system'] ? 'js/reload.modern.js' : 'js/reload.js';
+
 	
 	$config['additional_javascript'][] = 'js/mod.js';
 	$config['additional_javascript'][] = 'js/show-own-posts.js';
