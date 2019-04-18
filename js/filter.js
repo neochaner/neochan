@@ -293,6 +293,8 @@ function filter_reload()
 			if(isThreadHidden( thread.dataset.board, thread.dataset.thread) || hideByTrip)
 			{ 
 
+				$opPost.find('.thread-toggle')[0].classList.add('toggle-show');
+
 				hideThreads.push(thread.dataset.board + '_' + thread.dataset.thread);
 
 				$thread.find('.omit').hide();

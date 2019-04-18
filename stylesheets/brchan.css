@@ -1082,6 +1082,8 @@ hr{
 .thread-attributes i {
     margin-left: 6px;
 }
+
+
 .control{
     display:inline-block;
     font-size:17px;
@@ -1779,6 +1781,7 @@ hr{
 .board-search-sort-mode{
     color:#0a0a0a
 }
+ 
 
 .post-marker {
     border-left: 2px dashed var(--post-marker-color) !important;
@@ -1853,9 +1856,12 @@ header code{
     background-color:#54578c
 }
 
+
+.thread-toggle{ display: none;}
 .post-no{ display: none; }
 .post-id-vi{ display: none; }
 .post-thread-reply{ display: none; }
+
  
 
 .post-id{

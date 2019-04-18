@@ -326,6 +326,32 @@ function showThread(board, thread){
 	filter_reload();
 }
 
+function toggleThread(event){
+
+	let el = event.target;
+	let post = el.parentElement.parentElement;
+	let board = post.dataset.board;
+	let thread = post.dataset.post;
+
+	if (store.isThread(board, thread)) {
+		showThread(board, thread);
+		el.classList.remove('toggle-show');
+		el.classList.add('toggle-hide');
+		
+		$(post).find('.post-body').show();
+		$(post).find('.post-footer').show();
+	} else {
+		hideThread(board, thread);
+		el.classList.remove('toggle-hide');
+		el.classList.add('toggle-show');
+		
+		$(post).find('.post-body').hide();
+		$(post).find('.post-footer').hide();
+	}
+
+	filter_reload();
+}
+
 function isThreadHiddenByTrip(tripcode){
 	return store.isTrip('thread_' + tripcode);
 }

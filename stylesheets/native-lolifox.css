@@ -1784,6 +1784,16 @@ header code{
 .post-id{  display: none;}
 .post-thread-reply{  display: none;}
 
+.thread-toggle{
+    order: -2;
+    cursor: pointer;
+    margin-right: 4px;
+}.toggle-hide::before{
+    content: '[–]';
+}.toggle-show::before{
+    content: '[+]';
+}
+
 
 .post-id-vi{
     order: -1;

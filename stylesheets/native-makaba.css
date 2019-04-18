@@ -1881,7 +1881,16 @@ header code{
 }
 
 
-
+.thread-toggle{
+    order: 8; 
+    cursor: pointer;
+    margin-right: 4px;
+    background-image: url(img/makaba_hide.png);
+    height: 13px;
+    width: 13px;
+    background-size: 13px;
+    margin-top: -2px;
+}
 
 .post-id{
    display: none;

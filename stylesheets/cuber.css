@@ -1918,6 +1918,7 @@ a.post-id:hover{
     color: var(--post-id-color-hover);
 }
 
+.thread-toggle{ display: none;}
 .post-no{ display: none; }
 .post-id-vi{ display: none; }
 .post-thread-reply{ display: none; }

@@ -1784,7 +1784,7 @@ header code{
     background-color:#54578c
 }
 
-
+.thread-toggle{ display: none;}
 .post-no{ display: none; }
 .post-id-vi{ display: none; }
 .post-thread-reply{ display: none; }
