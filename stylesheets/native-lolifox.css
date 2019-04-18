@@ -1788,13 +1788,23 @@ header code{
 .post-id-vi{
     order: -1;
     margin-right:4px;
-    margin-top: -2px;
+    margin-top: -1px;
     transition: transform 0.2s;
-    font-size: 13px;
+
+    background-image: url(/static/ln_arrow.png);
+    height: 11px;
+    width: 11px;
+    background-size: 10px;
+    background-repeat: no-repeat;
+
+
 }
+.post-id-vi:hover{
+    background-image: url(/static/ln_arrow-hover.png);
+}/*
 .post-id-vi::before{ 
     content: '▶'; 
-}
+}*/
 .post-id-open{
     transform: rotate(90deg);
 }
