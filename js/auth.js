@@ -7,21 +7,14 @@ $(document).ready(function() {
 
 	loadProfile();
 
-	if(auth !== null && auth.type > 0 && !getKey('disableModPosts', false))
-		autoLoad(true);
-
-
 	$('#btn-login').click(function(){
 
 		$('.modal').not('#profile').not('#login').hide();
 
-		if(auth)
-		{
+		if (auth) {
 			$('#login').hide();
 			toggle('#profile');
-		}
-		else
-		{
+		} else {
 			$('#profile').hide();
 			toggle('#login');
 		}
@@ -73,7 +66,7 @@ function checkUsernamePass(){
 	
 	var user = el('luser').value;
 	var pass = el('lpass').value;
-
+/*
 	if(!user)
 	{
 		alert('Введите имя или трипкод');
@@ -87,7 +80,7 @@ function checkUsernamePass(){
 	{
 		alert('Введите пароль');
 		return false;
-	}
+	}*/
 
 	return true;
 }
