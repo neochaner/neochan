@@ -3675,6 +3675,7 @@ function mod_settings($b) {
 		$oekaki = ($imgboard || $fileboard) && isset($_POST['oekaki']) ? 'true' : 'false';
 		$view_bumplock = isset($_POST['view_bumplock']) ? '-1' : 'MOD';
 		$enable_emoji = isset($_POST['enable_emoji']) ? 'true' : 'false';
+		$op_mod = isset($_POST['op_mod']) ? 'true' : 'false';
 
 		if (($tor_image_posting === 'true') && isset($_POST['meta_noindex'])) {
 			error('Please index your board to enable this.');
@@ -3888,6 +3889,8 @@ function mod_settings($b) {
 \$config['min_body'] = $min_body;
 \$config['mod']['view_bumplock'] = $view_bumplock;
 \$config['enable_emoji'] = $enable_emoji;
+\$config['opmod']['enable'] = $op_mod;
+
 $code_tags $katex $replace $multiimage $emoji_config $user_flags 
 $assets
 $anal_filenames

@@ -325,7 +325,7 @@ function check() {
 						<td class='s-value'>{% trans %}Max images per post{% endtrans %}</td></tr>
 								
 						<tr><td class='s-key'>
-						<select name="max_pages">{% for i in range(1, 25) %}<option value="{{ i }}" {% if config.max_pages == i %}selected{% endif %}>{{ i }}</option>{% endfor %}</select>
+						<select name="max_pages">{% for i in range(1, 50) %}<option value="{{ i }}" {% if config.max_pages == i %}selected{% endif %}>{{ i }}</option>{% endfor %}</select>
 						</td>
 						<td class='s-value'>{% trans %}Page count{% endtrans %}</td></tr>
 				
@@ -343,6 +343,11 @@ function check() {
 
 						<tr><td class='s-key'></td><td style="padding: 16px;"><strong>Moderation</strong></td></tr>
 
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="op_mod" {% if config.opmod.enable %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>Thread moderation<br><span class="unimportant">Allow posters moderate his threads</span></td></tr>
+							
 									
 						<tr><td class='s-key'><label class="checktainer_xs">
 						<input type="checkbox" name="public_bans" {% if board.public_bans %}checked{% endif %}>
