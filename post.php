@@ -1433,7 +1433,8 @@ elseif (isset($_POST['user_edit']))
 			json_response(array('error' => 'Нельзя редактировать ролл'));
 			
 		if ($action == 'get_body') {
-			json_response(array('get_post_success' => true, 'source' => $post['body_nomarkup']));
+			$body_nomarkup = remove_modifiers($post['body_nomarkup']);
+			json_response(array('get_post_success' => true, 'source' => $body_nomarkup));
 		}
 		
 		if ($action == 'set_body') {
@@ -1441,8 +1442,18 @@ elseif (isset($_POST['user_edit']))
 			if (mb_strlen($_POST['text']) > $config['max_body'])
 				error($config['error']['toolong_body']);
 
+			$new_body = remove_modifiers($_POST['text']);
+			$modifiers = extract_modifiers($post['body_nomarkup']);
+
+			foreach ($modifiers as $key => $value) {
+				if($key == 'raw html' && !hasPermission($config['mod']['rawhtml'], $board)) {
+					continue;
+				}
+				$new_body .= "<tinyboard $key>$value</tinyboard>";
+			}
+
 			$query = prepare(sprintf("UPDATE ``posts_%s`` SET `body_nomarkup` = :body_nomarkup, `edited_at` = UNIX_TIMESTAMP(NOW()), `changed_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = :id", $board['uri']));
-			$query->bindValue(':body_nomarkup',  $_POST['text']);
+			$query->bindValue(':body_nomarkup',  $new_body);
 			$query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
 			$query->execute() or error(db_error($query));
 
