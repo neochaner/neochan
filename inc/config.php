@@ -671,9 +671,7 @@ $config['tippy_tooltips'] = true;
 	$config['link_prefix'] = ''; 
 	$config['url_ads'] = &$config['link_prefix'];	 // leave alias
 	
-	// Allow "uploading" images via URL as well. Users can enter the URL of the image and then Tinyboard will
-	// download it. Not usually recommended.
-	$config['allow_upload_by_url'] = false;
+
 	// The timeout for the above, in seconds.
 	$config['upload_by_url_timeout'] = 15;
 
