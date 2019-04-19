@@ -474,7 +474,7 @@ if(isset($_GET['rate']))
 		// Check if thread is locked
 		// but allow mods to post
 		if ($thread['locked'] && !hasPermission($config['mod']['postinlocked'], $board['uri']))
-			error($config['error']['locked']);
+			error('l_error_thread_locked');
 		
 		$numposts = numPosts($post['thread']);
 		

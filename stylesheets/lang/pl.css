@@ -12,7 +12,11 @@
     content:'Błąd podczas przetwarzania pliku.';
 }.l_error_extension_not_supported::before{
     content:'Rozszerzenie nie jest obsługiwane.';
+}.l_error_thread_locked::before{
+    content:'Wątek jest zablokowany. Nie możesz w nim teraz postować.';
 }
+
+ 
 
 .l_disabled_for_darknet{
     content:'Opcja wyłączona dla tor/i2p.';

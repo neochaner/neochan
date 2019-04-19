@@ -1504,7 +1504,6 @@ srand(time());
 	$config['error']['fileext']		= _('Unsupported image format.');
 	$config['error']['noboard']		= _('Invalid board!');
 	$config['error']['nonexistant']		= _('Thread specified does not exist.');
-	$config['error']['locked']		= _('Thread locked. You may not reply at this time.');
 	$config['error']['reply_hard_limit']	= _('Thread has reached its maximum reply limit.');
 	$config['error']['image_hard_limit']	= _('Thread has reached its maximum image limit.');
 	$config['error']['nopost']		= _('You didn\'t make a post.');

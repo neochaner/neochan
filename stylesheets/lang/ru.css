@@ -12,6 +12,8 @@
     content:'Ошибка при обработке файла.';
 }.l_error_extension_not_supported::before{
     content:'Тип файла не поддерживается.';
+}.l_error_thread_locked::before{
+    content:'Тред закрыт, вы не можете написать сюда.';
 }
 
 .l_disabled_for_darknet{

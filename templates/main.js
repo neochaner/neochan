@@ -283,6 +283,10 @@ function alert(a, do_confirm, confirm_ok_action, confirm_cancel_action) {
 		return false;
 	};
 
+	if (a.startsWith('l_')) {
+		a = '<span class='+a+'></span>';
+	}
+
 	handler = $("<div id='alert_handler'></div>").hide().appendTo('body');
 
 	bg = $("<div id='alert_background'></div>").appendTo(handler);

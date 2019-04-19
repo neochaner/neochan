@@ -12,6 +12,8 @@
     content:'Verarbeitungsfehler.';
 }.l_error_extension_not_supported::before{
     content:'Erweiterung wird nicht unterstützt.';
+}.l_error_thread_locked::before{
+    content:'Faden geschloßen. Posten ist zur Zeit nicht möglcih.';
 }
 
 .l_disabled_for_darknet{

@@ -12,6 +12,8 @@
     content:'Error processing file.';
 }.l_error_extension_not_supported::before{
     content:'Extension not supported.';
+}.l_error_thread_locked::before{
+    content:'Thread locked. You may not reply at this time.';
 }
 
 .l_disabled_for_darknet{

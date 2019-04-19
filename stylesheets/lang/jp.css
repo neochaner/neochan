@@ -12,7 +12,12 @@
     content:'ファイル処理エラー';
 }.l_error_extension_not_supported::before{
     content:'拡張子はサポートされていません';
+}.l_error_thread_locked::before{
+    content:'ロックされています。現時点では返信できません。';
 }
+
+
+ 
 
 .l_disabled_for_darknet{
     content:'のオプションが無効です tor/i2p.';

@@ -12,6 +12,8 @@
     content:'파일 처리 오류';
 }.l_error_extension_not_supported::before{
     content:'확장 기능이 지원되지 않습니다';
+}.l_error_thread_locked::before{
+    content:'잠겨있어. 지금은 답장을 보내실 수 없습니다';
 }
 
 .l_disabled_for_darknet{
