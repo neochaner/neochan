@@ -10,7 +10,6 @@ require_once 'instance-functions.php';
 require "secrets.php";
 
 
-
 /*
 *  Instance Configuration
 *  ----------------------
