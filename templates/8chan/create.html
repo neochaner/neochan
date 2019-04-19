@@ -1,13 +1,5 @@
 
-
-
-
-
-
-
-
-
-
+<br><br><br>
 
 <form method="POST">
 <table class="modlog" style="width:auto">
@@ -21,5 +13,13 @@
 <tr><th>{% trans("CAPTCHA") %}</th><td>{% include 'captcha.html' %}</td></tr>
 </tbody>
 </table>
-<ul style="padding:0;text-align:center;list-style:none"><li><input type="submit" value="{% trans("Create board") %}"></li></ul>
+<ul style="padding:0;text-align:center;list-style:none">
+    <li><input type="submit" value="{% trans("Create board") %}"></li>
+</ul>
 </form>
+
+<style>
+td .captcha-box{
+    justify-content:start!important;
+}
+</style>
