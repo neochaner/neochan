@@ -53,7 +53,9 @@
 	{% endif %}
 	<a class="control post-control post-ban-control"><i class="fa fa-gavel"></i></a>
 	<a class="control post-control post-quote-control" onclick="cite(event)"><i class="fa fa-reply"></i></a> 
+	{% if config.neotube.enable %}
 	<a class="control post-control" id="toggle-neotube" title="Neotube" onclick="toggleNeoTube()" style='display: none'><i class="fa fa-film"></i></a>
+	{% endif %}
 </div>
 
 <div class="post-backlinks" {% if index %} style='display: none;'{% endif %}>
