@@ -2012,10 +2012,7 @@ srand(time());
 		'!', // Allow editing ONLY the variables listed (plus that in $config['mod']['config'][JANITOR]).
 		'global_message',
 	);
-
-	// Allow OP to remove arbitrary posts in his thread
-	$config['user_moderation'] = false;
-
+	
 	// File board. Like 4chan /f/
 	$config['file_board'] = false;
 
