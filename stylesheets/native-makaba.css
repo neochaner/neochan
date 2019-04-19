@@ -1797,7 +1797,7 @@ hr{
         display: none;
     }
     .omit{    
-        display: flex !important;
+        display: flex;
         justify-content: space-between;
         width: 100%;
         margin-left:0px;
