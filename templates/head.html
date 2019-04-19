@@ -39,7 +39,7 @@
 		fav_new : "{{ config.favicon.new }}",
 		fav_you : "{{ config.favicon.you }}",
 		neotube : {% if config.neotube.enable %}true{% else %}false{% endif %},
-		watch_deleted : {% if config.allow_watch_deleted %}true{% else %}false{% endif %},
+		opmod:  {% if config.opmod.enable %}true{% else %}false{% endif %},
 		mod : {% if mod %}true{% else %}false{% endif %},
 		mod_root : "{{ config.root }}mod.php?/",
 		test : 0,

@@ -6,15 +6,13 @@ var modAccess;
 
 $(document).ready(function(){
 
-    if($('.thread_index').length != 1)
+    if(!config.opmod || $('.thread_index').length != 1)
         return;
  
     //var enable_control = "<a class='control post-control post-opmod-control' title='"+_T('Модерировать тред')+"' onclick=\"enable_opmod()\"><i class='fa fa-shield'></i></a>";
     var enable_watch_deleted = "<a class='control post-control' id='watch_hell' title='"+_T('Show deleted posts')+"' onclick=\"show_deleted_posts()\"><i class='fa fa-minus-circle'></i></a>";
 
     $('.post_op').find('.post-controls').append(enable_watch_deleted);
-
-
 
     $('.post-opmod-control').click( function(e) {
         
