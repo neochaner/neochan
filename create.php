@@ -1,15 +1,11 @@
 <?php
-
 include "inc/functions.php";
-
-
 
 checkBan('*');
 
 if (!$config['allow_create_userboards']) {
 	error(_('Create user boards temporarily is not allowed. Contact admin(a)lolifox.org for this. '));
 }
-
 
 if (Session::$is_darknet && !$config['allow_create_userboards_from_darknet']) {
 	error(_('Create user boards is not allowed for you.'));
@@ -127,8 +123,8 @@ if (!isset($_POST['uri'], $_POST['title'], $_POST['subtitle'], $_POST['username'
 	}
 
 	if ($config['cache']['enabled']) {
-		cache::delete('all_boards');
-		cache::delete('all_boards_indexed');
+		Cache::delete('all_boards');
+		Cache::delete('all_boards_indexed');
 	}
 
 	// Build the board
