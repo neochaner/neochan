@@ -3858,7 +3858,6 @@ function mod_settings($b) {
 		}
 
 		$config_file = <<<EOT
-<?php
 \$config['country_flags'] = $country_flags;
 \$config['rating']['thread'] = $rating_thread;
 \$config['field_disable_name'] = $field_disable_name;
@@ -3970,11 +3969,10 @@ if(isset($_POST['blotter']) && !empty($_POST['blotter'])){
 		unset($config['wordfilters']);
   
 		$php_code = str_replace('flags.php', "$b/flags.php", $config_file);
-		$eval_code = preg_replace('/^\<\?php$/m', '', $php_code);
 
 
-		file_put_contents($b . '/config.php', $php_code);
-		eval($eval_code);
+		file_put_contents($b . '/config.php', "<?php\n" . $php_code);
+		eval($php_code);
 
 
 
