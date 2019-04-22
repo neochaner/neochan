@@ -1,0 +1,10 @@
+{% if post.mod %}
+
+
+{% elseif config.poster_ids or (mod|hasPermission(config.mod.show_ip_less, board.uri)) %}
+	{% if post.thread %}
+		 <span class="post-hash">{{ poster_id(post.ip, post.thread, board.uri) }}</span>
+	{% else %}
+		 <span class="post-hash">{{ poster_id(post.ip, post.id, board.uri) }}</span>
+	{% endif %}
+{% endif %}

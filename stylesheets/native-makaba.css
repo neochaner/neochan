@@ -1882,7 +1882,7 @@ header code{
 
 
 .thread-toggle{
-    order: 8; 
+    order: 10; 
     cursor: pointer;
     margin-right: 4px;
     background-image: url(img/makaba_hide.png);
@@ -1921,20 +1921,20 @@ header code{
     color:#004A99!important;
 }
 .post-name{
-    order: 1;
+    order: 2;
     cursor: pointer;
 }
 .post-name-default{
-    order: 1;
+    order: 2;
     cursor: pointer;  
 }
 .post-trip {
-    order: 2;
+    order: 4;
     margin-left: 1px;
     margin-right:var(--post-items-margin);
 }
 .post-time{
-    order: 4;
+    order: 6;
     margin-right:var(--post-items-margin);
 }
 .post-rate{
@@ -1953,7 +1953,7 @@ header code{
     margin: 0 4px;
 }
 .post-sage{
-    order: 3;
+    order: 5;
     color: red;
     font-weight: bold;
     margin-right: var(--post-items-margin);
@@ -1963,14 +1963,21 @@ header code{
 }
 .post-no::before{content: '№'}
 .post-no{
-    order: 4;
+    order: 6;
     color: #333;
     text-decoration: none;
     margin-right: 10px
 }
+.post-hash::before{ content: 'ID: '}
+.post-hash{
+    order: 5;
+    margin-right: var(--post-items-margin);
+    font-size: 13px;
+}
+
 
 .post-co{
-    order: 5;
+    order: 7;
     color: #789922;
 }
  

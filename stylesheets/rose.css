@@ -1999,6 +1999,10 @@ header code{
     font-weight:700;
     color:#d60000
 }
+.post-hash{ 
+    margin-right: var(--post-items-margin);
+    font-size: 13px;
+}
 .post-time{
     font-size: 11px;
     cursor:pointer;

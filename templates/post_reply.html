@@ -7,10 +7,11 @@
 		<a class="post-id" href="{{ post.link }}" onclick="post_menu(event)">#{{ post.id }}</a>
 
 		{% include 'post/flag.html' %} 
-		{% include 'post/ip.html' %}
+		{% include 'post/ip.html' %} 
 		{% include 'post/name.html' %}
+		{% include 'post/poster_id.html' %}
 
-		{% if mod %}<div class="view-inline-pc">{% include 'post/post_controls.html' %}</div> {% endif %}	
+		{% if mod %}<div class="view-inline-pc">{% include 'post/post_controls.html' %}</div> {% endif %}
 		<time class="post-time" unixtime={{ post.time }} edit='{% if post.edited_at %}{{ post.edited_at }}{% else %}{{ post.time }}{% endif %}' datetime="{{ post.time|date('%Y-%m-%dT%H:%M:%S') }}{{ timezone() }}" onclick="hideReply({{ post.id }})">{{ post.time|date(config.post_date) }}</time>
 		<a class='post-no' onclick="cite(event)">{{ post.id }}</a>
 		<span class='post-co'></span>

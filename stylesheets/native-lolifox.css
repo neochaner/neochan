@@ -1885,6 +1885,12 @@ header code{
     font-size: 13px;
     font-weight: bold;
 }
+.post-hash::before{ content: 'ID: '}
+.post-hash{
+    order: 6;
+    margin-right: var(--post-items-margin);
+    font-size: 13px;
+}
 .post-co{
     order: 8;
     font-size: 13px;
