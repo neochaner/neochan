@@ -341,9 +341,9 @@ if(isset($_GET['rate']))
 		$post['op'] = true;
 	}
 
-
-
 	Session::load();
+	
+	$post['ip'] =Session::getIdentity();
 
 	if(Session::getAntispamState() == 0){
 		$html = "<p class='l_antispam_1'><a class='l_antispam_2' href='/antispam.php?board={$_POST['board']}'></a></p>";
