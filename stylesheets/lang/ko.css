@@ -180,7 +180,9 @@
 }
 
 
-.l_youarebanned::before{
+.l_public_ban::before{
+    content:'Ban: '
+}.l_youarebanned::before{
     content:'너는 금지되어있어'
 }.l_youarebanned_on::before{
     content:'판: '

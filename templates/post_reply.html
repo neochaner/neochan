@@ -32,10 +32,10 @@
 {% endif %}
 		</div>
 		<div class="post-controls">
-			{% if post.modifiers['ban message'] %}
-				{{ config.mod.ban_message|sprintf(post.modifiers['ban message']) }}
+			{% if config.mod.ban_message and post.modifiers['ban message'] %}
+				<span class='l_public_ban public_ban'>{{ post.modifiers['ban message']|e }}</span>
 			{% else %}
-			{% include 'post/edited_at.html' %}
+				{% include 'post/edited_at.html' %}
 			{% endif %}
 			<a class="control post-quote-control" onclick="cite(event)"><i class="fa fa-reply"></i></a>
 		</div>

@@ -180,7 +180,9 @@
     content:'Ответ'
 }
 
-.l_youarebanned::before{
+.l_public_ban::before{
+    content:'Бан: '
+}.l_youarebanned::before{
     content:'Вы забанены'
 }.l_youarebanned_on::before{
     content:'доска: '

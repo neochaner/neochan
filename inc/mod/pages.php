@@ -3847,7 +3847,7 @@ function mod_settings($b) {
 			$query->bindValue(':subtitle', $subtitle);
 		$query->bindValue(':uri', $b);
 		$query->bindValue(':indexed', !isset($_POST['meta_noindex']), PDO::PARAM_BOOL);
-		$query->bindValue(':public_bans', isset($_POST['public_bans']));
+		$query->bindValue(':public_bans', isset($_POST['public_bans']), PDO::PARAM_BOOL);
 		$query->bindValue(':public_logs', (int)$_POST['public_logs']);
 
 

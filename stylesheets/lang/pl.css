@@ -183,7 +183,9 @@
 }
 
 
-.l_youarebanned::before{
+.l_public_ban::before{
+    content:'Ban: '
+}.l_youarebanned::before{
     content:'Jesteś zbanowany!'
 }.l_youarebanned_on::before{
     content:'board: '

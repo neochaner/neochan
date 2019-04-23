@@ -184,7 +184,9 @@
 }
 
 
-.l_youarebanned::before{
+.l_public_ban::before{
+    content:'Ban: '
+}.l_youarebanned::before{
     content:'あなたは禁止されています'
 }.l_youarebanned_on::before{
     content:'ボード: '

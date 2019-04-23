@@ -44,7 +44,11 @@
 	{% endif %}
 	{% set is_thread = false %}
 <blockquote class="post-message">{{ post.body }}{% include 'post/poll.html' %}</blockquote>
-{% include 'post/edited_at.html' %}
+{% if config.mod.ban_message and post.modifiers['ban message'] %}
+	<span class='l_public_ban public_ban'>{{ post.modifiers['ban message']|e }}</span>
+{% else %}
+	{% include 'post/edited_at.html' %}
+{% endif %}
 </section>
 
 <footer class="post-footer">
