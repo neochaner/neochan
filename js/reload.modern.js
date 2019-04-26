@@ -68,7 +68,6 @@ function autoLoadCycle()
 
 	if(autoLoadSecCurrent-- <= 0)
 	{
-
 		$("#update_text").text(autoLoadSecCurrent);
 		$('#update_text').hide();
 		$('#spinner').show();
@@ -82,7 +81,6 @@ function autoLoadCycle()
 			$('#update_text').show();
 		
 		}, 1000);
-
 	}
 	else
 	{
@@ -99,17 +97,12 @@ function manualLoad(){
 function autoLoad(fullReloadPage=false)
 {
 
-
-
-
 	$.ajax({
 		url: document.location
 	}).done(function(data) {
 
 		mStoreCounter++;
-		
-		//let html = document.createElement('html');
-		//html.innerHTML = data;
+
 		var virtualDocument = document.implementation.createHTMLDocument('vdoc');
 		var html = virtualDocument.createElement('html');
 		html.innerHTML = data;
@@ -128,9 +121,7 @@ function autoLoad(fullReloadPage=false)
 			}
 			
 			let editTime = time[0].getAttribute('edit');
-			
-			
-			
+
 			if(!mStore.hasOwnProperty(postID)){
 				console.log("new post! " + postID);
 				mStore[postID] = [editTime, mStoreCounter];
@@ -163,8 +154,10 @@ function autoLoad(fullReloadPage=false)
 			
 		}	
 		
-		/* detect deleted posts */
+		/* detect deleted posts 
 
+			 DISABLED  IN  MODERN MODE
+		
 		for(var key in mStore){
 			if(mStore[key][1] != mStoreCounter){
 				let dPost = document.getElementById(key);
@@ -175,18 +168,8 @@ function autoLoad(fullReloadPage=false)
 					dPost.parentElement.removeChild(dPost);
 				}
 			}
-		}
-
-
-
-
-
-		/*
-		if(NTUBE_STATE > 0 && typeof result.playlist != 'undefined'){
-			neotubeUpdatePlayList(result.playlist);
 		}*/
-		
-		
+
 	}).fail(function(jqXHR, textStatus, errorStatus) {
 		
 		infoAlert(textStatus + " : " + errorStatus);
