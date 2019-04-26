@@ -22,7 +22,7 @@ function discobot_build($action, $settings, $board)
 	if($settings['report_new_user'] &&  $action == 'post') {
 
 		// check is new user_error
-		$min_time = time() - (60*60*24*3);
+		$min_time = time() - (60*60*24*7);
 		$query = prepare("SELECT * FROM posts_{$board} WHERE `id` != :id AND `time` > :min_time AND `ip`=:ip LIMIT 1");
 		$query->bindParam(':ip', $post['ip'], PDO::PARAM_STR);
 		$query->bindParam(':id', $post['id'], PDO::PARAM_INT);
@@ -38,9 +38,7 @@ function discobot_build($action, $settings, $board)
 		if($res === false) {
 			(new DiscoBot($settings['domain'], $settings['webhook'], $board))->EventNewUser($post);
 		} else {
-			syslog(2, 'discobot_build() user already exists!');
-			syslog(2, json_encode($res));
-			
+
 			return;
 		}
 		
