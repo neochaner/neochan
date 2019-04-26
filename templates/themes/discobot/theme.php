@@ -8,23 +8,22 @@ function discobot_build($action, $settings, $board)
 	
 	global $config;
 
-	if($settings['boards'] != '*' && !in_array($board, explode(' ', $settings['boards']))) {
+	if ($settings['boards'] != '*' && !in_array($board, explode(' ', $settings['boards']))) {
 		return;
 	}
 
 	// excluded boards
-	if(in_array($board, explode(' ', $settings['excluded']))) {
+	if (in_array($board, explode(' ', $settings['excluded']))) {
 		return;
 	}
 	
 	$post = $config['temp']['last-post'];
-	syslog(2, 'discobot_build() lastpost='. json_encode($post));
 
-	if($settings['report_thread'] &&  $action == 'post-thread') {
+	if ($settings['report_thread'] &&  $action == 'post-thread') {
 		(new DiscoBot($settings['domain'], $settings['webhook'], $board))->EventThread($post);
 	}
 	
-	if($settings['report_new_user'] &&  $action == 'post') {
+	if ($settings['report_new_user'] &&  $action == 'post') {
 
 		// check is new user_error
 		$min_time = time() - (60*60*24*7);
@@ -40,11 +39,8 @@ function discobot_build($action, $settings, $board)
 		
 		$res = $query->fetch();
 		
-		if($res === false) {
+		if ($res === false) {
 			(new DiscoBot($settings['domain'], $settings['webhook'], $board))->EventNewUser($post);
-		} else {
-
-			return;
 		}
 		
 	}
@@ -54,19 +50,18 @@ function discobot_build($action, $settings, $board)
 
 class DiscoBot
 {
-	
+
 	private $domain;
 	private $webhook;
 	private $board;
-	
+
 	function __construct($domain, $webhook, $board) 
 	{
 		$this->domain = $domain . '/';
 		$this->webhook = $webhook;
 		$this->board = $board;
 	}
-	
-	
+
 	public function EventThread($post)
 	{
 		$this->Send("Thread  **/".$this->board."**\n", $post);
@@ -79,19 +74,16 @@ class DiscoBot
 	
 	private function Send($title, $post)
 	{
-			
 		$text = remove_modifiers($post['body_nomarkup']);
 
 		if(!isset($post['thread'])) {
 			$text = $post['subject'] . ' '. remove_modifiers($post['body_nomarkup']);
 		}
 
-
 		$embeds = array();
 		if ($post['files']) {
 			foreach ($post['files'] as $file) {
-				if($file['is_an_image']){
-					$thumb = $this->domain . $file['thumb_path'];
+				if ($file['is_an_image']){
 					$image = $this->domain . $file['file_path'];
 					$embeds[] = [ 'type'=>'rich', 'thumbnail' => [ 'url'=> $image ] ];
 				}
@@ -100,16 +92,12 @@ class DiscoBot
 
 		$content =  "$title\n```$text```";
 
-		// footer
-		$thread_id = isset($post['thread']) ? $post['thread'] : $post['id'];
+		$thread_id 		= isset($post['thread']) ? $post['thread'] : $post['id'];
 		$url_board 		=  $this->domain . 'mod.php?/' . $this->board .'/res/'. $thread_id  . '.html#'. $post['id'];
-		$url_ban 		=  $this->domain . 'mod.php?/' . $this->board  .'/ban/'. $post['id'];
 		$url_bandelete 	=  $this->domain . 'mod.php?/' . $this->board  .'/ban&delete/'. $post['id'];
-
 
 		$embeds[] = ['type'=>'rich', 'description' => "[Open]($url_board)  |  [Ban&Delete]($url_bandelete)"];
 		
-
 		$message = array(
 			'content' => $content, 
 			'tts' => false,
@@ -120,11 +108,8 @@ class DiscoBot
 
 	}
 	
-	
-	
 	private function SendData($json)
 	{
-
 		$make_json = json_encode($json );
 		$ch = curl_init( $this->webhook );
 		curl_setopt( $ch, CURLOPT_POST, 1);
@@ -133,9 +118,6 @@ class DiscoBot
 		curl_setopt( $ch, CURLOPT_HEADER, 0);
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $ch );
-		
-		syslog(2, "response:\n" .  json_encode($response));
-		
 	}
 	
 }
