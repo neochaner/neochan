@@ -63,20 +63,26 @@ class DiscoBot
 		$this->board = $board;
 	}
 	
+	
 	public function EventThread($post)
 	{
-		$this->Send("THREAD\n" .  $post['subject'], $post);
+		$this->Send("Thread  **/".$this->board."**\n", $post);
 	}
 	
 	public function EventNewUser($post)
 	{
-		$this->Send("POST\n", $post);
+		$this->Send("Post  **/".$this->board."**\n", $post);
 	}
 	
 	private function Send($title, $post)
 	{
 			
 		$text = remove_modifiers($post['body_nomarkup']);
+
+		if(!isset($post['thread'])) {
+			$text = $post['subject'] . ' '. remove_modifiers($post['body_nomarkup']);
+		}
+
 
 		$embeds = array();
 		if ($post['files']) {
@@ -89,8 +95,8 @@ class DiscoBot
 			}
 		}
 
-		$content =  "$title\n$text";
-		
+		$content =  "$title\n```$text```";
+
 		// footer
 		$thread_id = isset($post['thread']) ? $post['thread'] : $post['id'];
 		$url_board 		=  $this->domain . 'mod.php?/' . $this->board .'/res/'. $thread_id  . '.html#'. $post['id'];
@@ -110,6 +116,7 @@ class DiscoBot
 		$this->SendData($message);
 
 	}
+	
 	
 	
 	private function SendData($json)
