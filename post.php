@@ -1247,6 +1247,7 @@ if(isset($_GET['rate']))
 
 	buildIndex();
 
+	$config['temp']['last-post'] = $post;
 	if ($post['op']) {
 		rebuildThemes('post-thread', $board['uri']);
 	}

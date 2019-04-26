@@ -2451,7 +2451,7 @@ function mod_new_pm($username) {
 			$check->bindValue(':to', $mod['id']);
 			$check->execute() or error(db_error($check));
 			if (!$check->rowCount()) {
-				error(_('You may not PM a member of global staff who did not PM you within the last month. Try posting on /operate/ or emailing us instead: admin@8chan.co'));
+				error(_('You may not PM a member of global staff who did not PM you within the last month.'));
 			}
 		}
 	}

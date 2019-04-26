@@ -28,7 +28,7 @@
 			</td>
 		</tr>
 		<tr>
-			<th>{% trans 'Email' %}<br/> <small style="font-weight:normal">({% trans 'if you forget your board password<br/>email admin@8chan.co from this<br/>address to request a reset; optional' %})</small></th>
+			<th>Email<br/> <small style="font-weight:normal">( optional )</small></th>
 			<td>
 				{% if new or (mod|hasPermission(config.mod.editusers) or (mod|hasPermission(config.mod.edit_profile) and user.id == mod.id)) %}
 					<input size="20" maxlength="1024" type="text" name="email" value="{{ user.email|e }}" autocomplete="off">
