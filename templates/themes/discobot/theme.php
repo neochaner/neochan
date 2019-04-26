@@ -11,6 +11,11 @@ function discobot_build($action, $settings, $board)
 	if($settings['boards'] != '*' && !in_array($board, explode(' ', $settings['boards']))) {
 		return;
 	}
+
+	// excluded boards
+	if(in_array($board, explode(' ', $settings['excluded']))) {
+		return;
+	}
 	
 	$post = $config['temp']['last-post'];
 	syslog(2, 'discobot_build() lastpost='. json_encode($post));

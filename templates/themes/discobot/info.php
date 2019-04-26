@@ -28,6 +28,13 @@ $theme['config'][] = array(
 	'comment' => '(space seperated)'
 );
 
+$theme['config'][] = array(
+	'title' => ' Excluded boards',
+	'name' => 'excluded',
+	'type' => 'text',
+	'comment' => '(space seperated)'
+);
+
 
 $theme['config'][] = array(
 	'title' => 'Report new thread',
