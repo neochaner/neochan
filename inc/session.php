@@ -59,7 +59,7 @@ class Session {
 
 		if (self::$is_darknet) {
 			self::$country_code = 'T1';
-			self::$country_name = 'Tor';
+			self::$country_name = 'Tor Network';
 		} elseif (isset($config['geoip_cloudflare_enable'], $_SERVER['HTTP_CF_IPCOUNTRY']) && $config['geoip_cloudflare_enable']){
 			
 			self::$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
@@ -207,7 +207,7 @@ class Session {
 		global $config;
 
 		if (self::$is_darknet) {
-			return self::$cookie_key;
+			return '!' . self::$cookie_key;
 		}
 
 		switch ($config['security_mode']) {
