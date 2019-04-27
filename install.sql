@@ -17,14 +17,13 @@ SET time_zone = "+00:00";
 
 
 
-CREATE TABLE IF NOT EXISTS cookie (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `key` varchar(128) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cookie` (
+  `key` varchar(32) NOT NULL,
   `created` DATETIME NOT NULL,
   `last`  DATETIME NOT NULL,
   `data` blob,
-  PRIMARY KEY (`id`)
- ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`key`)
+ ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE IF NOT EXISTS `playlist` (

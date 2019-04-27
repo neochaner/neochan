@@ -9,7 +9,6 @@ class Session {
 		'spam'=> array(),
 	];
 
-	public static $cookie_id = 0;
 	public static $cookie_key = null; 
 	public static $cache_time = 60*5;
 	public static $ip; 
@@ -24,7 +23,6 @@ class Session {
 	public static $country_name = '';
 
 
-
 	public static function init() 
 	{
 		global $config;
@@ -36,8 +34,8 @@ class Session {
 		self::$initialized = true;
 
 		self::$data['capchas_left'] = 0;
-		self::$data['posts_left'] = $config['tor']['max_posts'];
-		self::$data['posts_max'] = $config['tor']['max_posts'];
+		self::$data['posts_left'] = 0;
+		self::$data['posts_max'] =2;//$config['tor']['max_posts'];
 		
 		self::$data['create'] = time();
 
@@ -48,14 +46,8 @@ class Session {
 		self::$is_darknet = (self::$is_onion || self::$is_i2p); 
 
 		if (isset($_COOKIE[$config['cookies']['general']])) {
-			$arr = explode('_', $_COOKIE[$config['cookies']['general']]);
- 
-			if (count($arr) == 3 && $arr[0] == 'c') { 
-				self::$cookie_id =$arr[1];
-				self::$cookie_key = $arr[2];
-			}
+			self::$cookie_key = $_COOKIE[$config['cookies']['general']];
 		}
-
 
 		if (self::$is_darknet) {
 			self::$country_code = 'T1';
@@ -107,30 +99,47 @@ class Session {
 	public static function load()
 	{
 
-		if (self::$cookie_id == 0) {
+		if (self::$cookie_key == null) {
 			return;
 		}
 		
 		// load from cache
-		$data = cache::get('cookie_' . self::$cookie_id);
+		$data = Cache::get(self::$cookie_key);
 
-		if(is_array($data)){
-			self::$data = $data;
+		// load from base
+		if(!is_array($data)){
+ 
+			$query = prepare("SELECT `data` FROM `cookie` WHERE `key` = :cookie");
+			$query->bindValue(':cookie', self::$cookie_key, PDO::PARAM_STR);
+			$query->execute() or error(db_error($query));
+			$db_data = $query->fetch(PDO::FETCH_ASSOC);
+
+			if ($db_data) { 
+				$data = json_decode($db_data['data'], TRUE);
+				Cache::set(self::$cookie_key, self::$data, self::$cache_time);
+			}
+		}
+
+		// data not found
+		if(!is_array($data)){
 			return;
 		}
 
-		// load from base
-		$query = prepare("SELECT `data` FROM `cookie` WHERE `id` = :id");
-		$query->bindValue(':id', self::$cookie_id, PDO::PARAM_INT);
-		$query->execute() or error(db_error($query));
-		$db_data = $query->fetch(PDO::FETCH_ASSOC);
 
-		if ($db_data) {  
-			self::$data = json_decode($db_data['data'], TRUE);
-			cache::set('cookie_' . self::$cookie_id, self::$data, self::$cache_time);
-		} else {				
-			self::$cookie_id = 0;
+		// check post limit
+		if($data['posts_left'] >= $data['posts_max']){
+
+			$data = Cache::delete(self::$cookie_key);
+			
+			$query = prepare("DELETE FROM `cookie` WHERE `key` = :cookie");
+			$query->bindValue(':cookie', self::$cookie_key, PDO::PARAM_STR);
+			$query->execute() or error(db_error($query));
+
+		} else {
+			self::$data = $data;
 		}
+
+
 
 	}
 
@@ -138,33 +147,33 @@ class Session {
 	{
 		global $config, $pdo;
 
-		if (self::$cookie_id == 0) {
-			self::$cookie_key = 'cookie' . bin2hex(random_bytes(8));
+		if (self::$cookie_key == NULL) {
+			self::$cookie_key = '!c' . bin2hex(random_bytes(8));
 			self::$data['create'] = time(); 
+			setcookie($config['cookies']['general'], self::$cookie_key, time()+60*60*24*30);
 		}
 
-		$query = prepare("INSERT INTO `cookie` (`key`,`created`,`data`, `last`) VALUES (:key, NOW(), :data, NOW())" . 
+		cache::set(self::$cookie_key, self::$data, self::$cache_time);
+
+		$query = prepare("INSERT INTO `cookie` (`key`, `created`, `data`, `last`) VALUES (:key, NOW(), :data, NOW())" . 
 			" ON DUPLICATE KEY UPDATE `data`=:data, `last`=NOW()");
 		$query->bindValue(':key', self::$cookie_key, PDO::PARAM_STR);
 		$query->bindValue(':data', json_encode(self::$data));
 		$query->execute() or error(db_error($query));
-
-		if (self::$cookie_id == 0) {
-			self::$cookie_id = $pdo->lastInsertId();
-			setcookie($config['cookies']['general'], 'c_' . self::$cookie_id . '_' . self::$cookie_key, time()+60*60*24*30);
-		} 
-		
-		if (self::$cookie_id == 0) {
-			syslog(LOG_ERR, '[neochan] [error] Session:save, cookie_id == 0!');
-		}
-
-		cache::set('cookie_' . self::$cookie_id, self::$data, self::$cache_time);
 	}
 
 	public static function captchaSolved()
 	{
 		self::$data['capchas_left']++;
 		self::save();
+	}
+
+	public static function IncreasePost()
+	{
+		if (self::$is_darknet && self::$cookie_key != NULL) {
+			self::$data['posts_left']++;
+			self::save();
+		}
 	}
 
 	public static function isAllowPost()
@@ -207,7 +216,7 @@ class Session {
 		global $config;
 
 		if (self::$is_darknet) {
-			return '!' . self::$cookie_key;
+			return self::$cookie_key;
 		}
 
 		switch ($config['security_mode']) {

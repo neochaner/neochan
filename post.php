@@ -1255,6 +1255,8 @@ if(isset($_GET['rate']))
 		rebuildThemes('post', $board['uri']);
 	}
 
+	Session::IncreasePost();
+
 	syslog(1, 'post score =' . (microtime(true) - $init_time));
 
 
