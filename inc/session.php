@@ -35,7 +35,7 @@ class Session {
 
 		self::$data['capchas_left'] = 0;
 		self::$data['posts_left'] = 0;
-		self::$data['posts_max'] =2;//$config['tor']['max_posts'];
+		self::$data['posts_max'] =$config['tor']['max_posts'];
 		
 		self::$data['create'] = time();
 
