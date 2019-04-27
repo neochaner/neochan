@@ -922,13 +922,9 @@ srand(time());
  
 
 	$config['markup'][] = array('/[\x{200B}-\x{200D}\x{FEFF}]/u', '');
-	$config['markup'][] = array('/[\x{0E00}-\x{0EFF}]/u','');
-
 
 
 	// "Wiki" markup syntax ($config['wiki_markup'] in pervious versions):
-	//$config['markup'][] = array("/\[spoiler\](&gt;(?!&gt;)[^\n]+)([^\[]*)\[\/spoiler\]/", "<del><span class='quote'>\$1</span>\$2</del>");
-	
 	$config['markup'][] = array("/(^|\n){1}(&gt;(?!&gt;)[^\n]*)/", "$1<blockquote>\$2</blockquote>");
 	$config['markup'][] = array("/%%(.*?)%%/", "<del>\$1</del>");
 
@@ -938,8 +934,6 @@ srand(time());
 	$config['markup'][] = array("/\(\(\((.+?)\)\)\)/", "<span class=\"detected\">(((\$1)))</span>");
 	$config['markup'][] = array("/^[ |\t]*==(.+?)==[ |\t]*$/m", "<span class=\"heading\">\$1</span>");
 	$config['markup'][] = array("/:+([a-zA-Z0-9_\.-]+):+/", "<i class='s42 s42-\$1' title=':\$1:'></i>"); 
-	//$config['markup'][] = array("/:([a-z0-9_\.-]+):/", "<i class='smile smile-\$1 smiles-icon' title=':\$1:'></i>"); 
-
 
 
 	$config['markup'][] = array("/\[b\]([^\[]*)\[\/b\]/", "<strong>\$1</strong>");
