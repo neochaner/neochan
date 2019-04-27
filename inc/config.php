@@ -183,15 +183,11 @@ $config['captcha']['antispam']['cookie_time'] = 60 * 60 * 24 * 7;
 
 
 $config['tor_posting'] = true;	// разрешить постинг из даркнета
-$config['tor_posting_on_web'] = true;
 $config['tor_image_posting'] = false;
 $config['tor_service_ips'] = ['127.0.0.2', '127.0.0.1'];
 $config['tor_allow_reports'] = true;
 
 $config['tor'] = [];
-$config['tor']['force_disable'] = false; // Принудительно запретить постинг
-$config['tor']['allow_posting'] = false;
-$config['tor']['allow_image_posting'] = false;
 $config['tor']['cookie_time'] = 60 * 60 * 24 * 7;
 $config['tor']['max_posts'] = 30;
 $config['tor']['max_fails'] = 3;
@@ -926,6 +922,8 @@ srand(time());
  
 
 	$config['markup'][] = array('/[\x{200B}-\x{200D}\x{FEFF}]/u', '');
+	$config['markup'][] = array('/[\x{0E00}-\x{0EFF}]/u','');
+
 
 
 	// "Wiki" markup syntax ($config['wiki_markup'] in pervious versions):

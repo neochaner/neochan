@@ -287,14 +287,17 @@ function check() {
 						<tr><td class='s-key'><label class="checktainer_xs">
 						<input type="checkbox" name="tor_posting" {% if config.tor_posting %}checked{% endif %}>
 						<span class="checkmark_xs"></span></label></td>
-						<td class='s-value'>{% trans %}Allow posters to post via the Tor onion router{% endtrans %}</td></tr>
+						<td class='s-value'>Allow posters to post via the Tor onion router</td></tr>
 			
-
+						<tr><td class='s-key'><label class="checktainer_xs">
+						<input type="checkbox" name="tor_image_posting" {% if config.tor_image_posting %}checked{% endif %}>
+						<span class="checkmark_xs"></span></label></td>
+						<td class='s-value'>Allow posters to post upload files via Tor</td></tr>
 
 						<tr><td class='s-key'><label class="checktainer_xs">
 						<input type="checkbox" name="early_404" {% if config.early_404 %}checked{% endif %}>
 						<span class="checkmark_xs"></span></label></td>
-						<td class='s-value'>{% trans %}Early 404{% endtrans %}<br><span class="unimportant">With this enabled, threads with less than 10 replies will 404 at page 5 instead of at page 15.<br>In effect, this makes it so that raiders have to put 10 replies in all their threads to slide an entire board.</span></td></tr>
+						<td class='s-value'>Early 404<br><span class="unimportant">With this enabled, threads with less than 10 replies will 404 at page 5 instead of at page 15.<br>In effect, this makes it so that raiders have to put 10 replies in all their threads to slide an entire board.</span></td></tr>
 				
 					
 						<tr><td class='s-key'>
