@@ -189,7 +189,7 @@ $config['tor_allow_reports'] = true;
 
 $config['tor'] = [];
 $config['tor']['cookie_time'] = 60 * 60 * 24 * 7;
-$config['tor']['max_posts'] = 30;
+$config['tor']['max_posts'] = 100;
 $config['tor']['max_fails'] = 3;
 $config['tor']['need_capchas'] = 5;
 
