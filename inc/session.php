@@ -139,7 +139,7 @@ class Session {
 		global $config, $pdo;
 
 		if (self::$cookie_id == 0) {
-			self::$cookie_key = 'cookie' . bin2hex(random_bytes(18));
+			self::$cookie_key = 'cookie' . bin2hex(random_bytes(8));
 			self::$data['create'] = time(); 
 		}
 
