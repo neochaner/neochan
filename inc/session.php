@@ -56,7 +56,11 @@ class Session {
 			}
 		}
 
-		if (isset($config['geoip_cloudflare_enable'], $_SERVER['HTTP_CF_IPCOUNTRY']) && $config['geoip_cloudflare_enable']){
+
+		if (self::$is_darknet) {
+			self::$country_code = 'T1';
+			self::$country_name = 'Tor';
+		} elseif (isset($config['geoip_cloudflare_enable'], $_SERVER['HTTP_CF_IPCOUNTRY']) && $config['geoip_cloudflare_enable']){
 			
 			self::$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
 			self::$country_name = isset(self::$country_data[$country_code]) ? self::$country_data[$country_code] : 'Unkhown';
