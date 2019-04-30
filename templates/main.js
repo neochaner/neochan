@@ -506,6 +506,9 @@ function cite(event)
 	{ 
 		$("#replybox").fadeIn(200);
 	}
+	
+	$(".captcha-box").css('width', $(".reply").css('width'));
+
 
 	// эту анимацию наверно нужно отключить в мобильной версии
 	$('html').animate({ scrollTop: $("#replybox").offset().top - ((window.innerHeight/2)-120)}, 200);
