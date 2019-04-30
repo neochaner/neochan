@@ -500,14 +500,14 @@ function cite(event)
 	if(is_mobile)
 	{
 		$("#replybox").show();  
-
+		$(".captcha-box").css('width', $(".reply").css('width'));
 	}
 	else
 	{ 
 		$("#replybox").fadeIn(200);
+		setTimeout(function(){ $(".captcha-box").css('width', $(".reply").css('width'));}, 500);
 	}
-	
-	$(".captcha-box").css('width', $(".reply").css('width'));
+	 
 
 
 	// эту анимацию наверно нужно отключить в мобильной версии
