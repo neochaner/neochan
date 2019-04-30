@@ -153,7 +153,7 @@ class Session {
 			setcookie($config['cookies']['general'], self::$cookie_key, time()+60*60*24*30);
 		}
 
-		cache::set(self::$cookie_key, self::$data, self::$cache_time);
+		Cache::set(self::$cookie_key, self::$data, self::$cache_time);
 
 		$query = prepare("INSERT INTO `cookie` (`key`, `created`, `data`, `last`) VALUES (:key, NOW(), :data, NOW())" . 
 			" ON DUPLICATE KEY UPDATE `data`=:data, `last`=NOW()");

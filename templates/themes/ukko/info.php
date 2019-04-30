@@ -9,20 +9,22 @@
 	
 	// Theme configuration	
 	$theme['config'] = array();
-	
-	$theme['config'][] = array(
-		'title' => 'Board name',
-		'name' => 'title',
-		'type' => 'text',
-		'default' => 'Ukko'
-	);
+
 	$theme['config'][] = array(
 		'title' => 'Board URI',
 		'name' => 'uri',
 		'type' => 'text',
 		'default' => '*',
 		'comment' => '(ukko for example)'
-	);	
+	);
+	
+	$theme['config'][] = array(
+		'title' => 'Board name',
+		'name' => 'title',
+		'type' => 'text',
+		'default' => 'all'
+	);
+
 	$theme['config'][] = array(
 		'title' => 'Subtitle',
 		'name' => 'subtitle',

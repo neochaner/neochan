@@ -27,11 +27,6 @@ class ukko
 
 		$body = '';
 		$overflow = array();
-		$board = array(
-			'url' => '/' . $this->settings['uri'],
-			'name' => $this->settings['title'],
-			'title' => sprintf($this->settings['subtitle'], $this->settings['thread_limit'])
-		);
 
 		$query = '';	
 		foreach ($boards as &$_board) {
@@ -75,9 +70,8 @@ class ukko
 					if ($po['files']) {
 							$num_images++;
 					}
-						
+
 					$thread->add(new Post($po, $mod ? '?/' : $config['root'], $mod));
-					
 				}
 				
 				if ($posts->rowCount() == ($post['sticky'] ? $config['threads_preview_sticky'] : $config['threads_preview'])) {
@@ -107,6 +101,16 @@ class ukko
 		}
 
 		$config['default_stylesheet'] = array('Yotsuba B', $config['stylesheets']['Yotsuba B']);
+ 
+
+		$board = array(
+			'uri' => 'all', 
+			'url' => '/' . $this->settings['uri'], 
+			'title' =>  $this->settings['title'], 
+			'subtitle' =>  $this->settings['subtitle'], 
+			'name' => $this->settings['title'],
+		);
+
  
 		return Element('index.html', array(
 			'config' => $config,
