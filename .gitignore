@@ -9,6 +9,7 @@
 /*.html
 /*/config.php
 !/inc/config.php
+!/404.html
 
 /statistics.php
 
