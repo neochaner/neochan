@@ -54,6 +54,7 @@ var csmiles = {
 		'hyejeong_amazed','hyejeong_cream','somi_angry2','hyejeong_wink','gun','hyejeong_feed','eunji_hi','seulgi_hubris','nana_smile',
 		'nana_wow','mina_boring','rose_heart','yuji_sunshine','hyejeong_funny','sana_sorry','joy_side','hyejeong_rejection','sally_wow'
  
+
 	], 'other' : [
 		 
 		'chae_eat','chae_bombom','hyejeong_heart','unn_notbad','chae_notbad','irene_see','somi_flashback',
@@ -66,7 +67,9 @@ var csmiles = {
 		'nayeon_disgust','joy_say','joy_contempt','jim_wut','jim_smile2','jim_smile3','bomi_hey','sana_cheese','sana_wow','jooe_herpderp',
 		'yves_aim','jennie_vaseline','momo_song','seol_coffee','yuna_listen','luda_sexy','naeun_tease','naeun_wrinkle','eunji_smile',
 		'eunji_secret','im_crazy','sexy_dance','salt','cheeck','nayoung_smile','rose_chee','rose_chuu','wink1','vulgar_wink',
-		'soyeon_lol','cb_yuju_susp', 'shy2', 'cb_yuju_hide', 'sejeong_ew', 'mimi_smile', 'sumin_cute', 'sumin_finger'
+		'soyeon_lol','cb_yuju_susp', 'shy2', 'cb_yuju_hide', 'sejeong_ew', 'mimi_smile', 'sumin_cute', 'sumin_finger',
+		'jeong_funny', 'jeong_lol', 'jeong_peek', 'jeong_smile', 'jeong_teased', 'jeong_wink'
+
 		
 	]},
 
