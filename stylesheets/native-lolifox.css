@@ -1080,7 +1080,7 @@ hr{
     color: var(--body2-color);
     border-radius:3px;
     border: 1px solid var(--body2-color);
-    padding:5px 10px;
+    padding:4px 10px;
     text-align:center;
     cursor:pointer;
     outline:none;
