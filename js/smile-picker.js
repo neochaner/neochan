@@ -68,7 +68,7 @@ var csmiles = {
 		'yves_aim','jennie_vaseline','momo_song','seol_coffee','yuna_listen','luda_sexy','naeun_tease','naeun_wrinkle','eunji_smile',
 		'eunji_secret','im_crazy','sexy_dance','salt','cheeck','nayoung_smile','rose_chee','rose_chuu','wink1','vulgar_wink',
 		'soyeon_lol','cb_yuju_susp', 'shy2', 'cb_yuju_hide', 'sejeong_ew', 'mimi_smile', 'sumin_cute', 'sumin_finger',
-		'jeong_funny', 'jeong_lol', 'jeong_peek', 'jeong_smile', 'jeong_teased', 'jeong_wink'
+		'jeong_funny', 'jeong_lol', 'jeong_peek', 'jeong_smile', 'jeong_teased', 'jeong_wink','jeong_wut','mina_shrug','dahyun_lol'
 
 		
 	]},
