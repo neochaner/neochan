@@ -183,7 +183,7 @@ $config['captcha']['antispam']['cookie_time'] = 60 * 60 * 24 * 7;
 
 
 $config['tor_posting'] = true;	// разрешить постинг из даркнета
-$config['tor_image_posting'] = false;
+$config['tor_image_posting'] = true;
 $config['tor_service_ips'] = ['127.0.0.2', '127.0.0.1'];
 $config['tor_allow_reports'] = true;
 
