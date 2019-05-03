@@ -32,6 +32,8 @@
     content:'Wróć';
 }.l_search::before{
     content:'Szukaj';
+}.l_search_noresults::before{
+    content:'Brak wyników...';
 }
 
 .l_custom_js::before{

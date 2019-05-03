@@ -33,6 +33,8 @@
     content:'戻る';
 }.l_search::before{
     content:'サーチ';
+}.l_search_noresults::before{
+    content:'結果がありません...';
 }
 
 .l_custom_js::before{

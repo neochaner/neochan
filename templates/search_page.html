@@ -16,14 +16,13 @@
 </head>
 <body>
 {% include 'header.html' %}
- 
- 
+
   
  
 <main class="main">
 
 <section class="board" id="threads">
-<h1 class="page-title l_search"><a href="/search.php" style="text-decoration: none;"></a></h1>
+<h1 class="page-title"><a href="/search.php" class='l_search' style="text-decoration: none;"></a></h1>
 
 
 <div class="ban">
@@ -31,7 +30,7 @@
 		<p>
 		<label style="display:inline" class="l_phase" for="search"></label> 
 		<input id="search" class="theme-textbox" name="search" type="text" size="40" value="{{ search }}">
-		<select name="board" style="margin-left: 12px">
+		<select name="board" class="theme-textbox"  style="margin-left: 12px">
 			<option value="none">{% trans %}Select board{% endtrans %}&hellip;</option>
 			{% for b1 in boards %}
 			<option value="{{ b1 }}"{% if b == b1 %} selected{% endif %}>/{{ b1 }}/</option>
@@ -40,9 +39,11 @@
 		<input type="submit" class="button" value="{% trans %}Search{% endtrans %}" style="margin-left: 12px"/>
 		</p>
 	</form>
-	<p style="font-size:8pt;margin:5px">
-			{% trans %}Search is case-insensitive and based on keywords. To match exact phrases, use "quotes". Use an asterisk (*) for wildcard.</p><p style="font-size:8pt;margin:5px">You may apply the following filters to your searches: <strong>id</strong>, <strong>thread</strong>, <strong>subject</strong>, and <strong>name</strong>. To apply a filter, simply add to your query, for example, <em>name:Anonymous</em> or <em>subject:"Some Thread"</em>. Wildcards cannot be used in filters.{% endtrans %}
+	<div style='display: none'>
+	<p class='l_search_help' style="font-size:8pt;margin:5px;">
+	{% trans %}Search is case-insensitive and based on keywords. To match exact phrases, use "quotes". Use an asterisk (*) for wildcard.</p><p style="font-size:8pt;margin:5px">You may apply the following filters to your searches: <strong>id</strong>, <strong>thread</strong>, <strong>subject</strong>, and <strong>name</strong>. To apply a filter, simply add to your query, for example, <em>name:Anonymous</em> or <em>subject:"Some Thread"</em>. Wildcards cannot be used in filters.{% endtrans %}
 	</p>
+</div>
 </div>
 	
 

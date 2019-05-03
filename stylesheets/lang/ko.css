@@ -30,6 +30,8 @@
     content:'뒤로';
 }.l_search::before{
     content:'수색';
+}.l_search_noresults::before{
+    content:'결과 없음...';
 }
 
 .l_custom_js::before{

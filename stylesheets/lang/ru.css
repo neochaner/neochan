@@ -28,6 +28,8 @@
     content:'Назад';
 }.l_search::before{
     content:'Поиск';
+}.l_search_noresults::before{
+    content:'Ничего не найдено...';
 }
 
  

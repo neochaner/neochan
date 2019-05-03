@@ -30,6 +30,8 @@
     content:'Zurück';
 }.l_search::before{
     content:'Search';
+}.l_search_noresults::before{
+    content:'Keine Ergebnisse...';
 }
 
 .l_custom_js::before{

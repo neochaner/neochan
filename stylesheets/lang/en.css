@@ -30,6 +30,8 @@
     content:'Back'
 }.l_search::before{
     content:'Search';
+}.l_search_noresults::before{
+    content:'No results...';
 }
 
 .l_custom_js::before{
