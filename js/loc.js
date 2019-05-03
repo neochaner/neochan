@@ -55,6 +55,7 @@ var langData = [
 	['BUMPLIMIT'		, 'БАМПЛИМИТ'		, 'LIMIT'			, 'LIMIT'		, '限定'	, '한도'],
 	['update'			, 'обновить'		, 'aktualisieren'	, 'aktualizacja', '更新'	, '최신 정보'],
 	['post count'		, 'количество постов', 'beitragszähler' , 'ilość postów', '投稿数'	, '게시물 수'],
+	['Search'			, 'Поиск'			, 'Search'			, 'Szukaj'		, 'サーチ'	, '수색'],
 	['Settings'			, 'Настройки'		, 'de', 'pl', 'jp', 'ko'],
 	['Settings'			, 'Настройки'		, 'de', 'pl', 'jp', 'ko'],
 

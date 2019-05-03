@@ -132,6 +132,8 @@
 		$query->execute() or error(db_error($query));
 		
 		$temp = '';
+		$results_count = 0;
+
 		while($post = $query->fetch()) {
 			if(!$post['thread']) {
 				$po = new Thread($post);
@@ -146,14 +148,14 @@
 			$results_count = $query->rowCount();
 		}
 		else
-			$body .= '<p style="text-align:center" class="unimportant">('._('No results.').')</p>';
+			$body .= '<p style="text-align:center" class="l_search_noresults"></p>';
 
 		
 	}
 		
 	echo Element('search_page.html', Array(
 		'config'=>$config,
-		'boards' => $boards, 
+		'boards' => $boards,
 		'b' => isset($_GET['board']) ? $_GET['board'] : false, 
 		'search' => isset($_GET['search']) ? str_replace('"', '&quot;', utf8tohtml($_GET['search'])) : false,
 		'body'=> $body,

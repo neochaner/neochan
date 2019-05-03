@@ -36,7 +36,8 @@
 			<option value="{{ b1 }}"{% if b == b1 %} selected{% endif %}>/{{ b1 }}/</option>
 			{% endfor %}
 		</select>
-		<input type="submit" class="button" value="{% trans %}Search{% endtrans %}" style="margin-left: 12px"/>
+
+		<input id='searchBtn' type="submit" class="button" value="{% trans %}Search{% endtrans %}" style="margin-left: 12px"/>
 		</p>
 	</form>
 	<div style='display: none'>
@@ -47,16 +48,18 @@
 </div>
 	
 
+
 <section class="threads-container" id="thread-container">
 <article class="thread_single" id="thread_id" data-id="{{ thread.id }}">
+{% if results_count == 0 %}
+	{{ body }}
+{% else %}
 <article class="thread thread_index">
-
-{{ body }}
-
+	{{ body }}
 </article>
+{% endif %}
 </article>
-</section>
-
+</section> 
 
 
  
@@ -67,4 +70,7 @@
 <aside class="hover-container hover-container_thread"></aside>
 {% include 'body_footer.html' %}
 </body>
+<script>
+document.getElementById('searchBtn').value= _T('Search');
+</script>
 </html>
