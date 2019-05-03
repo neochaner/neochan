@@ -1168,28 +1168,20 @@ hr{
     -ms-user-select:none;
     user-select:none; 
 }
-.control-image{
-    z-index: 2;
+
+.control-image{ 
     position: absolute;
-    font-size:17px;
-    padding:0;
-    text-align:center;
-    background:none;
-    border:none;
+    font-size: 16px;
+    top: 0;
+    left: 0; 
     color: #52709e;
     cursor:pointer;
-    outline:none;
-    -webkit-user-select:none;
-    -moz-user-select:none;
-    -ms-user-select:none;
-    user-select:none;
     padding: 0px 3px;
     background: #fdfdfd;
     margin: 5px 5px;
     border-radius: 5px;
+    z-index: 2;
 }
-
-
 .control:not(:disabled):hover{
     color:#829cc3
 }

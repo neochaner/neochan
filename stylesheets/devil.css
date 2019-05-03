@@ -1007,6 +1007,28 @@ hr{
 .control:focus{
     outline:none
 }
+.control-image{ 
+    position: absolute;
+    font-size: 16px;
+    top: 0;
+    left: 0; 
+    color: var(--control-color);
+    cursor:pointer;
+    padding: 0px 3px;
+    background: #c70000;
+    margin: 5px 5px;
+    border-radius: 5px;
+    z-index: 2;
+}
+.control-image:not(:disabled):hover{
+    color:#b6a3c1;
+}
+.control-image:disabled{
+    cursor:default
+}
+.control-image:focus{
+    outline:none
+}
 .control_active,.control_active:not(:disabled):hover{
     color:red
 }

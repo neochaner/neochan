@@ -1039,25 +1039,18 @@ hr{
 }
 
 
-.control-image{
-    z-index: 2;
+.control-image{ 
     position: absolute;
-    font-size:17px;
-    padding:0;
-    text-align:center;
-    background:none;
-    border:none;
+    font-size: 16px;
+    top: 0;
+    left: 0; 
     color: var(--control-color);
     cursor:pointer;
-    outline:none;
-    -webkit-user-select:none;
-    -moz-user-select:none;
-    -ms-user-select:none;
-    user-select:none;
     padding: 0px 3px;
     background: var(--post-background-color);
     margin: 5px 5px;
     border-radius: 5px;
+    z-index: 2;
 }
 .control-image:not(:disabled):hover{
     color:var(--control-hover-color);

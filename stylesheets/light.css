@@ -1047,25 +1047,19 @@ h1{
     outline:none
 }
 
-.control-image{
-    z-index: 2;
+
+.control-image{ 
     position: absolute;
-    font-size:17px;
-    padding:0;
-    text-align:center;
-    background:none;
-    border:none;
+    font-size: 16px;
+    top: 0;
+    left: 0; 
     color: #7e488f;
     cursor:pointer;
-    outline:none;
-    -webkit-user-select:none;
-    -moz-user-select:none;
-    -ms-user-select:none;
-    user-select:none;
     padding: 0px 3px;
     background: #e4e1e5;
     margin: 5px 5px;
     border-radius: 5px;
+    z-index: 2;
 }
 .control-image:not(:disabled):hover{
     color:#9e85ad;

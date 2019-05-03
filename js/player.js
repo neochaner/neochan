@@ -476,6 +476,14 @@ class MediaPlayer{
 var player = null;
 
 function playContent(e, url, vid_width, vid_height, embed, content_id = -1, time_stamp = 0){
+
+    if(e.target.classList.contains('control-image') || e.target.parentElement.classList.contains('control-image')){
+        // ctrl click
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+    
     player.playContent(e, url, vid_width, vid_height, embed, content_id, time_stamp);
 }
  

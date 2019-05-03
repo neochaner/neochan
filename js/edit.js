@@ -1,6 +1,6 @@
 /* 
  DEP :   
-            show-own-posts.js : thigger : new_own_post
+            show-own-posts.js : trigger : new_own_post
 */
 var edit_sec = 120;
 
@@ -27,7 +27,8 @@ $(document).on('new_own_post', function(e, post, board, post_id) {
         for(let i =0; i<files.length; i++){
              
             var $file = $(files[i]);
-			var hash = $file.find('.post-file-link').find('img').data('md5');
+            var $img = $file.find('.post-file-link').find('img');
+			var hash = $img.data('md5');
 			
 			if(hash){
 			
@@ -36,7 +37,7 @@ $(document).on('new_own_post', function(e, post, board, post_id) {
 				var delCtrl = "<a class='control-image post-edit-control' title='"+_T('Delete file')+"' onclick=\"edit_request('delete_file', '"+post.dataset.board+"', '"+post.dataset.thread+"', '"+post.dataset.post+"', '"+hash+"')\"><i class='fa fa-trash'></i></a>";
 				var hideCtrl ="<a class='control-image post-edit-control ml30' title='"+_T('Spoiler')+"' onclick=\"edit_request('spoiler_file', '"+post.dataset.board+"', '"+post.dataset.thread+"', '"+post.dataset.post+"', '"+hash+"')\"><i class='fa fa-eye-slash'></i></a>";
 			 
-				$file.find('.post-file-info').after(delCtrl+hideCtrl);
+				$img.after(delCtrl+hideCtrl);
 				 
 			}
 		}
