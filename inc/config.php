@@ -995,12 +995,13 @@ srand(time());
 	$config['max_images'] = 10;
 
 
-	$config['additional_javascript'][] = 'js/jquery-3.1.0.min.js';
+	$config['additional_javascript'][] = 'js/jquery-3.1.0.min.js'; 
 	$config['additional_javascript'][] = 'js/vanilla.js';
 	$config['additional_javascript'][] = 'js/storage.js';
 	$config['additional_javascript'][] = 'js/player.js';
-	$config['additional_javascript'][] = 'js/base.js';  
-	$config['additional_javascript'][] = 'js/loc.js';  
+	$config['additional_javascript'][] = 'js/base.js';
+	$config['additional_javascript'][] = 'js/loc.js';
+	$config['additional_javascript'][] = 'js/api.js';
 
 
 	$config['additional_javascript'][] = 'js/time.js';
@@ -1060,6 +1061,7 @@ srand(time());
 	$config['additional_javascript'][] = 'js/neotube.js'; 
 
  
+	$config['additional_javascript'][] = 'js/screenshot.js';
  
 
 	// Method to use for determing the max filesize. 
