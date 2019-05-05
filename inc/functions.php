@@ -44,7 +44,7 @@ register_shutdown_function('fatal_error_handler');
 mb_internal_encoding('UTF-8');
 
 loadConfig();
-$_SERVER['REMOTE_ADDR']='127.0.0.1';
+
 Session::init();
 
 
