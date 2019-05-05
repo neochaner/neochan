@@ -453,7 +453,13 @@ class MediaPlayer{
 			video.src = '';
 			video.load();
 			video.parentElement.removeChild(video);
-		}
+        }
+        
+        /* audio player */
+        if (typeof closeAudioPlayer === "function") { 
+            closeAudioPlayer();
+        }
+
 
         this.container.innerHTML='';
         this.container.style.display='none'; 

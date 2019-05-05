@@ -48,10 +48,7 @@ function initAudioPlayerEventListeners() {
 }
 
 $(document).on('click', '.plyr__control.close', function() {
-    audio_player.destroy();
-    var current_source_element = getPlayerSourceElement();
-    current_source_element.removeClass('playing paused').find('.bars').remove();
-    $('#audio-player').remove();
+    closeAudioPlayer();
 });
 
 $(document).on('click', '.audio-url', function(e) {
@@ -67,6 +64,9 @@ $(document).on('click', '.audio-url', function(e) {
         var current_source_element = getPlayerSourceElement();
       
         if(e.target !== current_source_element[0] && !current_source_element[0].contains(e.target)) {
+
+            player.stopAll();
+
             current_source_element.removeClass('playing paused').find('.bars').remove();
             $(this).addClass('playing').append(music_pseudo_bars);
           
@@ -97,6 +97,9 @@ $(document).on('click', '.audio-url', function(e) {
             }
         }
     } else {
+        
+        player.stopAll();
+
         $('body').append('<audio id="audio-player" controls><source src="' + selectedAudioSource + '" type="' + media_type + '"></audio>');
         const options = {
             settings: [],
@@ -119,6 +122,18 @@ $(document).on('click', '.audio-url', function(e) {
     }
 });
 
+
+function closeAudioPlayer() {
+
+    if(audio_player) {
+        audio_player.destroy();
+        let current_source_element = getPlayerSourceElement();
+        current_source_element.removeClass('playing paused').find('.bars').remove();
+        $('#audio-player').remove();
+        audio_player=null;
+    }
+  
+}
 
 function downloadCurrentTrack()
 {
