@@ -106,6 +106,20 @@ body{
 }
 
 
+.capcode{
+    font-size: 12px!important;
+} .capcode-Admin{
+    color: red!important;
+}.capcode-GlobalMod{
+    color: blue!important;
+}.capcode-Mod{
+    color: blue!important;
+}.capcode-Owner{
+    color: blue!important;
+}.capcode-Volunteer{
+    color: blue!important;
+}
+
 a {
     color: var(--a1-color);
     text-decoration: none;

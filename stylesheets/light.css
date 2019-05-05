@@ -41,6 +41,19 @@ body{
     background-color:#ebeaeb;
 }
 
+
+.capcode-Admin{
+    color: red!important;
+}.capcode-GlobalMod{
+    color: #6700a5!important;
+}.capcode-Mod{
+    color: #6700a5!important;
+}.capcode-Owner{
+    color: #6700a5!important;
+}.capcode-Volunteer{
+    color: #6700a5!important;
+}
+
 h1,h2{color:#5b2d69}
 h2{text-shadow:#5b2d69 1px 1px 0}
 

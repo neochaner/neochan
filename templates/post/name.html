@@ -1,14 +1,6 @@
-{% if post.capcode and post.capcode.name %}
-	<span class='capcode'>capcode.name</span>
-{% else %}
-
-
-
-
-{% endif %}
-
-
-{% if post.name|length > 1 %}
+{% if post.modifiers['capcode'] %}
+	<span class='post-name capcode capcode-{{ post.modifiers['capcode'] }}'></span>
+{% elseif post.name|length > 1 %}
 	<span class='post-name'>{{ post.name }}</span>
 {% endif %}
 
@@ -16,7 +8,7 @@
 	<span class="post-trip">{{ post.trip }}</span>
 {% else %}
 
-{% if post.name|length > 1 %}
+{% if post.name|length > 1 or post.modifiers['capcode'] %}
 
 {% else %}
 	{% if config.anonymous|length > 1 %}

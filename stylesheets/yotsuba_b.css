@@ -95,14 +95,28 @@ html
 
 body{
     background:var(--background-color);
-    background-image: url('img/fade-blue.png') repeat-x 50% 0%
-    background-repeat:repeat-x,repeat;
+    background-image: url('img/fade-blue.png') repeat-x 50% 0%;
+    background-repeat: repeat-x,repeat;
     background-attachment:scroll,scroll;
     color:var(--body-color);
     font-family:arial,helvetica,sans-serif;    
     font-size: var(--font-size);
 }
 
+
+.capcode{
+    font-size: 12px!important;
+} .capcode-Admin{
+    color: red!important;
+}.capcode-GlobalMod{
+    color: blue!important;
+}.capcode-Mod{
+    color: blue!important;
+}.capcode-Owner{
+    color: blue!important;
+}.capcode-Volunteer{
+    color: blue!important;
+}
 
 a {
     color: var(--a1-color);

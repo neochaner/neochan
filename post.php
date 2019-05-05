@@ -517,7 +517,7 @@ if(isset($_GET['rate']))
 	if ($mod && preg_match('/^((.+) )?## (.+)$/', $post['name'], $matches) && (in_array($board['uri'], $mod['boards']) or $mod['boards'][0] == '*')) {
 		$name = $matches[2] != '' ? $matches[2] : $config['anonymous'];
 		$cap = $matches[3];
-		
+
 		if (isset($config['mod']['capcode'][$mod['type']])) {
 			if (	$config['mod']['capcode'][$mod['type']] === true ||
 				(is_array($config['mod']['capcode'][$mod['type']]) &&
@@ -688,6 +688,11 @@ if(isset($_GET['rate']))
 	if ($config['allowed_tags'] && $post['op'] && isset($_POST['tag']) && $_POST['tag'] && isset($config['allowed_tags'][$_POST['tag']])) {
 		$post['body'] .= "\n<tinyboard tag>" . $_POST['tag'] . "</tinyboard>";
 	}
+
+	if ($post['capcode']) {
+		$post['body'] .= "\n<tinyboard capcode>{$post['capcode']}</tinyboard>";
+	}
+ 
 
 	if (mysql_version() >= 50503) {
 		$post['body_nomarkup'] = $post['body']; // Assume we're using the utf8mb4 charset
@@ -1256,9 +1261,6 @@ if(isset($_GET['rate']))
 	}
 
 	Session::IncreasePost();
-
-	syslog(1, 'post score =' . (microtime(true) - $init_time));
-
 
 } elseif (isset($_POST['appeal'])) {
 	

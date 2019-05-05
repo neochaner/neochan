@@ -21,7 +21,9 @@
 	{% if not index %}<a id="{{ post.id }}" name="{{ post.id }}" class="post_anchor"></a>{% endif %}
 	<a class="post-id-vi" onclick="post_menu(event)"></a>
 	<a class="post-header-item post-id" href="{{ post.link }}" onclick="post_menu(event)">#{{ post.id }}</a>
-
+	{% if post.modifiers['capcode'] %}
+	<span class='post-name capcode capcode-{{ post.modifiers['capcode'] }}'></span>
+	{% endif %}
 	<a class="post-subject" href="{{ post.link }}">{{ post_subject }}</a></h3>
 	{% if post.trip %}<span class="post-trip" style='vertical-align:unset'>{{ post.trip }}</span>{% endif %}
 	{% include 'post/mod_attributes.html' %}

@@ -1,5 +1,5 @@
 @charset "utf-8";
- 
+
 .l_anonymous::before{
     content:'Аноним';
 }
@@ -268,7 +268,18 @@
 }
 
 
-
+/* cap codes */
+.capcode-Admin::before{
+    content: '## Админ ##'
+}.capcode-GlobalMod::before{
+    content: '## Глобальный Модератор ##'
+}.capcode-Mod::before{
+    content: '## Модератор ##'
+}.capcode-Owner::before{
+    content: '# Владелец доски #'
+}.capcode-Volunteer::before{
+    content: '# Волонтёр #'
+}
 
 
 

@@ -126,6 +126,18 @@ body{
 
 }
 
+.capcode-Admin{
+    color: red!important;
+}.capcode-GlobalMod{
+    color: #00cc00!important
+}.capcode-Mod{
+    color: #00cc00!important
+}.capcode-Owner{
+    color: #00cc00!important
+}.capcode-Volunteer{
+    color: #00cc00!important
+}
+
 
 a {
     color: var(--a1-color);

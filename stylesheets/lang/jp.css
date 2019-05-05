@@ -267,3 +267,19 @@
 }.l_btn_appeal::before{
 	content: '上訴する'
 }
+
+
+
+
+/* cap codes */
+.capcode-Admin::before{
+    content: '## Admin ##'
+}.capcode-GlobalMod::before{
+    content: '## Global Moderator ##'
+}.capcode-Mod::before{
+    content: '## Moderator ##'
+}.capcode-Owner::before{
+    content: '# Board Owner #'
+}.capcode-Volunteer::before{
+    content: '# Volunteer #'
+}

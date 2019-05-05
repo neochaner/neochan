@@ -1690,24 +1690,7 @@ srand(time());
 	$config['mod']['link_uncycle'] = '-Cycle';
 
 	// Moderator capcodes.
-	$config['capcode'] = ' <span class="capcode">## %s</span>';
-
-	// "## Custom" becomes lightgreen, italic and bold:
-	//$config['custom_capcode']['Custom'] ='<span class="capcode" style="color:lightgreen;font-style:italic;font-weight:bold"> ## %s</span>';
-
-	// "## Mod" makes everything purple, including the name and tripcode:
-	//$config['custom_capcode']['Mod'] = array(
-	//	'<span class="capcode" style="color:purple"> ## %s</span>',
-	//	'color:purple', // Change name style; optional
-	//	'color:purple' // Change tripcode style; optional
-	//);
-
-	// "## Admin" makes everything red and bold, including the name and tripcode:
-	//$config['custom_capcode']['Admin'] = array(
-	//	'<span class="capcode" style="color:red;font-weight:bold"> ## %s</span>',
-	//	'color:red;font-weight:bold', // Change name style; optional
-	//	'color:red;font-weight:bold' // Change tripcode style; optional
-	//);
+	$config['capcode'] = ' <span class="capcode capcode-%s">## %s</span>';
 
 	// Enable the moving of single replies
 	$config['move_replies'] = false;
@@ -1805,9 +1788,9 @@ srand(time());
 	// Capcode permissions.
 	$config['mod']['capcode'] = array(
 		JANITOR			=> array('Janitor'), 
-		BOARDVOLUNTEER	=> array('Board Volunteer'),
-		MOD				=> array('Board Owner'),
-		GLOBALVOLUNTEER	=> array('Global Volunteer'),
+		BOARDVOLUNTEER	=> array('Volunteer'),
+		MOD				=> array('Mod'),
+		GLOBALVOLUNTEER	=> array('Mod', 'GlobalMod'),
 		ADMIN			=> true
 	);
 

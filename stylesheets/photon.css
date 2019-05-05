@@ -38,6 +38,18 @@ body{
     margin:0
 }
 
+.capcode-Admin{
+    color: red!important;
+}.capcode-GlobalMod{
+    color: blue!important;
+}.capcode-Mod{
+    color: blue!important;
+}.capcode-Owner{
+    color: blue!important;
+}.capcode-Volunteer{
+    color: blue!important;
+}
+
 h1,h2{color:#b32407}
 h2{text-shadow:#8e3523 1px 1px 0}
 

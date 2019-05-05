@@ -84,6 +84,20 @@ body {
     line-height: 1.3;
 }
 
+.capcode{
+    margin: 0px 10px;
+} .capcode-Admin{
+    color: red!important;
+}.capcode-GlobalMod{
+    color: blue!important;
+}.capcode-Mod{
+    color: blue!important;
+}.capcode-Owner{
+    color: blue!important;
+}.capcode-Volunteer{
+    color: blue!important;
+}
+
 a {color: var(--a1-color); text-decoration: none;}
 a:hover {color: var(--a-color-hover);}.post-subject
 .a-off{ color:var(--a-off)!important; }
