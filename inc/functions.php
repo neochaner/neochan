@@ -44,6 +44,7 @@ register_shutdown_function('fatal_error_handler');
 mb_internal_encoding('UTF-8');
 
 loadConfig();
+$_SERVER['REMOTE_ADDR']='127.0.0.1';
 Session::init();
 
 
@@ -1266,7 +1267,7 @@ function post(array $post, &$template=null)
 		$query->bindValue(':poll', null, PDO::PARAM_NULL);
 	}
 	
-	/*Force Anonymous*/
+	/* Force Anonymous */
 	if (isset($post['force_anon']) && $post['force_anon']) {
 		$query->bindValue(':force_anon', true, PDO::PARAM_BOOL);
 	} else {
@@ -3355,9 +3356,17 @@ function getAudioInfo($path)
 			substr( $value, 0, 7	) !== "base64:"
 		) {
 			continue;
-		}
+		} 
 	
-		$bin = base64_decode(substr($value, 6));
+		$b64 = substr($value, 7);
+		$bin = base64_decode($b64);
+
+
+		// itunes fix
+		if(strpos($bin, hex2bin("00000D49484452")) === 0){
+			$bin = hex2bin("89504E470D0A1A0A00") . $bin;
+		}
+
 		$fi = new finfo(FILEINFO_MIME_TYPE);
 		$mime = $fi->buffer($bin);
 		$mimea = explode('/', $mime);
