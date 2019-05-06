@@ -434,7 +434,7 @@ class MediaPlayer{
 
     }
 
-    stopAll(){
+    stopAll(audio = true){
 
         this.is_active = false;
         this.is_active_video=false;
@@ -456,7 +456,7 @@ class MediaPlayer{
         }
         
         /* audio player */
-        if (typeof closeAudioPlayer === "function") { 
+        if (audio && typeof closeAudioPlayer === "function") { 
             closeAudioPlayer();
         }
 

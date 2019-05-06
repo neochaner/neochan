@@ -136,7 +136,6 @@ function loadProfile(response = null){
 }
 
 function updateProfile(){
-
 	//api({'update_profile':true});
 }
 
