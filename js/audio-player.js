@@ -65,7 +65,7 @@ $(document).on('click', '.audio-url', function(e) {
       
         if(e.target !== current_source_element[0] && !current_source_element[0].contains(e.target)) {
 
-            player.stopAll();
+            player.stopAll(false);
 
             current_source_element.removeClass('playing paused').find('.bars').remove();
             $(this).addClass('playing').append(music_pseudo_bars);
@@ -98,7 +98,7 @@ $(document).on('click', '.audio-url', function(e) {
         }
     } else {
         
-        player.stopAll();
+        player.stopAll(false);
 
         $('body').append('<audio id="audio-player" controls><source src="' + selectedAudioSource + '" type="' + media_type + '"></audio>');
         const options = {
