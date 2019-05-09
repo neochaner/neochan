@@ -175,6 +175,8 @@ function usermod_delete($board_name, $thread_id, $post_id, $token)
     $query->bindValue(':id', $post_id, PDO::PARAM_INT);
     $query->execute() or error(db_error($query));
  
+    buildThread($thread_id);
+    buildIndex();
     header("Location: /usermod.php?/$board_name/res/$thread_id.html/view/$token");
     exit;
 
