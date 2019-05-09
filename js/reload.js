@@ -265,7 +265,7 @@ function updatePost(post, forceReplace = false)
 	if(post.template == null)
 	{
 
-		if(oldPost.length != 0)
+		if(oldPost.length != 0 && !enable_devil)
 		{
 			console.log('update: post '+postID+' hide or deleted');
 			oldPost.remove();
