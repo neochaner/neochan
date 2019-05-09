@@ -1569,7 +1569,7 @@ function clean($pid = false) {
 	$offset = round($config['max_pages']*$config['threads_per_page']);
 
 	// I too wish there was an easier way of doing this...
-	$query = prepare(sprintf("SELECT `id` FROM ``posts_%s`` WHERE `thread` IS NULL AND `deleted`=0 AND `hide`=0 ORDER BY `sticky` DESC, `bump` DESC LIMIT :offset, 9001", $board['uri']));
+	$query = prepare(sprintf("SELECT `id` FROM ``posts_%s`` WHERE `thread` IS NULL ORDER BY `sticky` DESC, `bump` DESC LIMIT :offset, 9001", $board['uri']));
 	$query->bindValue(':offset', $offset, PDO::PARAM_INT);
 	$query->execute() or error(db_error($query));
 
@@ -1581,7 +1581,7 @@ function clean($pid = false) {
 	// Bump off threads with X replies earlier, spam prevention method
 	if ($config['early_404']) {
 		$offset = round($config['early_404_page']*$config['threads_per_page']);
-		$query = prepare(sprintf("SELECT `id` AS `thread_id`, (SELECT COUNT(`id`) FROM ``posts_%s`` WHERE `thread` = `thread_id`) AS `reply_count` FROM ``posts_%s`` WHERE `thread` IS NULL AND `deleted`=0 AND `hide`=0 ORDER BY `sticky` DESC, `bump` DESC LIMIT :offset, 9001", $board['uri'], $board['uri']));
+		$query = prepare(sprintf("SELECT `id` AS `thread_id`, (SELECT COUNT(`id`) FROM ``posts_%s`` WHERE `thread` = `thread_id`) AS `reply_count` FROM ``posts_%s`` WHERE `thread` IS NULL ORDER BY `sticky` DESC, `bump` DESC LIMIT :offset, 9001", $board['uri'], $board['uri']));
 		$query->bindValue(':offset', $offset, PDO::PARAM_INT);
 		$query->execute() or error(db_error($query));
 		
@@ -1598,7 +1598,7 @@ function clean($pid = false) {
 function thread_find_page($thread) {
 	global $config, $board;
 
-	$query = query(sprintf("SELECT `id` FROM ``posts_%s`` WHERE `thread` IS NULL AND `deleted`=0 AND `hide`=0 ORDER BY `sticky` DESC, `bump` DESC", $board['uri'])) or error(db_error($query));
+	$query = query(sprintf("SELECT `id` FROM ``posts_%s`` WHERE `thread` IS NULL ORDER BY `sticky` DESC, `bump` DESC", $board['uri'])) or error(db_error($query));
 	$threads = $query->fetchAll(PDO::FETCH_COLUMN);
 	if (($index = array_search($thread, $threads)) === false)
 		return false;
@@ -1611,7 +1611,7 @@ function index($page, $mod=false) {
 	$body = '';
 	$offset = round($page*$config['threads_per_page']-$config['threads_per_page']);
 
-	$query = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `thread` IS NULL AND `deleted`=0 AND `hide`=0 ORDER BY `sticky` DESC, `bump` DESC LIMIT :offset,:threads_per_page", $board['uri']));
+	$query = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `thread` IS NULL ORDER BY `sticky` DESC, `bump` DESC LIMIT :offset,:threads_per_page", $board['uri']));
 	$query->bindValue(':offset', $offset, PDO::PARAM_INT);
 	$query->bindValue(':threads_per_page', $config['threads_per_page'], PDO::PARAM_INT);
 	$query->execute() or error(db_error($query));
@@ -1637,7 +1637,7 @@ function index($page, $mod=false) {
 			}
 		}
 		if (!isset($cached)) {
-			$posts = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `thread` = :id AND `deleted`=0 AND `hide`=0 ORDER BY `id` DESC LIMIT :limit", $board['uri']));
+			$posts = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `thread` = :id AND `hide`=0 ORDER BY `id` DESC LIMIT :limit", $board['uri']));
 			$posts->bindValue(':id', $th['id']);
 			$posts->bindValue(':limit', ($th['sticky'] ? $config['threads_preview_sticky'] : $config['threads_preview']), PDO::PARAM_INT);
 			$posts->execute() or error(db_error($posts));
@@ -1672,8 +1672,7 @@ function index($page, $mod=false) {
 			if ($po['num_files'])
 				$num_images+=$po['num_files'];
 
-			if(!$po['deleted'] && !$po['hide'])
-				$thread->add(new Post($po, $mod ? '?/' : $config['root'], $mod));
+			$thread->add(new Post($po, $mod ? '?/' : $config['root'], $mod));
 		}
 
 		$thread->images = $num_images;
@@ -1821,7 +1820,7 @@ function getPages($mod=false) {
 		$count = $board['thread_count'];
 	} else {
 		// Count threads
-		$query = query(sprintf("SELECT COUNT(*) FROM ``posts_%s`` WHERE `thread` IS NULL AND `hide`=0 AND `deleted`=0", $board['uri'])) or error(db_error());
+		$query = query(sprintf("SELECT COUNT(*) FROM ``posts_%s`` WHERE `thread` IS NULL", $board['uri'])) or error(db_error());
 		$count = $query->fetchColumn();
 	}
 	$count = floor(($config['threads_per_page'] + $count - 1) / $config['threads_per_page']);
@@ -1901,7 +1900,7 @@ function checkRobot($body) {
 // Returns an associative array with 'replies' and 'images' keys
 function numPosts($id) {
 	global $board;
-	$query = prepare(sprintf("SELECT COUNT(*) AS `replies`, SUM(`num_files`) AS `images` FROM ``posts_%s`` WHERE `thread` = :thread AND `deleted`=0 AND `hide`=0", $board['uri'], $board['uri']));
+	$query = prepare(sprintf("SELECT COUNT(*) AS `replies`, SUM(`num_files`) AS `images` FROM ``posts_%s`` WHERE `thread` = :thread", $board['uri'], $board['uri']));
 	$query->bindValue(':thread', $id, PDO::PARAM_INT);
 	$query->execute() or error(db_error($query));
 
@@ -2699,7 +2698,7 @@ function buildThread($id, $return = false, $mod = false)
 		$build_pages[] = thread_find_page($id);
 		
 		
-    $query = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE (`thread` IS NULL AND `id` = :id) OR `thread` = :id AND (`deleted`=0 AND `hide`=0) ORDER BY `thread`,`id`", $board['uri']));	
+    $query = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE (`thread` IS NULL AND `id` = :id) OR `thread` = :id ORDER BY `thread`,`id`", $board['uri']));	
 	$query->bindValue(':id', $id, PDO::PARAM_INT);
 	$query->execute() or error(db_error($query));
 
@@ -2708,8 +2707,6 @@ function buildThread($id, $return = false, $mod = false)
 	$posts = array();
 
 	while ($post = $query->fetch(PDO::FETCH_ASSOC)) {
-		//if($post['thread'] && ($post['deleted'] || $post['hide']))
-		//	continue;
 		array_push($posts, $post);
 	}
 
@@ -2727,12 +2724,10 @@ function buildThread($id, $return = false, $mod = false)
 			$lastBump = $post['time'];
 			$thread = new Thread($post, $mod ? '?/' : $config['root'], $mod);
 		} else {
-			if(!$post['deleted'] && !$post['hide']){
-				$thread->add(new Post($post, $mod ? '?/' : $config['root'], $mod));
+			$thread->add(new Post($post, $mod ? '?/' : $config['root'], $mod));
 
-				if($post['email'] != 'sage' && $post['time'] > $lastBump)
-					$lastBump = $post['time'];
-			}
+			if($post['email'] != 'sage' && $post['time'] > $lastBump)
+				$lastBump = $post['time'];
 		}
 		 
 	}

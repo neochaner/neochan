@@ -1,4 +1,5 @@
 var enable_opmode_state = false;
+var enable_devil = false;
 var menuOpMod = 'modControls';
 var modSecQuestion=  true;
 var modAccess;
@@ -355,7 +356,8 @@ function opmod_request(action, board, thread, post_id, confirm_text, param1, par
 
 function enable_devilstyle()
 {
-    document.getElementById("theme-css").href = "/stylesheets/devil.css";
+    enable_devil=true;
+    document.getElementById("theme-css").href = "/stylesheets/devil.css?"+Date.now();
 }
 
 function show_deleted_posts()

@@ -92,8 +92,8 @@ $(document).ready(function () {
             var $post = $('#reply_'+id);
             var $clone = null;
 
-            if($post.length == 0)
-            {
+            if ($post.length == 0) {
+
                 $post = $('#post'+id);
 
                 if($post.length != 0)
@@ -102,8 +102,10 @@ $(document).ready(function () {
                     //return $clone;
                 }
             }
-            else
-            {
+            else if(!enable_devil && $post.hasClass('post-hide')) {
+                $clone = $('<article class="post"><span class="l_post_removed"></span></div>').addClass('hover').attr('id', 'hover_reply_'+id);
+            } else {
+
 
                 $clone = $post.clone().addClass('hover').attr('id', 'hover_reply_'+id);
                //return $post.clone().addClass('hover').attr('id', 'hover_reply_'+id)[0];
@@ -162,6 +164,8 @@ $(document).ready(function () {
                         {
                             $post = $thread.find('#post'+id);
                             $post.addClass('post_op');
+                        } else if(!enable_devil && $post.hasClass('post-hide')) {
+                            $post = $('<article class="post"><span class="l_post_removed"></span></div>').addClass('hover').attr('id', 'hover_reply_'+id);
                         }
 
                         var $pHolder = $('#hover_reply_' + id); //#placeholder?

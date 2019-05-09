@@ -206,6 +206,7 @@
         bottom: auto !important;
     }
 }
+.post-hide {display: none;}
 .post-file.audioplayer > .post-file-info {
 
     max-width: 155px;

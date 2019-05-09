@@ -203,6 +203,8 @@
     content:'Status: Stosowany...'
 }.l_ban_apperdenied::before{
     content:'Status: pojawia się odmowa...'
+}.l_post_removed::before{
+    content:'Post usunięty.' 
 }
 
 .l_board_notubes::before{

@@ -208,6 +208,8 @@
     content:'지위: 적용된...'
 }.l_ban_apperdenied::before{
     content:'지위: 거부당한 것으로 보인다...'
+}.l_post_removed::before{
+    content:'제거됨' 
 }
 
 .l_board_notubes::before{

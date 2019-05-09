@@ -201,6 +201,8 @@
     content:'Status: Angewendet...'
 }.l_ban_apperdenied::before{
     content:'Status: erscheinen abgelehnt...'
+}.l_post_removed::before{
+    content:'Beitrag entfernt.' 
 }
 
 .l_board_notubes::before{

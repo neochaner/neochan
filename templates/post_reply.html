@@ -1,6 +1,6 @@
 {% filter remove_whitespace %}
 {# tabs and new lines will be ignored #}
-<article class="post{% if post.files %} post_file{% endif %}{% if post.num_files > 1 %} post_files{% endif %} post_{{ board.uri }}_{{ post.thread }}_{{ post.id }}" id="reply_{{ post.id }}" data-board="{{ board.uri }}" data-thread={{ post.thread }} data-post={{ post.id }}>
+<article class="post{% if post.files %} post_file{% endif %}{% if post.num_files > 1 %} post_files{% endif %} post_{{ board.uri }}_{{ post.thread }}_{{ post.id }}{% if post.hide==1 %} post-hide{% endif %}" id="reply_{{ post.id }}" data-board="{{ board.uri }}" data-thread={{ post.thread }} data-post={{ post.id }}>
 	<header class="post-header">
 		{% if not index %}<a id="{{ post.id }}" name="{{ post.id }}" class="post_anchor"></a>{% endif %}
 		<a class="post-id-vi" onclick="post_menu(event)"></a>

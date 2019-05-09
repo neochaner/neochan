@@ -208,6 +208,8 @@
     content:'Статус: находится на рассмотрении.'
 }.l_ban_apperdenied::before{
     content:'Статус: в разбане отказано.'
+}.l_post_removed::before{
+    content:'Пост удалён.' 
 }
 
 .l_board_notubes::before{

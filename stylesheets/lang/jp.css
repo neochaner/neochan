@@ -212,6 +212,8 @@
     content:'状態: 適用済み...'
 }.l_ban_apperdenied::before{
     content:'状態: 拒否されたようです...'
+}.l_post_removed::before{
+    content:'削除しました' 
 }
 
 .l_board_notubes::before{

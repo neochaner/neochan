@@ -211,6 +211,8 @@
     content:'Status: Applied...'
 }.l_ban_apperdenied::before{
     content:'Status: apeear denied...'
+}.l_post_removed::before{
+    content:'Post removed.' 
 }
 
 .l_board_notubes::before{
