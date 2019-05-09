@@ -1375,9 +1375,6 @@ elseif (isset($_POST['user_edit']))
 		if(!$mod_request && time() > $post['time']+(60*3))
 			json_response(array('error' => 'Истекло время редактирования'));
 
-		if(strpos($post['body_nomarkup'], '[SECTAG_') !== false)
-			json_response(array('error' => 'Нельзя редактировать сообщение со спец. тегами'));
-		
 		if(!$mod_request && strpos($post['body_nomarkup'], 'roll(') !== false)
 			json_response(array('error' => 'Нельзя редактировать ролл'));
 			
@@ -1472,44 +1469,7 @@ elseif (isset($_POST['user_edit']))
 	
 	error($config['error']['wrong params']);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  
 
 
 }
