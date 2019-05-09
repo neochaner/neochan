@@ -1061,6 +1061,7 @@ function checkWipe($create_thread = false)
 	global $config, $board;
 
 	$limits = $config['antispam'];
+	$ip = Session::getIdentity();
 	$limit_minute = 0;
 	$limit_hour = 0;
 
@@ -1084,12 +1085,12 @@ function checkWipe($create_thread = false)
 	if ($limit_minute > 0 || $limit_hour > 0) {
 
 		$query = prepare($request);
-		$query->bindParam(':ip', Session::getIdentity(), PDO::PARAM_STR);
+		$query->bindParam(':ip', $ip, PDO::PARAM_STR);
 		$query->execute() or error(db_error());
 		
 		if ($result = $query->fetchAll(PDO::FETCH_ASSOC)) {
 
-			syslog(1, '[WIPE]'. ($create_thread ? '[THREAD]':'[POST]') . "  minute={$result[0]['res']}/$limit_minute | hour={$result[1]['res']}/$limit_hour  " . Session::getIdentity());
+			syslog(1, '[WIPE]'. ($create_thread ? '[THREAD]':'[POST]') . "  minute={$result[0]['res']}/$limit_minute | hour={$result[1]['res']}/$limit_hour  " . $ip);
 
 			if($limit_minute > 0 && (int)$result[0]['res'] >= $limit_minute) {
 				//error($create_thread ? 'l_antispam_threadlimit_per_minute' : 'l_antispam_postlimit_per_minute');
