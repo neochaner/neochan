@@ -177,6 +177,7 @@ function usermod_delete($board_name, $thread_id, $post_id, $token)
  
     buildThread($thread_id);
     buildIndex();
+    rebuildTheme('ukko', 'post-delete');
     header("Location: /usermod.php?/$board_name/res/$thread_id.html/view/$token");
     exit;
 
@@ -250,6 +251,7 @@ function usermod_ban($board_name, $thread_id, $post_id, $token)
         rebuildPost($post_id);
         buildThread($thread_id);
         buildIndex();
+        rebuildTheme('ukko', 'post-delete');
 
         
         header("Location: /usermod.php?/$board_name/res/$thread_id.html/view/$token");
