@@ -114,6 +114,14 @@
     content:'Sorry, you need to pass an antispam check, cookies must be enabled.';
 }.l_antispam_left::before{
     content:'It remains to solve captcha: ';
+}.l_antispam_postlimit_per_minute::before{
+    content:'Reached limit send posts per minute. Please try later.';
+}.l_antispam_postlimit_per_hour::before{
+    content:'Reached limit send posts per hout. Please try later.';
+}.l_antispam_threadlimit_per_minute::before{
+    content:'Reached limit create threads per minute. Please try later.';
+}.l_antispam_threadlimit_per_hour::before{
+    content:'Reached limit create threads per hour. Please try later.';
 }
 
 

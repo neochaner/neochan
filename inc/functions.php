@@ -1056,7 +1056,53 @@ function displayBan($ban) {
 }
 
 
+function checkWipe($create_thread = false)
+{
+	global $config, $board;
 
+	$limits = $config['antispam'];
+	$limit_minute = 0;
+	$limit_hour = 0;
+
+	if (Session::$is_darknet) {
+
+		$limit_minute = $create_thread ? $limits['max_darkthreads_per_minute'] : $limits['max_darkposts_per_minute'];
+		$limit_hour = $create_thread ? $limits['max_darkthreads_per_hour'] : $limits['max_darkposts_per_hour'];
+	} else {
+
+		$limit_minute = $create_thread ? $limits['max_threads_per_minute'] : $limits['max_posts_per_minute'];
+		$limit_hour = $create_thread ? $limits['max_threads_per_hour'] : $limits['max_posts_per_hour'];
+	}
+ 
+	$filter = $create_thread ? "`thread` IS NULL AND" : "";
+	$min_ago = time() - 60;
+	$hour_ago = time() - 3600;
+	
+	$request = "SELECT COUNT(id) as res FROM `posts_{$board['uri']}` WHERE $filter `time`>$min_ago AND `ip`=:ip UNION ALL (SELECT COUNT(id) FROM `posts_{$board['uri']}` WHERE $filter `time`>$hour_ago AND `ip`=:ip)";
+
+
+	if ($limit_minute > 0 || $limit_hour > 0) {
+
+		$query = prepare($request);
+		$query->bindParam(':ip', Session::getIdentity(), PDO::PARAM_STR);
+		$query->execute() or error(db_error());
+		
+		if ($result = $query->fetchAll(PDO::FETCH_ASSOC)) {
+
+			syslog(1, '[WIPE]'. ($create_thread ? '[THREAD]':'[POST]') . "  minute={$result[0]['res']}/$limit_minute | hour={$result[1]['res']}/$limit_hour  " . Session::getIdentity());
+
+			if($limit_minute > 0 && (int)$result[0]['res'] >= $limit_minute) {
+				//error($create_thread ? 'l_antispam_threadlimit_per_minute' : 'l_antispam_postlimit_per_minute');
+				syslog(1, 'ANTIWIPE TRIGGERED');
+			}
+
+			if($limit_hour > 0 && (int)$result[1]['res'] >= $limit_hour) {
+				//error($create_thread ? 'l_antispam_threadlimit_per_hour' : 'l_antispam_postlimit_per_hour');
+				syslog(1, 'ANTIWIPE TRIGGERED');
+			}
+		}
+	}
+}
 
 function checkBan($board = false) {
 	

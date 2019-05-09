@@ -112,6 +112,14 @@
     content:'К сожалению, вам нужно пройти антиспам проверку, куки должны быть включены.';
 }.l_antispam_left::before{
     content:'Осталось решить капч: ';
+}.l_antispam_postlimit_per_minute::before{
+    content:'Достигнут лимит отправки постов в минуту. Пожалуйста, попробуйте позднее.';
+}.l_antispam_postlimit_per_hour::before{
+    content:'Достигнут лимит отправки постов в час. Пожалуйста, попробуйте позднее.';
+}.l_antispam_threadlimit_per_minute::before{
+    content:'Достигнут лимит создания тредов в минуту. Пожалуйста, попробуйте позднее.';
+}.l_antispam_threadlimit_per_hour::before{
+    content:'Достигнут лимит создания тредов в час. Пожалуйста, попробуйте позднее.';
 }
  
 .l_vote_success::before{

@@ -262,6 +262,14 @@
 	content: 'Du kannst dich über diesen Bann beschweren. Bitte nenne hier deinen Grund.'
 }.l_btn_appeal::before{
 	content: 'Berufung senden'
+}.l_antispam_postlimit_per_minute::before{
+    content:'Das Limit für das Senden von posts pro Minute wurde erreicht. Bitte versuch es später.';
+}.l_antispam_postlimit_per_hour::before{
+    content:'Erreichtes Limit für das Senden von posts pro Stunde. Bitte versuch es später.';
+}.l_antispam_threadlimit_per_minute::before{
+    content:'Das Limit für das Senden von threads pro Minute wurde erreicht. Bitte versuch es später.';
+}.l_antispam_threadlimit_per_hour::before{
+    content:'Erreichtes Limit für das Senden von threads pro Stunde. Bitte versuch es später.';
 }
 
 

@@ -359,10 +359,10 @@ if(isset($_GET['rate']))
 		}
 	}
 
-
 	checkBan($board['uri']);
 
- 
+	checkWipe($post['op']);
+
 
 	// Check the referrer
 	if ($config['referer_match'] !== false &&

@@ -159,16 +159,30 @@ $config['report_captcha'] = false;
 
 /* ANTISPAM OVERRIDES ALL CAPTCHA SETTINGS */
 
+// max posts per hour (for unical ip/cookie)
+$config['antispam']['max_posts_per_hour'] = 600;
+$config['antispam']['max_posts_per_minute'] = 60;
+
+$config['antispam']['max_darkposts_per_hour'] = 300;
+$config['antispam']['max_darkposts_per_minute'] = 15;
+
+
+// max threads per hour (for unical ip/cookie)
+$config['antispam']['max_threads_per_hour'] = 60;
+$config['antispam']['max_threads_per_minute'] = 3;
+
+$config['antispam']['max_darkthreads_per_hour'] = 10;
+$config['antispam']['max_darkthreads_per_minute'] = 2;
+
+
+
+
 
 // Enable special antispam check for www users (value = captcha count)
 $config['captcha']['antispam']['enable_www'] = 0;
 
 // Enable special antispam check for tor/onion users (value = captcha count)
 $config['captcha']['antispam']['enable_darknet'] = 3;
-
-
-$config['captcha']['antispam']['max_posts'] = 5;
-
 
 $config['captcha']['antispam']['cookie_time'] = 60 * 60 * 24 * 7;
 
