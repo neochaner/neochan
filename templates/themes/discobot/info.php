@@ -22,6 +22,15 @@ $theme['config'][] = array(
 );
 
 $theme['config'][] = array(
+	'title' => 'Webhook for reports',
+	'name' => 'webhook_reports',
+	'type' => 'text',
+	'comment' => 'https://discordapp.com/api/webhooks/xxx/xxxx'
+);
+
+
+
+$theme['config'][] = array(
 	'title' => 'Included boards',
 	'name' => 'boards',
 	'type' => 'text',
@@ -50,8 +59,15 @@ $theme['config'][] = array(
 	'type' => 'checkbox',
 	'default' => false
 );
-	
-	
+
+$theme['config'][] = array(
+	'title' => 'Forward reports',
+	'name' => 'forward_reports',
+	'type' => 'checkbox',
+	'default' => false
+);
+
+
 	
 $theme['build_function'] = 'discobot_build';
 	

@@ -8,6 +8,23 @@ function discobot_build($action, $settings, $board)
 	
 	global $config;
 
+	if ($action == 'report') {
+
+		$id = $config['tmp']['id']; 
+
+		$query = prepare(sprintf("SELECT * FROM ``posts_%s`` WHERE `id` = :id", $board));
+		$query->bindParam(':id', $id, PDO::PARAM_INT);
+
+		if ($query->execute() && ($post = $query->fetch())) {
+
+			$post['files'] = json_decode($post['files'], true);
+			(new DiscoBot($settings['domain'], $settings['webhook_reports'], $board))->EventReport($post, $config['tmp']['reason']);
+		}
+		
+		return;
+	}
+
+
 	if ($settings['boards'] != '*' && !in_array($board, explode(' ', $settings['boards']))) {
 		return;
 	}
@@ -71,9 +88,20 @@ class DiscoBot
 	{
 		$this->Send("Post  **/".$this->board."**\n", $post);
 	}
+
+	public function EventReport($post, $reason)
+	{
+		$this->Send("Report  **/".$this->board."**\n$reason\n", $post);
+	}
 	
 	private function Send($title, $post)
 	{
+
+		if(!isset($post['body_nomarkup'])) {
+			syslog(1, "DISKOBOT FAIL ! " . json_encode($post));
+			return;
+		}
+
 		$text = remove_modifiers($post['body_nomarkup']);
 
 		if(!isset($post['thread'])) {
@@ -118,6 +146,10 @@ class DiscoBot
 		curl_setopt( $ch, CURLOPT_HEADER, 0);
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $ch );
+
+		syslog(1, 'webhook = ' . json_encode($this->webhook));
+		syslog(1, 'json = ' . $json);
+		syslog(1, 'response = ' . json_encode($response));
 	}
 	
 }
