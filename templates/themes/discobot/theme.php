@@ -146,10 +146,6 @@ class DiscoBot
 		curl_setopt( $ch, CURLOPT_HEADER, 0);
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec( $ch );
-
-		syslog(1, 'webhook = ' . json_encode($this->webhook));
-		syslog(1, 'json = ' . $json);
-		syslog(1, 'response = ' . json_encode($response));
 	}
 	
 }
