@@ -223,6 +223,13 @@ if(isset($_GET['rate']))
 				$query->bindValue(':local',  $report_local, PDO::PARAM_BOOL);
 				$query->bindValue(':global', $report_global, PDO::PARAM_BOOL);
 				$query->execute() or error(db_error($query));
+				
+				$config['tmp'] = array(
+					'reason'=> $reason,
+					'id'=> $id
+				);
+
+				rebuildTheme('discobot', 'report', $board['uri']);
 			}
 		}
 	}
