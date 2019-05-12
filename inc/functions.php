@@ -3345,14 +3345,9 @@ function get_post_template($post)
 {
 	global $board, $config;
 
-	if(!isset($post['thread'], $post['id'])){
-		$post['thread']=0;
-		$post['id']=0;
-	}
-
 	$post['modifiers'] = extract_modifiers($post['body_nomarkup']);
 
-	if (!isset($post['thread']) || $post['thread']  == null) {
+	if (!isset($post['thread']) || $post['thread'] == null) {
 		$post['thread'] = $post['id'];
 	}
 
