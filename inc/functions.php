@@ -2299,7 +2299,8 @@ function markup(&$body, $track_cites = false, $op = false) {
 		while ($cited = $query->fetch(PDO::FETCH_ASSOC)) {
 			$cited_posts[$cited['id']] = $cited['thread'] ? $cited['thread'] : false;
 		}
-				
+
+	
 		foreach ($cites as $matches) {
 			$cite = $matches[2][0];
 
@@ -2309,7 +2310,7 @@ function markup(&$body, $track_cites = false, $op = false) {
 			}
 
 			if (isset($cited_posts[$cite])) {
-				$replacement = '<a class=\'post-link\' data-id=\''.$cite.'\' onclick="highlightReply(\''.$cite.'\', event);" href="' .
+				$replacement = '<a class=\'post-link' . (!$cited_posts[$cite] ? ' post-link-op':'') . '\' data-id=\''.$cite.'\' onclick="highlightReply(\''.$cite.'\', event);" href="' .
 					$config['root'] . $board['dir'] . $config['dir']['res'] .
 					($cited_posts[$cite] ? $cited_posts[$cite] : $cite) . '.html#' . $cite . '">' .
 					'&gt;&gt;' . $cite .

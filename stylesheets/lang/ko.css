@@ -1,5 +1,9 @@
 @charset "utf-8";
 
+.post-link-op::after{
+    content: ' (OP)';
+}
+
 .l_anonymous::before{
     content:'작자 불명의';
 }
