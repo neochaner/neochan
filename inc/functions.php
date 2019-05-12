@@ -1439,7 +1439,7 @@ function rebuildPost($id)
 	$post['files'] = json_decode($post['files']);
 	$post['poll'] = $post['poll'] == NULL ? NULL : json_decode($post['poll'], TRUE);
 
-	$query = prepare(sprintf("UPDATE ``posts_%s`` SET `body` = :body, `template` = :template, `edited_at` = UNIX_TIMESTAMP(NOW()) WHERE `id` = :id", $board['uri']));
+	$query = prepare(sprintf("UPDATE ``posts_%s`` SET `body` = :body, `template` = :template WHERE `id` = :id", $board['uri']));
 	$query->bindValue(':body', $post['body']);
 	$query->bindValue(':id', $id, PDO::PARAM_INT);
 
