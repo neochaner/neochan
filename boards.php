@@ -17,13 +17,11 @@ $query->execute() or error(db_error($query));
 $boards = $query->fetchAll(PDO::FETCH_ASSOC);
 
 
-
 foreach ($boards as $board) {
 
 	$sta = getBoardStatistics($board['uri'], $statistics_hours);
 	$sta['uri'] = $board['uri'];
 	$sta['title'] = $board['title'];
-	
 
 	for ($i=0; $i<count($statistics); $i++) {
 
@@ -49,6 +47,7 @@ $HTML = Element("site/index.html", array(
 ));
 
 file_put_contents("index.html", $HTML);
+file_put_contents("boards.json", json_encode($statistics));
 
 
 
@@ -58,11 +57,25 @@ function getBoardStatistics($uri, $hours){
 
 
 	$min_time = time() - ($hours * 3600);
+	$ago3days = time() - 24 * 3600 * 72;
+	$hourAgo = time() - 24 * 3600;
+
+
 	$table_name = "posts_$uri";
 	$query = prepare("SELECT count(`id`) as post_count,count(DISTINCT(`ip`)) as unical_count FROM `$table_name` WHERE `time`> :min_time");
 	$query->bindParam(':min_time', $min_time, PDO::PARAM_INT);
 	$query->execute() or error(db_error($query));
 	$boards = $query->fetchAll(PDO::FETCH_ASSOC);
+ 
+	$query = prepare("SELECT count(`id`) as post_count,count(DISTINCT(`ip`)) as unical_count FROM `$table_name` WHERE `time`> :min_time");
+	$query->bindParam(':min_time', $ago3days, PDO::PARAM_INT);
+	$query->execute() or error(db_error($query));
+	$boards72 = $query->fetchAll(PDO::FETCH_ASSOC);
+ 
+	$query = prepare("SELECT count(`id`) as post_count,count(DISTINCT(`ip`)) as unical_count FROM `$table_name` WHERE `time`> :min_time");
+	$query->bindParam(':min_time', $hourAgo, PDO::PARAM_INT);
+	$query->execute() or error(db_error($query));
+	$pph = $query->fetchAll(PDO::FETCH_ASSOC);
 
 
 	$query = prepare("SELECT max(`id`) as 'post_total' FROM `$table_name`");
@@ -74,8 +87,9 @@ function getBoardStatistics($uri, $hours){
 		'unical_count' => $boards[0]['unical_count'],
 		'post_total' => $max[0]['post_total'],
 
+		// for api old 72 style
+		'pph' => $pph[0]['unical_count'],
+		'active' => $boards72[0]['unical_count'],
+		'new' => true,
 	);
-
-
- 
 }
