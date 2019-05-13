@@ -61,6 +61,7 @@ function replybox_submit(form) {
 
 	var submit_txt = $(form).find('.reply-send-button').val();
 	var formData = new FormData(form);
+	let fboard = formData.get('board');
 	var dontResetForm = false;
 
 	var btn_text = (typeof(NTUBE_STATE) !== 'undefined' && NTUBE_STATE >= 1) ? '..' : _T('Wait') ;
@@ -101,8 +102,17 @@ function replybox_submit(form) {
 		processData: false,
 		dataType: 'json'
 	}).done(function(response) {
+ 
 
-		$(document).trigger('ajax_after_post', response);
+		if(response.id) {
+
+			if(!Api.own_posts.hasOwnProperty(fboard)) {
+				Api.own_posts[fboard]=[];
+			}
+
+			Api.own_posts[fboard].push(parseInt(response.id));
+			localStorage.own_posts = JSON.stringify(Api.own_posts);			
+		}
 
 		if (response.banned) {
 
@@ -145,9 +155,15 @@ function replybox_submit(form) {
 			}
 			else if(response.template && response.creation_time)
 			{
-				autoLoadSecCurrent=0; 
-				updatePost(response, true);
-								
+				autoLoadSecCurrent=0;
+
+				// force replace
+				for(let i=0,l=Api.postStore.length; i<l;i++) {
+					if(Api.postStore[i].id == response.id)
+						delete Api.postStore[i];
+				}
+
+				Api.noticeNewPost($(response.template)[0]);
 			}
 			else { 
 				autoLoad(true);
