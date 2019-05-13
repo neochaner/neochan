@@ -11,50 +11,12 @@ var megaurl = "";
 var POST_AUTO_SCROLL = false;
 var POST_AUTO_SCROLL_BOTTOM = 300;
 
-var uStore={
+Api.onLoadPage(reloadMain, ['thread']);
 
-	'b':	// board
-	[0,		// - last time
-	0,		// - last id
-	0]		// - min post id
-	,
-	'kpop':[0,0,0],
-	'mu':[0,0,0],
-	'jp':[0,0,0],
-
- }; 
-
-$(document).ready(function(){
-
-
-	if(config.active_page != 'thread')
-		return;
+function reloadMain() {
 	
-
 	setInterval(function(){ autoLoadCycle() }, 1000);
-
-	uStore = {};
-
-	let posts = document.getElementsByClassName('post');
-	let boardUri, postID, eTime, postTime;
-			
-	for(let i=0;i<posts.length;i++){
-
-		boardUri =  posts[i].dataset.board;
-		postID = posts[i].dataset.board+'_'+posts[i].dataset.thread+'_'+posts[i].dataset.post;
-		eTime = posts[i].getElementsByTagName("time");
-
-		if(!uStore.hasOwnProperty(boardUri)){
-			uStore[boardUri] = [0, 0, 0];
-		}
-					
-		if(eTime.length > 0){
-			postTime = eTime[0].getAttribute('edit');
-			uStore[ posts[i].dataset.board] = [postTime,  posts[i].dataset.post, 0];
-		}
-	}
-
-});
+}
 
 
 function infoAlert(text, time=3000)
@@ -79,7 +41,6 @@ function getAutoloadSecs() {
 		return autoLoadSec*2;
 	return autoLoadSec;
 }
-
 
 function autoLoadCycle()
 {
@@ -108,65 +69,66 @@ function autoLoadCycle()
 	}
 }
 
-
 function manualLoad(){
 	autoLoadSecCurrent = 0;
 	autoLoadCycle();
 }
 
+
 function autoLoad(fullReloadPage=false)
 {
 
 
+	let maxID =0;
+	let maxEdit=0;
 
-	let argBoards='';
-	let argLastTimes='';
-	let argLastIds=''; 
+	for (let i=0, l=Api.postStore.length; i<l; i++) {
 
-	for(let key in uStore){
-		argBoards = argBoards + (argBoards.length ? ',' : '') + key;
-		argLastTimes = argLastTimes + (argLastTimes.length ? ',' : '') + uStore[key][0] ;
-		argLastIds = argLastIds + (argLastIds.length ? ',' : '') +  uStore[key][1] ;
-
-		if(fullReloadPage){
-			argLastTimes = 0;
-			argLastIds = 0;
-		}
+		if(maxID < Api.postStore[i].post)
+			maxID = Api.postStore[i].post;
+		if(maxEdit < Api.postStore[i].edit)
+			maxEdit = Api.postStore[i].edit;
 	}
-	
+
+	if(fullReloadPage){
+		maxID = 0;
+		maxEdit = 0;
+	}
+
 	var uripath = window.location.origin + '/recent_v2.php?'+
 	'board=' + config.board_uri + 
-	'&thread=' + $('#thread_id').data('id') + 
-	'&post=' + argLastIds + 
-	'&time=' + argLastTimes+
-	'&active_page=' + config.active_page +
+	'&thread=' + Api.thread + 
+	'&post=' + maxID + 
+	'&time=' + maxEdit+
 	'&neotube=' + NTUBE_STATE;
-
-	if(getKey('disableModPosts', false))
-		uripath += '&disable_mod';
 
 
 	$.ajax({
 		url: uripath
 	}).done(function(data) {
 
-	
-		if(data.length < 5){	
+		if (data.length < 5) {
 			console.log('update empty');
-			return
+			return;
 		}
 
 		let result = JSON.parse(data);
 
-		if(result.post_len > 0){
+		if (result.post_len > 0) { //????????
 
-			let posts = sortPosts(result.posts);
+			let posts = result.posts;
 
-			for(let i=0; i<posts.length;i++)
-				updatePost(posts[i]);
+			for (let i=0; i<posts.length;i++) {
+
+				if (posts[i].template == null) {
+					Api.noticeHidePost(posts[i].board, posts[i].id);
+				} else {
+					Api.noticeNewPost($(posts[i].template)[0]);
+				} 
+			}
 		}
 
-		if(NTUBE_STATE > 0 && typeof result.playlist != 'undefined'){
+		if (NTUBE_STATE > 0 && typeof result.playlist != 'undefined') {
 			neotubeUpdatePlayList(result.playlist);
 		}
 		
@@ -183,131 +145,6 @@ function autoLoad(fullReloadPage=false)
 	});
 
 }
-
-/* сортируем посты по времени создания */
-function sortPosts(posts)
-{
-
-	for (let i = 0, end_i = posts.length - 1; i < end_i; i++) 
-	{
-		for (let j = 0, end_j = end_i - i; j < end_j; j++) 
-		{
-			if (posts[j].time > posts[j + 1].time) 
-			{
-				var tmp = posts[j];
-				
-                posts[j] = posts[j + 1];
-                posts[j + 1] = tmp;
-            }
-        }
-	}
-
-	return posts;
-}
-
-function addNewPost(post, createTime)
-{
-
-	if(post == '')
-		return false;
-
-
-	// check double
-	let dpost = $(post);
-	let dclass = 'post_' + dpost[0].dataset.board + '_' + dpost[0].dataset.thread + '_' + dpost[0].dataset.post;
-	let dcheck = document.getElementsByClassName(dclass);
-
-	if(dcheck.length > 0){
-		dcheck[0].parentNode.removeChild(dcheck[0]);
-	}
-
-
-	let posts = $('.post').not('.hover');// document.querySelectorAll('.post');
-	
-	for(let i=posts.length-1; i>=0;i--){
-		
-		let curTime =  posts[i].getElementsByTagName('time')[0].getAttribute('unixtime');
-		
-		if(createTime > parseInt(curTime))
-		{
-
-			var nPost = $(post).insertAfter(posts[i]).addClass('new_post');
-			$(document).trigger('new_post', nPost[0]);
-		
-			postAutoCroll();
-			return true;
-		}
-		
-	}
-
-
-}
-
-function updatePost(post, forceReplace = false)
-{
-
-	let time =  post.changed_at;
-	let postID = 'post_' + post.board + '_' + post.thread + '_' + post.id ;
-	let oldPost = $('.'+ postID).not('.hover');
-	let oldPostTime = 0;
-	
-	if(!forceReplace && oldPost.length ==1)
-	{
-		oldPostTime = oldPost.find('time')[0].getAttribute('edit');
-	}
-
-
-	if(!forceReplace && uStore[post.board][2] >= post.id)
-		return false;
-
-			
-	// hide or deleted
-	if(post.template == null)
-	{
-
-		if(oldPost.length != 0 && !enable_devil)
-		{
-			console.log('update: post '+postID+' hide or deleted');
-			oldPost.remove();
-			reloadControls();
-		}
-
-	}
-	// new post
-	else if(oldPost.length == 0)
-	{
-		console.log('update: new post '+ postID);
-		addNewPost(post.template, post.time);
-	}
-	// changed post
-	else if(oldPostTime < time)
-	{
-
-		uStore[post.board][0] = time;
-		uStore[post.board][1] = post.id;
-
-		console.log('Post #' + postID + ' changed'); 
-			
-		var nPost = $(post.template).insertAfter(oldPost);
-		oldPost.remove();
-		reloadControls();
-		$(document).trigger('change_post', nPost[0]);
-
-		postAutoCroll();
-
-	}
-
-	
-	if(time > uStore[post.board][0])
-	{
-		uStore[post.board][0] = time;
-		uStore[post.board][1] = post.id;
-	}
-		
-}
-
-
-
 
 function reloadControls()
 {
