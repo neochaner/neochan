@@ -1,39 +1,27 @@
-/** global: config, serverTime,  */
 
 
-var loadPageTick = new Date().getTime();
-var optionLocalTimeKey = 'localTimeMode';
-var optionLocalTimeValue;
+Api.onLoadPage(timeMain);
+Api.onLoadPost(timeProcess);
+Api.onNewPost(timeProcess);
+Api.onChangePost(timeProcess);
+
+
+var OPT_LOCALTIME = true;
 var OPT_TIMESHORT = true;
 var OPT_TIMEFORMATDAY = [' ', ' ', ' ', ' ', ' ', ' ', ' '];
+var STORE_AGOS={};
+var timeDifference;
 
- 
-var interval_id;
+timeLoad();
 
-function getServerTime()
-{
-	var elapsed_sec = (new Date().getTime() - loadPageTick) / 1000;
-	return serverTime + elapsed_sec;
+function timeMain() {
+	OPT_LOCALTIME = Api.addOptCheckbox('localTimeMode', false, 'l_relative', '', timeOptChange);
+	setInterval(timeReload, 1000 * 10);	
 }
 
- 
-
-$(document).ready(function(){
-
-	optionLocalTimeValue = menu_add_checkbox(optionLocalTimeKey, false, 'l_relative');
-	interval_id = setInterval(do_time, 1000 * 60, document);	
-	 
-	$(document).on(optionLocalTimeKey, function(e, value) {	
-		
-		optionLocalTimeValue = value;
-		do_time(document);
-	});
-
-	timeReload();
-
-});
-
-function timeReload(){
+function timeLoad() {
+	
+	timeDifference = config.language == 'ru' ? timeDifferenceRU : timeDifferenceEU;
 
 	function D(dayNum, sym=2){
 
@@ -62,26 +50,93 @@ function timeReload(){
 			OPT_TIMEFORMATDAY =  [' ', ' ', ' ', ' ', ' ', ' ', ' '];
 		break;
 	}
+} 
 
-	do_time(document);
+function timeOptChange(optLocalTime) {
+
+	OPT_LOCALTIME = optLocalTime;
+	timeLoad();
+	timeReload(true);
+}
+
+function timeReload(reload=false) {
+
+	if(reload) {
+		STORE_AGOS={};
+	}
+
+	for(let i=0, l=Api.postStore.length; i<l; i++) {
+		timeProcess(Api.postStore[i]);
+	}
+}
+
+function timeProcess(obj){
+
+	let currentServerTime = getServerTime();
+	let timeAgo = timeDifference(currentServerTime*1000, obj.time*1000);
+
+	if(!STORE_AGOS.hasOwnProperty(obj.id))
+	{
+		var t = obj.elTime.getAttribute('datetime');
+		var abs = dateformatUN(iso8601(t));
+
+		// new element
+		if(OPT_LOCALTIME) {
+			obj.elTime.innerText = timeAgo;
+			obj.elTime.title = abs;
+			obj.elTime.setAttribute('data-original-title', abs);
+		} else {
+			obj.elTime.innerText = abs;
+			obj.elTime.title = timeAgo;
+			obj.elTime.setAttribute('data-original-title', timeAgo);
+		}
+	} else if (STORE_AGOS[obj.id] != timeAgo) {
+		
+		// need change ago info
+		if(OPT_LOCALTIME) {
+			obj.elTime.innerText = timeAgo;
+		} else {
+			obj.elTime.title = timeAgo;
+			obj.elTime.setAttribute('data-original-title', timeAgo);
+		}
+	} else {
+		return false;
+	}
+
+
+	STORE_AGOS[obj.id] = timeAgo;
+}
+
+
+
+
+
+
+
+
+
+/** global: config, serverTime,  */
+
+
+var loadPageTick = new Date().getTime();
+var optionLocalTimeKey = 'localTimeMode';
+var optionLocalTimeValue;
+var OPT_TIMESHORT = true;
+var OPT_TIMEFORMATDAY = [' ', ' ', ' ', ' ', ' ', ' ', ' '];
+
+
+var interval_id;
+
+function getServerTime()
+{
+	var elapsed_sec = (new Date().getTime() - loadPageTick) / 1000;
+	return serverTime + elapsed_sec;
 }
  
- 
-
-$(document).on('new_post', function(e, post) {
-	do_time(post);
-});
-
-$(document).on('change_post', function(e, post) {
-	do_time(post);
-});
-
-
 var dn = new Date();
 var cur_year = dn.getFullYear();
 var cur_month = dn.getMonth();
 var cur_day = dn.getUTCDate();
-
 
 var iso8601 = function(s) {
 	s = s.replace(/\.\d\d\d+/,""); // remove milliseconds
@@ -212,142 +267,3 @@ function timeDifferenceRU(current, previous)
     
     return null;
 }
-
-
-function do_time(elem)
-{
-	if(optionLocalTimeValue)	
-		do_localtime(elem);
-	else
-		do_absolutetime(elem);
-}
-
-function do_localtime(elem)
-{
-	if(config.language == 'ru')
-		do_localtime_ru(elem);
-	else
-		do_localtime_eu(elem);
-}
-
-function do_absolutetime(elem)
-{
-	if(config.language == 'ru')
-		do_absolutetime_ru(elem);
-	else
-		do_absolutetime_eu(elem);
-}
-
-
-var do_localtime_ru = function(elem) 
-{	
-
-	var times = elem.getElementsByTagName('time');
-	var currentServerTime = getServerTime();
-
-    for(var i = 0; i < times.length; i++) 
-    { 
-		var unixtime = times[i].getAttribute('unixtime');
-		var timeAgo = timeDifferenceRU(currentServerTime*1000, unixtime*1000);
-
-		if(times[i].innerHTML != timeAgo)
-		{
-
-			var t = times[i].getAttribute('datetime');
-			var isoDateTime =  dateformatUN(iso8601(t));
-
-			times[i].innerText = timeAgo;
-			times[i].title = isoDateTime;
-			times[i].setAttribute('data-original-title', isoDateTime);
-		}
-		
-	}
-};
-
-var do_localtime_eu = function(elem) 
-{	
-
-	var times = elem.getElementsByTagName('time');
-	var currentServerTime = getServerTime();
-
-    for(var i = 0; i < times.length; i++) 
-    { 
-		var unixtime = times[i].getAttribute('unixtime');
-		var timeAgo = timeDifferenceEU(currentServerTime*1000, unixtime*1000);
-
-		if(times[i].innerHTML != timeAgo)
-		{
-
-			var t = times[i].getAttribute('datetime');
-			var isoDateTime =  dateformatUN(iso8601(t));
-
-			times[i].innerText = timeAgo;
-			times[i].title = isoDateTime;
-			times[i].setAttribute('data-original-title', isoDateTime);
-		}
-		
-	}
-};
-	
- 
-	
-
-
- 
-var do_absolutetime_ru = function(elem) 
-{	
-
-	var times = elem.getElementsByTagName('time');
-	var currentTime = Date.now();
-
-    for(var i = 0; i < times.length; i++) 
-    {
-		var t = times[i].getAttribute('datetime');
-		var abs = dateformatUN(iso8601(t));
-
-		if(times[i].innerHTML != abs)
-		{
-			times[i].innerText = abs;
-		}
-
-		var postTime = new Date(t);
-		var timeDiff = timeDifferenceRU(currentTime, postTime.getTime());
-		
-		if(times[i].getAttribute('data-original-title') != timeDiff)
-		{
-			times[i].title = timeDiff;
-			times[i].setAttribute('data-original-title', timeDiff);
-		}
-
-
-	}
-};
-	
-var do_absolutetime_eu = function(elem) 
-{	
-
-	var times = elem.getElementsByTagName('time');
-	var currentTime = Date.now();
-
-    for(var i = 0; i < times.length; i++) 
-    {
-
-		var t = times[i].getAttribute('datetime');
-		var abs =  dateformatUN(iso8601(t));
-
-		if(times[i].innerHTML != abs)
-		{
-			times[i].innerText = abs;
-		}
-
-		var postTime = new Date(t);
-		var timeDiff = timeDifferenceEU(currentTime, postTime.getTime());
-		
-		if(times[i].getAttribute('data-original-title') != timeDiff)
-		{
-			times[i].title = timeDiff;
-			times[i].setAttribute('data-original-title', timeDiff);
-		}
-	}
-};
-	
