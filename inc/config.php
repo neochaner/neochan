@@ -1014,8 +1014,8 @@ srand(time());
 	$config['additional_javascript'][] = 'js/storage.js';
 	$config['additional_javascript'][] = 'js/player.js';
 	$config['additional_javascript'][] = 'js/base.js';
-	$config['additional_javascript'][] = 'js/loc.js';
 	$config['additional_javascript'][] = 'js/api.js';
+	$config['additional_javascript'][] = 'js/loc.js'; 
 
 
 	$config['additional_javascript'][] = 'js/time.js';
@@ -1034,7 +1034,6 @@ srand(time());
 	
 	$config['additional_javascript'][] = 'js/mod.js';
 	$config['additional_javascript'][] = 'js/show-own-posts.js';
-	$config['additional_javascript'][] = 'js/show-op.js';
 	$config['additional_javascript'][] = 'js/replybox-float.js';
 	
 	$config['additional_javascript'][] = 'js/media.js'; 
