@@ -3,14 +3,20 @@ var optionNSFMValue;
 var optionNSFMOpacity = 0.01;
 var optionNSFMSmileOpacity = 0.1;
 
-	
-$(document).ready(function(){
 
-	optionNSFMValue = Menu.addCheckBox(optionNSFMKey, false, 'l_nsfm', '', toggleNSFM);
+Api.onLoadPage(mainNSFM)
+Api.onLoadPost(processNSFM);	
+Api.onNewPost(processNSFM);	
+Api.onChangePost(processNSFM);	
+
+
+function mainNSFM() {
+
+	optionNSFMValue = Api.addOptCheckbox(optionNSFMKey, false, 'l_nsfm', '', toggleNSFM);
 
 	if(optionNSFMValue)
         enableNSFM();
-});
+}
 
 
 function toggleNSFM(value)
@@ -51,26 +57,27 @@ function disableNSFM()
     $(".s42").unbind('mouseenter mouseleave');
 }
 
-
-$(document).on('new_post', function(e, post) {
+function processNSFM(obj){
 
     if(optionNSFMValue)	
     {
-        $(post).find("img").css("opacity", optionNSFMOpacity)
-        $(post).find(".s42").css("opacity", optionNSFMSmileOpacity)
+        let post = $(obj.el);
 
-        $(post).find("img").hover(function(){
+        post.find("img").css("opacity", optionNSFMOpacity)
+        post.find(".s42").css("opacity", optionNSFMSmileOpacity)
+
+        post.find("img").hover(function(){
             $(this).css("opacity", 1);
             }, function(){
             $(this).css("opacity", optionNSFMOpacity);
         });
 
-        $(post).find(".s42").hover(function(){
+        post.find(".s42").hover(function(){
             $(this).css("opacity", 1);
             }, function(){
             $(this).css("opacity", optionNSFMSmileOpacity);
         });
-
-
     }
-});
+}
+
+ 

@@ -3,14 +3,15 @@
 var optKeyCustomJs = 'custom_js';
 var optKeyCustomCSS = 'custom_css';
 
+Api.onLoadPage(mainJSCSS)
 
-$(document).ready(function(){
+function mainJSCSS() {
 
 	let jsOpt = `<a onclick='openJSCSSBox("JavaScript", "`+optKeyCustomJs+`")' style="cursor: pointer;"><i class="fa fa-pencil"></i></a>`;
 	let cssOpt = `<a onclick='openJSCSSBox("CSS", "`+optKeyCustomCSS+`")' style="cursor: pointer;"><i class="fa fa-pencil"></i></a>`;
 	
-	let enableJS = Menu.addCheckBox('optCustomJs', false, 'l_custom_js', '', false, jsOpt); 
-	let enableCSS = Menu.addCheckBox('optCustomCss', false, 'l_custom_css', '', false, cssOpt); 
+	let enableJS = Api.addOptCheckbox('optCustomJs', false, 'l_custom_js', '', false, jsOpt); 
+	let enableCSS = Api.addOptCheckbox('optCustomCss', false, 'l_custom_css', '', false, cssOpt); 
 
 
 	let userCSS = localStorage.getItem('custom_css');
@@ -22,8 +23,6 @@ $(document).ready(function(){
     css.type="text/css"; 
     css.innerHTML = userCSS
     document.body.appendChild(css);
-
-	
 	}
 
 	if(enableJS && userJS !== null){
@@ -39,7 +38,7 @@ $(document).ready(function(){
 		}*/
 	}
 
-});
+}
 
  
 
