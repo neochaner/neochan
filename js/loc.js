@@ -184,14 +184,6 @@ function jsLocalization()
 
 	});
 
-	var elems = $('.post-link');
-
-	for(var i=0; i<elems.length; i++)
-	{
-		var link = $(elems[i]);
-		link.html(link.html().replace(/ \(.+\)/, _T(' (You)')));
-	}
-
 	$('.reply-subject[name=subject]').attr('placeholder', _T('subject')) 
 	$('.reply-subject[name=neoname]').attr('placeholder', _T('name'))
 	$('.reply-send-button').attr('value', _T('Send'));
