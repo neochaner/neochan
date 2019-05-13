@@ -1,4 +1,27 @@
 
+function el(id){
+	return document.getElementById(id);
+}
+
+function $remove(el) {
+
+	if(typeof el === 'string') {
+		el = document.getElementById(el);
+	}
+  
+	el.parentElement.removeChild(el);
+}
+
+function $before(x, y) {
+  x.parentElement.insertBefore(y, x);
+}
+
+function $after(x, y) {
+  x.parentElement.insertBefore(y, x.nextSibling);
+}
+
+
+
 class EventCallback
 {
 	
@@ -26,7 +49,6 @@ class EventCallback
 	}
 
 }
-
 
 class BoardApi
 {
@@ -109,8 +131,30 @@ class BoardApi
 		return item;
 	}
 
-	/*******************/
+	addOptCheckbox(key, default_bool, l_text, tooltip, callback=false, add_div='')
+	{
+	
+		var rValue  = getKey(key, default_bool);
+		var state = rValue ? 'checked' : '';
+		
+		var div = `<div class='options-item'>
+		<label class='checktainer_xs `+l_text+`'><input type='checkbox' `+state+` id='`+key+`' onclick='Menu.toggle("`+key+`")'>
+		<span class='checkmark_xs'></span></label>`+add_div+`</div>`;
 
+		$( ".options-tab" ).append(div);
+
+		//box.innerHTML+=div;
+
+		if(callback) {
+			this.events.register('option-toggle-' + key, callback);
+		} 
+
+		return rValue;
+
+	}
+
+	
+	/*******************/
 
 
 
@@ -119,7 +163,7 @@ class BoardApi
 		if (typeof num === 'string') {
 			num = parseInt(num);
 		}
-		
+
 		return (this.own_posts[board] && this.own_posts[board].indexOf(num) !== -1);
 	}
 
@@ -139,7 +183,7 @@ class BoardApi
 
 	parsePostElem(el) {
 		
-		let timeEl = el.getElementsByTagName("time")[0];
+		let elTime = el.getElementsByTagName("time")[0];
 		let trip = el.querySelector('.post-trip');
 		let pbody = el.getElementsByClassName('post-body');
 	    let plinksEl = pbody[0].getElementsByClassName('post-link');
@@ -168,8 +212,10 @@ class BoardApi
 		postObj.op = el.dataset.thread == el.dataset.post;
 		postObj.trip = trip != null ? trip.innerHTML : false;
 		postObj.own = this.isOwnPost(postObj.board, postObj.post);
-		postObj.time = parseInt(timeEl.getAttribute('unixtime'));
-		postObj.edit = parseInt(timeEl.getAttribute('edit'));
+		
+		postObj.elTime = elTime;
+		postObj.time = parseInt(elTime.getAttribute('unixtime'));
+		postObj.edit = parseInt(elTime.getAttribute('edit')); 
 
 		return postObj; 
 	
@@ -223,7 +269,7 @@ class BoardApi
 					return;
 				}
 
-				if(prevObj == null || prevObj.post < orig.post) {
+				if(prevObj == null || (orig.post > prevObj.post && orig.post < obj.post)) {
 					prevObj = this.postStore[i];
 				}
 			}
@@ -232,7 +278,7 @@ class BoardApi
 		// ADD NEW POST
 
 		if(prevObj == null) {
-			let thread = document.getElementById('thread_' + obj.thread).appendChild(obj.el);
+			document.getElementById('thread_' + obj.thread).appendChild(obj.el);
 		} else {
 
 			$after(prevObj.el, obj.el);
@@ -254,6 +300,13 @@ class BoardApi
 		}
 	}
 
+	noticeOptToggle(key) {
+
+		let value = document.getElementById(key).checked;
+		
+		setKey(key, value);
+		this.events.awake('option-toggle-'+key, value);
+	}
 
 
 	/* Events */
