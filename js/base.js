@@ -46,9 +46,6 @@
 
 
 
-function el(id){
-	return document.getElementById(id);
-}
 
 function is_visible(id){
     return $(id).css('display') !== 'none';
