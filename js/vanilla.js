@@ -92,18 +92,6 @@ function set_draggable(elem_id, clickEvent = false, excludeElements = [], endDra
 
 }
 
-function $remove(elem_id){
-    
-  let el = document.getElementById(elem_id);
-
-  if(el != null){
-    el.parentElement.removeChild(el);
-    return true;
-  }
-
-  return false;
-}
-
 
 function $rand(length) {
   var text = "";
@@ -114,8 +102,6 @@ function $rand(length) {
 
   return text;
 }
-
-
 
 
 function win_size(){
