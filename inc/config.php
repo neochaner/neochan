@@ -1009,6 +1009,7 @@ srand(time());
 	$config['max_images'] = 10;
 
 
+	// general
 	$config['additional_javascript'][] = 'js/jquery-3.1.0.min.js'; 
 	$config['additional_javascript'][] = 'js/vanilla.js';
 	$config['additional_javascript'][] = 'js/storage.js';
@@ -1016,12 +1017,13 @@ srand(time());
 	$config['additional_javascript'][] = 'js/base.js';
 	$config['additional_javascript'][] = 'js/api.js';
 	$config['additional_javascript'][] = 'js/loc.js'; 
+	$config['additional_javascript'][] = 'js/menu-options.js';
 
 
-	$config['additional_javascript'][] = 'js/time.js';
-
-	$config['additional_javascript'][] = 'js/group-menu.js'; 
-	$config['additional_javascript'][] = 'js/menu-options.js';   
+	// plugins
+	$config['additional_javascript'][] = 'js/group-menu.js';
+	$config['additional_javascript'][] = 'js/time.js'; 
+	$config['additional_javascript'][] = 'js/fav.js';
 
 
 	
