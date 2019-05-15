@@ -1862,10 +1862,15 @@ hr{
     color:#0a0a0a
 }
 
+
+.post-hide>.post-body{
+	display:none;
+}.post-hide>.post-footer{
+	display:none;
+}
 .post-marker {
     border-left: 2px dashed #52709e !important;
 }
-
 .post-you {
     border-left: 2px solid #52709e !important;
 }
@@ -2792,6 +2797,22 @@ html.work-mode .post-file-info:hover~.post-file-link{
     position: absolute;
     font-size: 12px;
     line-height: 1.5em;
+}
+.post-menu .post-submenu>ul
+{
+    white-space:nowrap;
+	width:auto;
+}
+.post-menu ul ul
+{
+    display:none;
+    position:absolute;
+}
+.post-menu :hover>ul
+{
+    display:block;
+    left:100%;
+    margin-top:-4px;
 }
 .post-menu ul {
     background-color: #fdfdfd!important;

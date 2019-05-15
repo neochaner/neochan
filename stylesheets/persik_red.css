@@ -1798,6 +1798,11 @@ hr{
     color:#0a0a0a
 }
 
+.post-hide>.post-body{
+	display:none;
+}.post-hide>.post-footer{
+	display:none;
+}
 .post-marker {
     border-left: 2px dashed #5e2d14 !important;
 }
@@ -2706,11 +2711,27 @@ html.work-mode .post-file-info:hover~.post-file-link{
 
 
 
-  .post-menu {
+.post-menu {
     position: absolute;
     font-size: 12px;
     line-height: 1.5em;
     box-shadow: 1px 1px 2px 0px rgba(184, 102, 47, 0.692);
+}
+.post-menu .post-submenu>ul
+{
+    white-space:nowrap;
+	width:auto;
+}
+.post-menu ul ul
+{
+    display:none;
+    position:absolute;
+}
+.post-menu :hover>ul
+{
+    display:block;
+    left:100%;
+    margin-top:-4px;
 }
 .post-menu ul {
     background-color: rgb(248, 242, 246) !important;

@@ -1779,10 +1779,14 @@ hr{
     color:#0a0a0a
 }
 
+.post-hide>.post-body{
+	display:none;
+}.post-hide>.post-footer{
+	display:none;
+}
 .post-marker {
     border-left: 2px dashed var(--post-marker-color) !important;
 }
-
 .post-you {
     border-left: 2px solid var(--post-marker-color) !important;
 }
@@ -2720,6 +2724,22 @@ textarea::placeholder { color: var(--placeholder-color); }
     position: absolute;
     font-size: 12px;
     line-height: 1.5em;
+}
+.post-menu .post-submenu>ul
+{
+    white-space:nowrap;
+	width:auto;
+}
+.post-menu ul ul
+{
+    display:none;
+    position:absolute;
+}
+.post-menu :hover>ul
+{
+    display:block;
+    left:100%;
+    margin-top:-4px;
 }
 .post-menu ul {
     background-color: var(--post-menu-backgound-color)!important;
