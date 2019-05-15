@@ -6,7 +6,7 @@ function el(id){
 function $remove(el) {
 
 	if(typeof el === 'string') {
-		el = document.getElementById(el);
+		el = document.getElementById(el);			
 	}
   
 	el.parentElement.removeChild(el);
@@ -101,6 +101,73 @@ class BoardApi
 		langData.push(line);
 	}
 
+	callPostMenu(el) {
+		
+		console.log(el);
+		let oldMenu = document.getElementById('post-menu');
+		
+		if(oldMenu) {
+			oldMenu.parentNode.removeChild(oldMenu);
+			//return false;
+		}
+			
+
+		let key = 'onPostMenu';
+		let post = $(el).closest('.post')[0];
+		let obj = this.parsePostElem(post);
+		let postMenu = [];
+		
+		
+		// manual awake 
+		if(this.events.data.hasOwnProperty(key)) {
+			for (let i=0, l=this.events.data[key].length; i<l; i++) {
+				let items = this.events.data[key][i](obj);
+				postMenu.push(items);
+			}
+		}
+		
+		// build post menu
+		let html ="<div class='post-menu' id='post-menu' style='z-index: 2'><ul>";
+		
+		for(let i=0,l=postMenu.length; i<l;i++) {
+			
+			for(let j=0,ll=postMenu[i].length; j<ll;j++) {
+				
+				if(postMenu[i][j].hasOwnProperty('submenu')) {
+					html += "<li class='post-submenu'><ul>"
+					
+					for(let k=0,lll=postMenu[i][j].items.length; k<lll;k++) {
+						let onclick = postMenu[i][j].items[k].onclick;
+						let name = postMenu[i][j].items[k].name;
+					
+						html += "<li class='post-item' onclick='"+onclick+"'>"+_T(name)+"</li>"
+					}
+					
+					html += "</ul>" + _T(postMenu[i][j].submenu) + '<span>>></span></li>'
+				} else {
+				
+					let onclick = postMenu[i][j].onclick;
+					let name = postMenu[i][j].name;
+					console.log(postMenu[i][j]);
+					html += "<li class='post-item' onclick='"+onclick+"'>"+_T(name)+"</li>"
+				}
+			}
+		}
+		
+		html +='</ul></div>';
+		
+		
+		
+		$(html).appendTo('.main');
+		var pos = $(event.target).offset();
+
+		$("#post-menu").offset({ top: pos.top+18, left: pos.left});
+
+		$( "#post-menu" ).click(function() {      
+			$('#post-menu').remove();
+		});
+		
+	}
 
 	/* ADD ELEMENTS */
 
@@ -153,10 +220,17 @@ class BoardApi
 
 	}
 
-	
+	addPostMenu(callback) {
+		this.events.register('onPostMenu', callback);
+	}
 	/*******************/
 
-
+	getPost(board, post){
+		for (let i=0, l=this.postStore.length; i<l; i++) {
+			if(this.postStore[i].board == board && this.postStore[i].post == post)
+				return this.postStore[i];
+		}
+	}
 
 	isOwnPost(board, num) {
 
@@ -187,7 +261,7 @@ class BoardApi
 		let trip = el.querySelector('.post-trip');
 		let pbody = el.getElementsByClassName('post-body');
 	    let plinksEl = pbody[0].getElementsByClassName('post-link');
-		
+		let elName = el.querySelector('.post-name');
 		var postObj = {
 			'el'		: null,
 			'board'		: '',	// board
@@ -210,6 +284,7 @@ class BoardApi
 		postObj.post = parseInt(el.dataset.post);
 		postObj.id = el.dataset.board+'_'+el.dataset.thread+'_'+el.dataset.post;
 		postObj.op = el.dataset.thread == el.dataset.post;
+		postObj.name = elName == null ? false : elName.innerHTML;
 		postObj.trip = trip != null ? trip.innerHTML : false;
 		postObj.own = this.isOwnPost(postObj.board, postObj.post);
 		
