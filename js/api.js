@@ -5,11 +5,14 @@ function el(id){
 
 function $remove(el) {
 
-	if(typeof el === 'string') {
-		el = document.getElementById(el);			
+	if (typeof el === 'string') {
+		el = document.getElementById(el);
 	}
-  
-	el.parentElement.removeChild(el);
+	
+	if (el != null) {
+		el.parentElement.removeChild(el);
+	}
+
 }
 
 function $before(x, y) {
