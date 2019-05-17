@@ -1609,18 +1609,33 @@ function mod_ban_post($board, $delete, $post, $token = false) {
 			$query->execute() or error(db_error($query));
 			rebuildPost($post);
 
+			rebuildTheme('modlog', 'mod-ban', array('board'=>$board, 'post'=>$post, 'message'=>$_POST['message']));
 			modLog("Attached a public ban message to post #{$post}: " . utf8tohtml($_POST['message']));
 			buildThread($thread ? $thread : $post);
 			buildIndex();
 		} elseif (isset($_POST['delete']) && (int) $_POST['delete']) {
 			// Delete post
+			rebuildTheme('modlog', 'mod-ban-delete', array('board'=>$board, 'post'=>$post));
 			deletePost($post);
 			modLog("Deleted post #{$post}");
 			// Rebuild board
 			buildIndex();
 			// Rebuild themes
 			rebuildThemes('post-delete', $board);
+		} else {
+			rebuildTheme('modlog', 'mod-ban', array('board'=>$board, 'post'=>$post));
 		}
+
+		/*
+
+	$arr = explode('/', $_SERVER['REQUEST_URI']);
+	$postID = (int)($arr[count($arr)-1]);
+
+	if($postID > 0) {
+		rebuildTheme('modlog', 'mod-ban', array('board'=>$board, 'post'=>$postID, 'message'=>$_POST['reason']));
+	}
+
+		*/
 
 		header('Location: ?/' . sprintf($config['board_path'], $board) . $config['file_index'], true, $config['redirect_http']);
 	}
@@ -1775,6 +1790,7 @@ function mod_delete($board, $post)
 	if (!hasPermission($config['mod']['delete'], $board))
 		error($config['error']['noaccess']);
 	
+	rebuildTheme('modlog', 'mod-delete', array('board'=>$board, 'post'=>$post));
 	// Delete post
 	deletePost($post);
 	// Record the action
@@ -1971,6 +1987,8 @@ function mod_deletebyip($boardName, $post, $global = false)
 	$query->execute() or error(db_error($query));
 	if (!$ip = $query->fetchColumn())
 		error($config['error']['invalidpost']);
+
+	rebuildTheme('modlog', 'mod-delete-by-ip', array('board'=>$boardName, 'post'=>$post));
 	
 	$boards = $global ? listBoards() : array(array('uri' => $boardName));
 	
