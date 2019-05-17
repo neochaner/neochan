@@ -81,6 +81,7 @@ class BoardApi
 
 		this.maxPostID=0;
 		this.maxEditTime=0;
+		this.isThreadPage = config.active_page == 'thread';
 	}
 
 	addTranslates(obj){
@@ -195,7 +196,7 @@ class BoardApi
 		
 		let item = document.createElement('a');
 		item.className="header-item header-icon";
-		item.innerHTML = '<i class="fa fa-'+icon+'"></i><span class="badge"></span>';
+		item.innerHTML = '<i class="fa fa-'+icon+'"></i><span class="header-badge"></span>';
 		item.title = _T(title);
 		item.onclick = callback;
 		
@@ -236,6 +237,18 @@ class BoardApi
 			if(this.postStore[i].board == board && this.postStore[i].post == post)
 				return this.postStore[i];
 		}
+	}
+
+	getMaxPost(){
+
+		let max = false;
+
+		for (let i=0, l=this.postStore.length; i<l; i++) {
+			if(!max || this.postStore[i].post > max.post)
+				max= this.postStore[i];
+		}
+
+		return max;
 	}
 
 	isOwnPost(board, num) {

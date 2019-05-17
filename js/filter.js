@@ -162,6 +162,7 @@ function filter_post(post, reload = false)
 function post_menu(event)
 {
 	event.preventDefault();
+	return Api.callPostMenu(event.target);
 	
 	let target = event.target;
 
