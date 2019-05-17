@@ -1385,6 +1385,13 @@ hr{
     background: var(--menu-item-background-color);
     text-decoration:none;
 }
+.header-badge{
+    position: relative;
+    color: green;
+    font-size: 10px;
+    left: 2px;
+    top: 2px;
+}
 .logo{
     display: block;
     width: 36px;
