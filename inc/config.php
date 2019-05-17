@@ -1023,7 +1023,7 @@ srand(time());
 	// plugins
 	$config['additional_javascript'][] = 'js/group-menu.js';
 	$config['additional_javascript'][] = 'js/time.js'; 
-	$config['additional_javascript'][] = 'js/fav.js';
+	$config['additional_javascript'][] = 'js/favorites.js';
 
 
 	
@@ -1049,7 +1049,8 @@ srand(time());
 	$config['additional_javascript'][] = 'js/smile-picker.js';
 
 	$config['additional_javascript'][] = 'js/show-backlinks.js';
-	$config['additional_javascript'][] = 'js/filter.js';
+	$config['additional_javascript'][] = 'js/filter-new.js';
+	$config['additional_javascript'][] = 'js/report.js';
 	$config['additional_javascript'][] = 'js/vendor/tippy.all.js';
 	$config['additional_javascript'][] = 'js/tooltips.js';
 
