@@ -379,7 +379,7 @@ class BoardApi
 		this.events.awake('new-post', obj);
 		
 		$(document).trigger('new_post', obj.el);
-		console.log('NEW POST ' + obj.el);
+
 	}
 
 	noticeHidePost (board, id) {
