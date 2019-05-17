@@ -1,4 +1,8 @@
-
+.fav-item{
+    width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 
 /* WINDOWS */

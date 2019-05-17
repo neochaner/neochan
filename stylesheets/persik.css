@@ -1801,9 +1801,9 @@ hr{
     color:#0a0a0a
 }
 
-.post-hide>.post-body{
+.post-filter>.post-body{
 	display:none;
-}.post-hide>.post-footer{
+}.post-filter>.post-footer{
 	display:none;
 }
 .post-marker {

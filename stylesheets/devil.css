@@ -1636,9 +1636,9 @@ hr{
     color:#e3e3e3
 }
 
-.post-hide>.post-body{
+.post-filter>.post-body{
 	display:none;
-}.post-hide>.post-footer{
+}.post-filter>.post-footer{
 	display:none;
 }
 .post-marker {

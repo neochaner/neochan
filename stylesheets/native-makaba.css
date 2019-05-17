@@ -1732,9 +1732,9 @@ hr{
     color:#0a0a0a
 }
 
-.post-hide>.post-body{
+.post-filter>.post-body{
 	display:none;
-}.post-hide>.post-footer{
+}.post-filter>.post-footer{
 	display:none;
 }
 .post-marker {
@@ -1920,6 +1920,24 @@ header code{
     margin-top: -2px;
     transition: transform 0.2s;
     background-image: url(img/mmenu_icon.png);
+    height: 13px;
+    width: 13px;
+    background-size: 13px; 
+}
+.post-fav-add{
+    order: 8;
+    margin-right:4px;
+    margin-top: -2px;
+    background-image: url(img/makaba_fav.png);
+    height: 13px;
+    width: 13px;
+    background-size: 13px; 
+}
+.post-fav-rem{
+    order: 8;
+    margin-right:4px;
+    margin-top: -2px;
+    background-image: url(img/makaba_fav2.png);
     height: 13px;
     width: 13px;
     background-size: 13px; 
