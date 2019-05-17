@@ -271,9 +271,6 @@ function loadConfig() {
 		$config['user_flags'] = array();
 
 
-	if ($config['allow_roll'])
-		event_handler('post', 'diceRoller');
-
 	if (is_array($config['anonymous']))
 		$config['anonymous'] = $config['anonymous'][array_rand($config['anonymous'])];
 
@@ -3049,64 +3046,6 @@ function shell_exec_error($command, $suppress_stdout = false) {
 	return $return === 'TB_SUCCESS' ? false : $return;
 }
 
-/* Die rolling:
- * If "dice XdY+/-Z" is in the email field (where X or +/-Z may be
- * missing), X Y-sided dice are rolled and summed, with the modifier Z
- * added on.  The result is displayed at the top of the post.
- */
-function diceRoller($post) {
-	global $config;
-	if (isset($_POST['dx'], $_POST['dy'], $_POST['dz']) && !empty($_POST['dy'])) {
-		// Get params
-		$diceX = $_POST['dx'];
-		$diceY = $_POST['dy'];
-		$diceZ = $_POST['dz'];
-
-		// Default values for X and Z
-		if($diceX == '') {
-			$diceX = 1;
-		}
-
-		if($diceZ == '') {
-			$diceZ = 0;
-		}
-
-		// Intify them
-		$diceX = intval($diceX);
-		$diceY = intval($diceY);
-		$diceZ = intval($diceZ);
-
-		// Apply sane limits
-		if ($diceY > 1024) {
-			$diceY = 1024;
-		}
-
-		if ($diceX > 200) {
-			$diceX = 200;
-		}
-
-		if (abs($diceZ) > 1000000) {
-			$diceZ = 0;
-		}
-
-		// Continue only if we have valid values
-		if($diceX > 0 && $diceY > 0) {
-			$dicerolls = array();
-			$dicesum = $diceZ;
-			for($i = 0; $i < $diceX; $i++) {
-				$roll = rand(1, $diceY);
-				$dicerolls[] = $roll;
-				$dicesum += $roll;
-			}
-
-			// Prepend the result to the post body
-			$modifier = ($diceZ != 0) ? ((($diceZ < 0) ? ' - ' : ' + ') . abs($diceZ)) : '';
-			$dicesum = ($diceX > 1) ? ' = ' . $dicesum : '';
-			$rollstring = "{$diceX}d{$diceY}";
-			$post->body = '<table class="diceroll"><tr><td><img src="'.$config['dir']['static'].'d10.svg" alt="Dice roll" width="24"></td><td>Rolled ' . implode(', ', $dicerolls) . $modifier . $dicesum . " ($rollstring)</td></tr></table><br/>" . $post->body;
-		}
-	}
-}
 
 function less_ip($ip, $board = '') {
 
