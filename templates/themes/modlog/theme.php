@@ -147,8 +147,8 @@ function modlog_insert($modlog_board, $modlog_thread, $message, $target_board, $
 				$destFile  = str_replace($target_board . '/src', $modlog_board . '/src', $file['file_path']);
 				$destThumb  = str_replace($target_board . '/th', $modlog_board . '/th', $file['thumb_path']);
  
-				copy($file['file_path'], $destFile);
-				copy($file['thumb_path'], $destThumb);
+				@copy($file['file_path'], $destFile);
+				@copy($file['thumb_path'], $destThumb);
 				
 			}
 		}
