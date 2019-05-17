@@ -1,3 +1,7 @@
+/*
+ global: Api, config, store
+*/
+
 Api.onLoadPage(favMain);
 Api.onLoadPost(addFavBtn);
 
@@ -21,7 +25,7 @@ function favMain(){
 
 	favStore = store.getKey('favorites', {});
 	
-	if(Object.keys(favStore).length !=0){
+	if(Object.keys(favStore).length !== 0){
 		createFavMenu();
 	}
 
@@ -219,7 +223,7 @@ function updFav(obj) {
 	}
 
 	
-	$(favEl).find('.header-badge')[0].innerHTML = (newTotal == 0? '': ('+' + newTotal));
+	$(favEl).find('.header-badge')[0].innerHTML = (newTotal === 0? '': ('+' + newTotal));
 
 }
 
@@ -228,12 +232,9 @@ function remFav(board, thread) {
 	let id = 'favc-'+key;
 	let el = document.getElementById(id);
 	
-	console.log('remFav before:')
-	console.log(favStore)
 	delete favStore[key];
 	store.setKey('favorites', favStore);
-	console.log('remFav after:')
-	console.log(favStore)
+
 	if(el) {
 		$(el).after(buildFavBtn(board, thread));
 		el.parentNode.removeChild(el);

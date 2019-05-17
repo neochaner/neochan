@@ -1,4 +1,7 @@
  
+/** global: Api, config */
+
+
 Api.addPostMenu(addReportMenu);
 
 

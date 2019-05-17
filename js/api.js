@@ -1,3 +1,7 @@
+/*
+		global: config 
+*/
+
 
 function el(id){
 	return document.getElementById(id);
@@ -13,7 +17,7 @@ function $remove(el) {
 		el = document.getElementById(el);
 	}
 	
-	if (el != null) {
+	if (el !== null) {
 		el.parentElement.removeChild(el);
 	}
 
@@ -155,7 +159,7 @@ class BoardApi
 				
 					let onclick = postMenu[i][j].onclick;
 					let name = postMenu[i][j].name;
-					console.log(postMenu[i][j]);
+
 					html += "<li class='post-item' onclick='"+onclick+"'>"+_T(name)+"</li>"
 				}
 			}
@@ -230,26 +234,16 @@ class BoardApi
 	addPostMenu(callback) {
 		this.events.register('onPostMenu', callback);
 	}
-	/*******************/
 
 	getPost(board, post){
 		for (let i=0, l=this.postStore.length; i<l; i++) {
 			if(this.postStore[i].board == board && this.postStore[i].post == post)
 				return this.postStore[i];
 		}
+
+		return null;
 	}
 
-	getMaxPost(){
-
-		let max = false;
-
-		for (let i=0, l=this.postStore.length; i<l; i++) {
-			if(!max || this.postStore[i].post > max.post)
-				max= this.postStore[i];
-		}
-
-		return max;
-	}
 
 	isOwnPost(board, num) {
 
@@ -304,7 +298,7 @@ class BoardApi
 		postObj.post = parseInt(el.dataset.post);
 		postObj.id = el.dataset.board+'_'+el.dataset.thread+'_'+el.dataset.post;
 		postObj.op = el.dataset.thread == el.dataset.post;
-		postObj.name = elName == null ? false : elName.innerHTML;
+		postObj.name = elName === null ? false : elName.innerHTML;
 		postObj.trip = trip != null ? trip.innerHTML : false;
 		postObj.own = this.isOwnPost(postObj.board, postObj.post);
 		
@@ -360,11 +354,9 @@ class BoardApi
 					this.events.awake('change-post', this.postStore[i]);
 					$(document).trigger('change_post', obj.el);
 
-					console.log('CHANGE POST ' + obj.el);
 					return;
 				} else if(orig.post == obj.post && orig.edit == obj.edit) {
 
-					console.log('DOUBLE POST! ' + obj.el);
 					return;
 				}
 

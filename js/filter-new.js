@@ -1,4 +1,7 @@
  
+/** global: Api, store */
+
+
 Api.addPostMenu(addFilterMenu);
 Api.onLoadPost(filterProcess);
 Api.onNewPost(filterProcess);
@@ -6,8 +9,9 @@ Api.onNewPost(filterProcess);
 
 
 function filterReloadAll(){
-	for(let i=0, l=Api.postStore.length; i<l;i++)
+	for(let i=0, l=Api.postStore.length; i<l;i++) {
 		filterProcess(Api.postStore[i]);
+	}
 }
 
 function filterProcess(obj) {
@@ -16,16 +20,20 @@ function filterProcess(obj) {
 	let isFiltered = obj.el.classList.contains('post-filter');
 	
 	// check trip
-	if(obj.trip && store.isTrip(obj.trip))
+	if(obj.trip && store.isTrip(obj.trip)) {
 		needFiltered=true;
-	if(obj.name && store.isTrip(obj.name))
+	}
+	if(obj.name && store.isTrip(obj.name)) {
 		needFiltered=true;
+	}
 	
 	
-	if(needFiltered && !isFiltered)
+	if(needFiltered && !isFiltered) {
 		obj.el.classList.add('post-filter');
-	if(!needFiltered && isFiltered)
+	}
+	if(!needFiltered && isFiltered) {
 		obj.el.classList.remove('post-filter');
+	}
 }
  
 function addFilterMenu(obj){
