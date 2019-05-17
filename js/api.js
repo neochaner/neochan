@@ -1,5 +1,5 @@
 /*
-		global: config 
+		global: config, langData
 */
 
 
@@ -100,7 +100,7 @@ class BoardApi
 	addTranslate(obj){
 
 		if (!obj.hasOwnProperty('en')) {
-			return false;
+			return;
 		} 
 	
 		let line = [];
@@ -170,7 +170,7 @@ class BoardApi
 		
 		
 		$(html).appendTo('.main');
-		var pos = $(event.target).offset();
+		var pos = $(el).offset();
 
 		$("#post-menu").offset({ top: pos.top+18, left: pos.left});
 
@@ -299,7 +299,7 @@ class BoardApi
 		postObj.id = el.dataset.board+'_'+el.dataset.thread+'_'+el.dataset.post;
 		postObj.op = el.dataset.thread == el.dataset.post;
 		postObj.name = elName === null ? false : elName.innerHTML;
-		postObj.trip = trip != null ? trip.innerHTML : false;
+		postObj.trip = trip !== null ? trip.innerHTML : false;
 		postObj.own = this.isOwnPost(postObj.board, postObj.post);
 		
 		postObj.elTime = elTime;
@@ -360,7 +360,7 @@ class BoardApi
 					return;
 				}
 
-				if(prevObj == null || (orig.post > prevObj.post && orig.post < obj.post)) {
+				if(prevObj === null || (orig.post > prevObj.post && orig.post < obj.post)) {
 					prevObj = this.postStore[i];
 				}
 			}
@@ -379,13 +379,12 @@ class BoardApi
 		this.events.awake('new-post', obj);
 		
 		$(document).trigger('new_post', obj.el);
-
 	}
 
 	noticeHidePost (board, id) {
-		for (let i=0, l=postStore.length; i<l; i++) {
-			if (postStore[i].board == board && postStore[i].id ==id) {
-				postStore[i].el.classList.add('post-hide');
+		for (let i=0, l=this.postStore.length; i<l; i++) {
+			if (this.postStore[i].board == board && this.postStore[i].id ==id) {
+				this.postStore[i].el.classList.add('post-hide');
 				break;
 			}
 		}
