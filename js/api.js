@@ -3,6 +3,10 @@ function el(id){
 	return document.getElementById(id);
 }
 
+function $id(id){
+	return document.getElementById(id);
+}
+
 function $remove(el) {
 
 	if (typeof el === 'string') {
@@ -106,7 +110,6 @@ class BoardApi
 
 	callPostMenu(el) {
 		
-		console.log(el);
 		let oldMenu = document.getElementById('post-menu');
 		
 		if(oldMenu) {
@@ -277,6 +280,7 @@ class BoardApi
 			'changed'	: 0,	// last changed
 			'trip'		: false,// trip code
 			'name'		: false,// poster name
+			'subject' : '',
 
 		};
 		
@@ -293,7 +297,11 @@ class BoardApi
 		
 		postObj.elTime = elTime;
 		postObj.time = parseInt(elTime.getAttribute('unixtime'));
-		postObj.edit = parseInt(elTime.getAttribute('edit')); 
+		postObj.edit = parseInt(elTime.getAttribute('edit'));
+
+		if (postObj.op) {
+			postObj.subject = el.querySelector('.post-subject').innerText;
+		}
 
 		return postObj; 
 	
