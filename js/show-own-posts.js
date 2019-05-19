@@ -21,7 +21,7 @@ function makeOwnMarker(obj) {
       if(Api.isOwnPost(obj.board, obj.plinks[i].dataset.id)) {
         obj.el.classList.add('post-marker');
         obj.plinks[i].innerHTML +=  _T(' (You)');
-
+        $(document).trigger('new_answer', [obj.el, obj.board, obj.post]);
       }
   }
 }
