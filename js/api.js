@@ -116,19 +116,20 @@ class BoardApi
 	callPostMenu(el) {
 		
 		let oldMenu = document.getElementById('post-menu');
-		
-		if(oldMenu) {
-			oldMenu.parentNode.removeChild(oldMenu);
-			//return false;
-		}
-			
-
 		let key = 'onPostMenu';
 		let post = $(el).closest('.post')[0];
 		let obj = this.parsePostElem(post);
 		let postMenu = [];
-		
-		
+		let selfClick = oldMenu && oldMenu.dataset.post == obj.post;
+
+		if(oldMenu) {
+			$remove(oldMenu);
+		}
+
+		if(selfClick) {
+			return;
+		}
+
 		// manual awake 
 		if(this.events.data.hasOwnProperty(key)) {
 			for (let i=0, l=this.events.data[key].length; i<l; i++) {
@@ -138,8 +139,8 @@ class BoardApi
 		}
 		
 		// build post menu
-		let html ="<div class='post-menu' id='post-menu' style='z-index: 2'><ul>";
-		
+		let html ="<div class='post-menu' id='post-menu'style='z-index: 2' data-board='"+obj.board+"' data-post='"+obj.post+"' ><ul>";
+	
 		for(let i=0,l=postMenu.length; i<l;i++) {
 			
 			for(let j=0,ll=postMenu[i].length; j<ll;j++) {
@@ -154,7 +155,7 @@ class BoardApi
 						html += "<li class='post-item' onclick='"+onclick+"'>"+_T(name)+"</li>"
 					}
 					
-					html += "</ul>" + _T(postMenu[i][j].submenu) + '<span>>></span></li>'
+					html += "</ul>" + _T(postMenu[i][j].submenu) + '<span class="post-submenu-arrow"></span></li>'
 				} else {
 				
 					let onclick = postMenu[i][j].onclick;
