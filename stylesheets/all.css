@@ -2,6 +2,11 @@
     width: 240px;
     overflow: hidden;
     text-overflow: ellipsis;
+}.post-submenu-arrow{
+    float: right;
+    margin-left: 10px; 
+}.post-submenu-arrow::before{
+    content: '»'
 }
 
 
