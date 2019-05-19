@@ -70,8 +70,8 @@ var csmiles = {
 		'soyeon_lol','cb_yuju_susp', 'shy2', 'cb_yuju_hide', 'sejeong_ew', 'mimi_smile', 'sumin_cute', 'sumin_finger',
 		'jeong_funny', 'jeong_lol', 'jeong_peek', 'jeong_smile', 'jeong_teased', 'jeong_wink','jeong_wut','mina_shrug','dahyun_lol',
 
-		'yaschitayu', 'bora_sulk', 'eunseo_chuu', 'mirae_smile', 'cb_yuju_smile', 'cb_yuju_ohyou','yujeong_smile','eunseo_ohyou','bora_smile', 'bora_shy'
-
+		'yaschitayu', 'bora_sulk', 'eunseo_chuu', 'mirae_smile', 'cb_yuju_smile', 'cb_yuju_ohyou','yujeong_smile','eunseo_ohyou','bora_smile', 'bora_shy',
+		'kyulkyung_smile', 'kyulkyung_smile2', 'kyulkyung_sulk'
 		 
  
 		
