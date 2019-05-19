@@ -7,7 +7,7 @@
     margin-left: 10px; 
 }.post-submenu-arrow::before{
     content: '»'
-}.header-icons{
+}#header-icons{
     display: flex;
 }
 
