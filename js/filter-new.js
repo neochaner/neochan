@@ -7,6 +7,46 @@ Api.onLoadPost(filterProcess);
 Api.onNewPost(filterProcess);
 
 
+Api.addTranslates([
+	{'en': 'Filter', 'ru' : 'Фильтр'},
+	{'en': 'Hide tripcode', 'ru' : 'скрывать трипкод'},
+	{'en': 'Show tripcode', 'ru' : 'показывать трипкод'},
+	{'en': 'Hide name', 'ru' : 'скрывать имя'},
+	{'en': 'Show name', 'ru' : 'показывать имя'},
+	
+])
+
+
+function addFilterMenu(obj){
+	 
+	let args = '("'+obj.board+'", '+obj.post+')';
+	let menu = {
+		submenu: 'Фильтр',
+		items: []
+	};
+
+	if(obj.trip) {
+	   if(store.isTrip(obj.trip))
+		   menu.items.push({name:'Show tripcode', onclick:'filterDelTrip'+args});
+	   else
+		   menu.items.push({name:'Hide tripcode', onclick:'filterAddTrip'+args});
+	}
+	
+	if(obj.name) {
+	   if(store.isTrip(obj.name))
+		   menu.items.push({name:'Show name', onclick:'filterDelName'+args});
+	   else
+		   menu.items.push({name:'Hide name', onclick:'filterAddName'+args});
+	}
+	
+	if(menu.items.length > 0) {
+	   return [menu];
+	} else {
+		return [];
+	}
+
+}
+
 
 function filterReloadAll(){
 	for(let i=0, l=Api.postStore.length; i<l;i++) {
@@ -36,35 +76,6 @@ function filterProcess(obj) {
 	}
 }
  
-function addFilterMenu(obj){
-	 
-	 let args = '("'+obj.board+'", '+obj.post+')';
-	 let menu = {
-		 submenu: 'фильтр',
-		 items: []
-	 };
-
-	 if(obj.trip) {
-		if(store.isTrip(obj.trip))
-			menu.items.push({name:'del tripcode', onclick:'filterDelTrip'+args});
-		else
-			menu.items.push({name:'add tripcode', onclick:'filterAddTrip'+args});
-	 }
-	 
-	 if(obj.name) {
-		if(store.isTrip(obj.name))
-			menu.items.push({name:'del name', onclick:'filterDelName'+args});
-		else
-			menu.items.push({name:'add name', onclick:'filterAddName'+args});
-	 }
-	 
-	 if(menu.items.length > 0) {
-		return [menu];
-	 } else {
-	 	return [];
-	 }
- 
- }
  
 function filterAddTrip(board, post) {
 	
