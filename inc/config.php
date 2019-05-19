@@ -2186,7 +2186,7 @@ srand(time());
 	$config['cloudflare']['domain'] = 'example.com';
 
 	// Version
-	$config['footer_title'] = '<a href="https://github.com/neochaner/neochan" target="_blank">Neoboard @ 2018</a> ';
+	$config['footer_title'] = '<a href="https://github.com/neochaner/neochan" target="_blank">Neoboard @ 2018 - 2019</a> ';
 	$config['footer'] = "Все права и копирайты на этой странице принадлежат правообладателям. Все комментарии принадлежат лицам, отправившим их.";
 	$config['footer'] .= "<br> Если вы обнаружили информацию, размещённую против правил, пожалуйста, <a href='mailto:admin@neochan.ru'>сообщите нам</a> об этом.";
 	
