@@ -201,7 +201,7 @@ class BoardApi
 		
 		let item = document.createElement('a');
 		item.className="header-item header-icon";
-		item.innerHTML = '<i class="fa fa-'+icon+'"></i></span><span class="header-badge">';
+		item.innerHTML = '<i class="fa fa-'+icon+'"><span class="header-badge"></span></i>';
 		item.title = _T(title);
 		item.onclick = callback;
 		
