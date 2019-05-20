@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS `boards` (
   `8archive` boolean default false,
   `sfw` boolean default false,
   `posts_total` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL,
   PRIMARY KEY (`uri`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 

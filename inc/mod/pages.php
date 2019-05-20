@@ -475,10 +475,11 @@ function mod_new_board() {
 					error(_("Cannot create board matching banned pattern $w"));
 			}
 		}
-		$query = prepare('INSERT INTO `boards` (`uri`, `title`, `subtitle`) VALUES (:uri, :title, :subtitle)');
+		$query = prepare('INSERT INTO `boards` (`uri`, `title`, `subtitle`, `created_at`) VALUES (:uri, :title, :subtitle, NOW())');
 
 		$query->bindValue(':uri', $_POST['uri']);
 		$query->bindValue(':title', $_POST['title']);
+		$query->bindValue(':subtitle', $_POST['subtitle']);
 		$query->bindValue(':subtitle', $_POST['subtitle']);
 
 		
