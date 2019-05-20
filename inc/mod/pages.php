@@ -480,8 +480,6 @@ function mod_new_board() {
 		$query->bindValue(':uri', $_POST['uri']);
 		$query->bindValue(':title', $_POST['title']);
 		$query->bindValue(':subtitle', $_POST['subtitle']);
-		$query->bindValue(':subtitle', $_POST['subtitle']);
-
 		
 		$query->execute() or error(db_error($query));
 		
