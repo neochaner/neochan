@@ -1,0 +1,81 @@
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel='stylesheet' type='text/css' href='/stylesheets/light_blue.css'>
+<link rel='stylesheet' type='text/css' href='/stylesheets/mod/mod.css'>
+<link rel='stylesheet' type='text/css' href='/stylesheets/all.css'>
+
+<title>Install</title>
+</head>
+
+<body>
+
+<header class="header">
+<a class="header-item header-logo"><i class="logo"  style="background-image: url(/static/logo.png)"></i></a>
+<a class="header-item header-board" href="/">Info</a>
+<a class="header-item header-board" href="/">Install</a>
+</header>
+
+<main class="main">
+<section class="board" id="threads">
+<h1 style='padding-bottom:30px'><a href="{{ board.url }}" style="text-decoration: none;">{{ title }}</a></h1>
+
+
+<section class="threads-container" id="thread-container">
+<form action="ins.php?step=1" method="post">
+
+
+
+<div class='board-settings'>
+
+<div style='display: flex;justify-content: center;'>
+
+
+
+
+<div class="mod-login">
+<h1>MYSQL</h1>
+<label for="dbhost">db host</label><br>
+<input class="theme-textbox" type="dbhost" name="dbhost" value="{{ post.dbhost }}"><br>
+
+<label for="dbname">db name</label><br>
+<input class="theme-textbox" type="dbname" name="dbname" value="{{ post.dbname }}"><br>
+
+<label for="dbuser">db user</label><br>
+<input class="theme-textbox" type="dbuser" name="dbuser" value="{{ post.dbuser }}"><br>
+
+<label for="dbpass">db pass</label><br>
+<input class="theme-textbox" type="dbpass" name="dbpass" value="{{ post.dbpass }}"><br>
+
+<br><br>
+ 
+</div>
+</div>
+
+ 
+{% if db_error %}
+<span style='display: flex;justify-content: center;color: red;'>{{ db_error }}</span>
+{% endif %}
+
+
+
+<hr>
+<nav style='display: flex;justify-content: center;'>
+	<input class="button" type="submit" value="Install">
+</nav>
+
+
+
+
+</form>
+</section>
+
+
+
+
+
+</main>
+</body>
+</html>
+

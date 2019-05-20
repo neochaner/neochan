@@ -767,9 +767,10 @@
 .fa-refresh:before {content: "\f021";}
 .fa-star:before {content: "\f005";}
 .fa-star-o:before {content: "\f006";}
+.fa-minus:before{content:"\f068"}
 
 .caret-down:before{content:"\f0d7"}
-.caret-up:before{content:"\f0d8"}
+.caret-up:before{content:"\f0d8"} 
 
 /* PLYR PLAYLIST STYLE */
 

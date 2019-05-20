@@ -1,0 +1,114 @@
+<html>
+<head>
+<meta charset="utf-8"> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel='stylesheet' type='text/css' href='/stylesheets/light_blue.css'>
+<link rel='stylesheet' type='text/css' href='/stylesheets/mod/mod.css'>
+<link rel='stylesheet' type='text/css' href='/stylesheets/all.css'>
+
+<title>Install</title>
+</head>
+
+<body>
+
+<header class="header">
+<a class="header-item header-logo"><i class="logo"  style="background-image: url(/static/logo.png)"></i></a>
+<a class="header-item header-board" href="/">Info</a>
+<a class="header-item header-board" href="/">Install</a>
+</header>
+
+<main class="main">
+<section class="board" id="threads">
+<h1 style='padding-bottom:30px'><a href="{{ board.url }}" style="text-decoration: none;">{{ title }}</a></h1>
+
+
+<section class="threads-container" id="thread-container">
+
+
+
+
+<div class='board-settings'>
+
+<div class="tbl-table">
+<div class="tbl-header">
+	<table cellpadding="0" cellspacing="0" border="0" style="width: 100%;table-layout: fixed;">
+		<thead><tr>
+			<th class="s-key">*</th>
+			<th class="s-value">Описание</th>
+		</tr></thead>
+	</table>
+</div>
+
+<div class="tbl-content">
+<table cellpadding="0" cellspacing="0" border="0" style="width: 100%;table-layout: fixed;">
+<tbody>
+
+
+{% set errors = 0 %}
+
+{% for test in tests %}
+<tr>
+	{% if test.result %}
+	<td class="s-key"><i class='fa fa-check' style='color:green'></i></td>
+	<td class="s-value">{{ test.name }} - {{test.success}}</td>
+	{% else %}
+		{% if test.required %}
+			{%  set errors = errors + 1 %}
+			<td class="s-key"><i class='fa fa-times' style='color:red'></i></td>
+			<td class="s-value">{{ test.name }} - {{ test.fail }}</td>
+		{% else %}
+			<td class="s-key"><i class='fa fa-minus' style='color:grey'></i></td>
+			<td class="s-value">{{ test.name }} - {{ test.fail }}</td>
+		{% endif %}
+	{% endif %}
+</tr>
+{% endfor %}
+
+
+
+</tbody>
+</table>
+
+
+
+</div>
+
+
+
+<hr>
+<nav>
+	<a href="/ins.php" class="button mr5 l_catalog">Refresh</a>
+	{% if errors == 0 %}
+	<a href="/ins.php?step=1" class="button mr5 l_reply">Next</a>
+	{% endif %}
+</nav>
+
+
+
+
+
+
+</section>
+
+
+
+
+
+</main>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
