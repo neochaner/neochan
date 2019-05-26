@@ -1087,16 +1087,16 @@ function checkWipe($create_thread = false)
 		
 		if ($result = $query->fetchAll(PDO::FETCH_ASSOC)) {
 
-			syslog(1, '[WIPE]'. ($create_thread ? '[THREAD]':'[POST]') . "  minute={$result[0]['res']}/$limit_minute | hour={$result[1]['res']}/$limit_hour  " . $ip);
+			//syslog(1, '[WIPE]'. ($create_thread ? '[THREAD]':'[POST]') . "  minute={$result[0]['res']}/$limit_minute | hour={$result[1]['res']}/$limit_hour  " . $ip);
 
 			if($limit_minute > 0 && (int)$result[0]['res'] >= $limit_minute) {
 				//error($create_thread ? 'l_antispam_threadlimit_per_minute' : 'l_antispam_postlimit_per_minute');
-				syslog(1, 'ANTIWIPE TRIGGERED');
+				//syslog(1, 'ANTIWIPE TRIGGERED');
 			}
 
 			if($limit_hour > 0 && (int)$result[1]['res'] >= $limit_hour) {
 				//error($create_thread ? 'l_antispam_threadlimit_per_hour' : 'l_antispam_postlimit_per_hour');
-				syslog(1, 'ANTIWIPE TRIGGERED');
+				//syslog(1, 'ANTIWIPE TRIGGERED');
 			}
 		}
 	}
