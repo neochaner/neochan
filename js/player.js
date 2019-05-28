@@ -264,7 +264,7 @@ class MediaPlayer{
            
 	
                 this.plyr = new Plyr(('#html5media'), {
-                    controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'download', 'fullscreen'],
+                    controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
                     classNames: {tabFocus: 'plyr__nullclass'}, 
                     clickToPlay: false,
                     disableContextMenu: false,
@@ -278,12 +278,18 @@ class MediaPlayer{
                     muted: muted
                 });
 
+                /*
                 this.plyr.on('ready', () => {
                     $(`<button type="button" class="plyr__control" onclick="player.downloadSource()">
                         <i class="fa fa-lg fa-download"></i></button>`).insertAfter('.plyr__volume')
+                });*/
+
+                this.plyr.on('ready', () => {
+                    $(`<button type="button" class="plyr__control" onclick="player.downloadSource()">
+                    <svg id="plyr-download" width="100%" height="100%"><path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z"></path></svg>
+                    </button>`).insertAfter('.plyr__volume')
                 });
-    
-                this.plyr.on('volumechange', () => {
+                 this.plyr.on('volumechange', () => {
                     setKey('volume', player.plyr.volume);
                     setKey('muted', player.plyr.muted);
                 });
@@ -329,7 +335,7 @@ class MediaPlayer{
             }
 	
             this.plyr = new Plyr(('#youtubevideo'), {
-                controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'download', 'fullscreen'],
+                controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
                 classNames: {tabFocus: 'plyr__nullclass'}, 
                 clickToPlay: false,
                 disableContextMenu: false,
