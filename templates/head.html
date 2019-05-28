@@ -88,7 +88,7 @@
 	
 
 	var css_theme 	 = "<link rel='stylesheet' id='theme-css' type='text/css' href='/stylesheets/"+ config.theme +".css?{{style_time}}'>";
-	var css_language = "<link rel='stylesheet' id='language-css' type='text/css' href='/stylesheets/lang/"+ config.language +".css?{{style_time}}'>";
+	var css_language = "<link rel='stylesheet' id='language-css' type='text/css' href='/stylesheets/lang/"+ config.language +".css?{{all_time}}'>";
 
 	document.write(css_theme);
 	document.write(css_language);
@@ -99,7 +99,7 @@
 <link rel="stylesheet" id="overall_theme" type="text/css" href='/stylesheets/all.css?{{ all_time }}'>
 <noscript>
 <link rel="stylesheet" href="/stylesheets/{{ config.default_theme }}.css?{{ style_time }}">
-<link rel='stylesheet' id='language-css' type='text/css' href='/stylesheets/lang/en.css?{{style_time}}'>
+<link rel='stylesheet' id='language-css' type='text/css' href='/stylesheets/lang/en.css?{{all_time}}'>
 </noscript>
 
 
