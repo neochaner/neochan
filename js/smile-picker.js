@@ -72,8 +72,9 @@ var csmiles = {
 
 		'yaschitayu', 'bora_sulk', 'eunseo_chuu', 'mirae_smile', 'cb_yuju_smile', 'cb_yuju_ohyou','yujeong_smile','eunseo_ohyou','bora_smile', 'bora_shy',
 		'kyulkyung_smile', 'kyulkyung_smile2', 'kyulkyung_sulk',
-
-		'jeong_boring', 'jeong_morning', 'jeong_heart', 'jeong_ok', 'jihyo_listening', 'tzuyu_angry'
+		'jeong_boring', 'kokoro_sulk','mirae_sad',  'jeong_morning', 'jeong_heart', 'jeong_ok', 'jihyo_listening', 'tzuyu_angry',
+		'chae_tt', 'chae_fighting', 'jeong_tt', 'chae_you', 'sana_come_here', 'mina_hi',
+		'remi_hope', 'jeong_crying', 'sana_thinking',  
 		
 	]},
 
