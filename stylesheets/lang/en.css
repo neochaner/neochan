@@ -316,3 +316,25 @@
 }.capcode-Volunteer::before{
     content: '# Volunteer #'
 }
+
+
+
+/* mod log theme */
+.ml_mod-delete-post::before{
+    content: 'deleted';
+}.ml_mod-delete-thread::before{
+    content: 'thread deleted';
+}.ml_mod-ban-post::before{
+    content: 'banned';
+}.ml_mod-ban-thread::before{
+    content: 'thread baneed';
+}.ml_mod-ban-delete-post::before{
+    content: 'delete and ban';
+}.ml_mod-ban-delete-thread::before{
+    content: 'thread delete and ban';
+}.ml_mod-delete-by-ip-post::before{
+    content: 'deleted all posts';
+}.ml_mod-delete-by-thread::before{
+    content: 'deleted all posts';
+}
+/*    end    */

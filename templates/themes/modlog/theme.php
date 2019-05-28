@@ -9,14 +9,9 @@ function modlog_build($action, $settings, $data)
 	
 	global $config, $mod;
 
-	$mod_actions = array(
-		'mod-delete'=>'DELETE',
-		'mod-ban'=> 'BAN', 
-		'mod-ban-delete'=>'BAN & DELETE',
-		'mod-delete-by-ip'=>'DELETE BY IP'
-	);
+	$mod_actions = 	['mod-delete','mod-ban', 'mod-ban-delete','mod-delete-by-ip'];
 
-	if (!isset($mod_actions[$action])) {
+	if (!in_array($action, $mod_actions)) {
 		return;
 	}
 
@@ -51,17 +46,21 @@ function modlog_build($action, $settings, $data)
 			
 		if($post) {
 
+			$mod_fullaction =  $action . ($post['thread'] == null ? '-thread' : '-post');
 
-			$message = $mod['username'] . ' - ' . $mod_actions[$action] . ($post['thread'] == null ? ' THREAD ' : ' POST ') . '  #' . $data['post'] ;
+			$old_modifiers = extract_modifiers($post['body_nomarkup']);
+			$body = remove_modifiers($post['body_nomarkup']);
 
-			if(isset($data['message'])) {
-				$message .= (" \nReason: " . $data['messsage']); 
-				 
-			} else if(isset($_POST['reason'])) {
-				$message .= (" \nReason: " . $_POST['reason']);
-				$message .= (" / " . $_POST['length']);
-			}
+			$body .= "<tinyboard ml_user>{$mod['username']}</tinyboard>";
+			$body .= "<tinyboard ml_action>{$mod_fullaction}</tinyboard>";
+			$body .= "<tinyboard ml_post>{$data['post']}</tinyboard>";
+			$body .= "<tinyboard ml_messsage>{$data['messsage']}</tinyboard>";
+			$body .= "<tinyboard ml_reason>{$data['reason']}</tinyboard>";
+			$body .= "<tinyboard ml_length>{$data['length']}</tinyboard>";
 
+			$post['body_nomarkup'] = $body;
+			$post['modifiers'] = extract_modifiers($post['body_nomarkup']);;
+			
 			modlog_insert($settings['dboard'], $thread_id, $message, $postBoard, $postID, array($post));
 		}
 	}	

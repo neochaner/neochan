@@ -299,7 +299,25 @@
 
 
 
-
+/* mod log theme */
+.ml_mod-delete-post::before{
+    content: 'удалён';
+}.ml_mod-delete-thread::before{
+    content: 'тред удалён';
+}.ml_mod-ban-post::before{
+    content: 'забанен';
+}.ml_mod-ban-thread::before{
+    content: 'тред забанен';
+}.ml_mod-ban-delete-post::before{
+    content: 'удалён и забанен';
+}.ml_mod-ban-delete-thread::before{
+    content: 'тред удалён и забанен';
+}.ml_mod-delete-by-ip-post::before{
+    content: 'удалёны все посты';
+}.ml_mod-delete-by-thread::before{
+    content: 'удалёны все посты';
+}
+/*    end    */
 
 
 

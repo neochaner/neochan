@@ -23,6 +23,8 @@
 		<blockquote class="post-message">{{ post.body }}{% include 'post/poll.html' %}</blockquote>
 	</section>
 	<footer class="post-footer">
+		{% include 'themes/modlog/modlog.html' %} 
+
 		{% if mod %}<div class="view-inline-mobile">{% include 'post/post_controls.html' %}</div> {% endif %}
 		<div class="post-backlinks">
 {% if post.backlinks is defined %}

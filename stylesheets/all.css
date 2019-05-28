@@ -1,3 +1,8 @@
+.ml-log{
+    color: red;
+    font-size: 12px;
+}
+
 .fav-item{
     width: 240px;
     overflow: hidden;
@@ -773,6 +778,7 @@
 .caret-up:before{content:"\f0d8"} 
 
 /* PLYR PLAYLIST STYLE */
+
 
 /* Playlist  */
 /* scrollbar rules have to be separate, browsers not supporting this syntax will skip them when combined. */
