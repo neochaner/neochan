@@ -3,6 +3,31 @@ include "inc/functions.php";
 
 checkBan('*');
 
+
+if ($_GET['email'] == 1) {
+
+	$body = "<div class='post post-large' style='text-align: center;'>
+	<p>Создатели досок могут модерировать, настраивать и набирать волонтёров на доски</p>
+	<p>Для того что-бы создать свою юзер-доску - напишите на почту admin@neochan.net </p>
+	<p>Укажите в своём сообщении желаемое название раздела и тематику для которой он создаётся.</p>
+	<br></div>";
+	$body = "<br><br><br><br><article style='width: 60%;
+    min-width: 600px;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;'>$body</article>";
+
+
+	echo Element("page.html", array(
+		"config" => $config,
+		"body" => $body,
+		"title" => 'Создание доски',
+		"subtitle" => '',
+	));exit;
+}
+
+
+
 if (!$config['allow_create_userboards']) {
 	error(_('Create user boards temporarily is not allowed. Contact admin(a)lolifox.org for this. '));
 }

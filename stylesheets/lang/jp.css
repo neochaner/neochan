@@ -319,3 +319,15 @@
     content: 'deleted all posts';
 }
 /*    end    */
+
+
+
+/* site index */
+.l_create_board::before{
+    content: 'Create board';
+}.l_tor_mirror::before{
+    content: 'Tor mirror';
+}.l_mod_log::before{
+    content: 'Mod log';
+}
+ 
