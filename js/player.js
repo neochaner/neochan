@@ -239,7 +239,7 @@ class MediaPlayer{
 
         let vol = getKey('volume', 0.5);
         let muted = getKey('muted', false);
-        let video_loop = getKey('loop', false);
+        let video_loop = getKey('loop', true);
         let ext = embed_provider ? 'embed' : url.split('.').pop().toLowerCase();
 
 
@@ -264,7 +264,8 @@ class MediaPlayer{
            
 	
                 this.plyr = new Plyr(('#html5media'), {
-                    controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
+                    controls: ['play', 'progress', 'current-time', 'mute', 'volume', /*'settings',*/ 'fullscreen'],
+                   /* settings: ['quality', 'speed', 'loop'],*/
                     classNames: {tabFocus: 'plyr__nullclass'}, 
                     clickToPlay: false,
                     disableContextMenu: false,
@@ -335,7 +336,8 @@ class MediaPlayer{
             }
 	
             this.plyr = new Plyr(('#youtubevideo'), {
-                controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
+                controls: ['play', 'progress', 'current-time', 'mute', 'volume', /*'settings',*/ 'fullscreen'],
+                /* settings: ['quality', 'speed', 'loop'],*/
                 classNames: {tabFocus: 'plyr__nullclass'}, 
                 clickToPlay: false,
                 disableContextMenu: false,
