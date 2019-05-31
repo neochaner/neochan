@@ -293,8 +293,7 @@ if(isset($_GET['rate']))
 
 	}
 
-	
-
+ 
 
 	if (isset($_POST['name'], $_POST['neoname']) && strlen($_POST['name']) > 0) {
 		error($config['error']['bot']);
@@ -307,6 +306,8 @@ if(isset($_GET['rate']))
 	if (!isset($_POST['body'], $_POST['board'])) {
 		error($config['error']['bot']);
 	}
+
+
 	
 	$post = array(
 		'board' => $_POST['board'],
@@ -318,6 +319,12 @@ if(isset($_GET['rate']))
 	if (!openBoard($post['board'])) {
 		error($config['error']['noboard']);
 	}
+
+		
+	if (in_array($post['board'], $config['closed_boards'])) {
+		error($config['error']['closed_board']);
+	}
+
 
 	
 	if (!isset($_POST['name'])) {

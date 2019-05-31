@@ -72,6 +72,9 @@ defined('TINYBOARD') or exit;
 	$config['allow_create_userboards'] = false;
 	$config['allow_create_userboards_from_darknet'] = false;
 	$config['allow_create_userboards_timeout'] = 10; // in minutes
+
+	// Disable posting
+	$config['closed_boards'] = ['closed_baord1', 'closed_baord2'];
 	
 /*
  * ====================
@@ -1513,6 +1516,8 @@ srand(time());
 	$config['error']['nomove']		= _('The server failed to handle your upload.');
 	$config['error']['fileext']		= _('Unsupported image format.');
 	$config['error']['noboard']		= _('Invalid board!');
+	$config['error']['closed_board']	= _('Board is closed');
+
 	$config['error']['nonexistant']		= _('Thread specified does not exist.');
 	$config['error']['reply_hard_limit']	= _('Thread has reached its maximum reply limit.');
 	$config['error']['image_hard_limit']	= _('Thread has reached its maximum image limit.');
