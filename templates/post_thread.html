@@ -21,6 +21,7 @@
 	{% if not index %}<a id="{{ post.id }}" name="{{ post.id }}" class="post_anchor"></a>{% endif %}
 	<a class="post-id-vi" onclick="post_menu(event)"></a>
 	<a class="post-header-item post-id" href="{{ post.link }}" onclick="post_menu(event)">#{{ post.id }}</a>
+	{% include 'post/ip.html' %} 
 	{% if post.modifiers['capcode'] %}
 	<span class='post-name capcode capcode-{{ post.modifiers['capcode'] }}'></span>
 	{% endif %}
