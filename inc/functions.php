@@ -3069,6 +3069,12 @@ function less_ip($ip, $board = '') {
 
 	$in_addr = inet_pton($ip);
 
+	if($in_addr === FALSE){
+		// bad ip address syntax
+		$iphash  = substr(sha1(sha1($ip . $board)  . $config['secure_trip_salt']), 0, 10);
+		return '!BAD_' . $iphash;
+	}
+
 	if ($ipv6) {
 		// Not sure how many to mask for IPv6, opinions?
 		$mask = inet_pton('ffff:ffff:ffff:ffff:ffff:0:0:0');
