@@ -33,10 +33,13 @@ function favMain(){
 	let keys = Object.keys(favStore);
 	for(let i=0, l=keys.length; i<l;i++) {
 		if(Api.isThreadPage && Api.thread == favStore[keys[i]].thread) {
-			// if now in fav thread 
-			favStore[keys[i]].miss = 0;
+			// if now in fav thread  
 			Api.onLoadPost(favThreadCheck);
 			Api.onNewPost(favThreadCheck); 
+
+			
+			favStore[keys[i]].miss = 0;
+			store.setKey('favorites', favStore);
 		}
 
 		updFav(favStore[keys[i]]); 
@@ -261,11 +264,11 @@ function updFavThreads() {
 
 		let key = keys[i];
 
-		if(favStore[key].update + timeoutSec > currentSec) {
+		if (favStore[key].update + timeoutSec > currentSec) {
 			continue;
 		}
 
-		if(Api.isThreadPage && Api.thread == favStore[key].thread) {
+		if (Api.isThreadPage && Api.thread == favStore[key].thread) {
 			continue;
 		}
 
