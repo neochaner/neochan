@@ -75,6 +75,8 @@ var csmiles = {
 		'jeong_boring', 'kokoro_sulk','mirae_sad',  'jeong_morning', 'jeong_heart', 'jeong_ok', 'jihyo_listening', 'tzuyu_angry',
 		'chae_tt', 'chae_fighting', 'jeong_tt', 'chae_you', 'sana_come_here', 'mina_hi',
 		'remi_hope', 'jeong_crying', 'sana_thinking',  
+
+		'dahyun_calling', 'sana_neomuhae', 'haeyoon_lips', 'jiwon_hi', 'may_lol', 'chaerin_hwaiting', 'linlin_glad', 
 		
 	]},
 
