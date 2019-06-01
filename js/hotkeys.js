@@ -8,7 +8,7 @@ $(document).ready(function(){
 
     document.onkeydown = function(e) {
 
-        if((e.keyCode == 37 || e.keyCode == 39) && !document.activeElement.tagName != 'TEXTAREA')
+        if((e.keyCode == 37 || e.keyCode == 39) && document.activeElement.tagName != 'TEXTAREA')
         {
             player.playNext(e.keyCode == 37);
         }
