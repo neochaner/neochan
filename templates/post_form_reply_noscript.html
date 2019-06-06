@@ -1,4 +1,10 @@
 
+<style>
+.multifile {display:none;}
+.multifile:target {display:block;}
+</style>
+	
+
 
 <form name="post" id='replybox_form' enctype="multipart/form-data" action="{{ config.post_url }}" method="post">
 	
@@ -43,11 +49,20 @@
  
 			<div class="reply-controls reply-footer-controls">
 				<input type="file" name="file" id="upload_file">
+				<a href="#multifile" >More files</a>
 				<div class="reply-dragger"></div>
 				
 				<input class="progress button reply-send-button"  accesskey="s"  type="submit" name="post" style="background: linear-gradient(to right, rgb(117, 67, 131) 0%, transparent 0%);" value="Send">
 			</div>
-	</div> 
+	</div>
+
+	<div id='multifile' class='multifile' style=" padding: 5px; ">
+		{% for i in 1..10 %}
+			{% if i < config.max_images %}
+				<input type="file" name="file{{ i }}" style="display:block;">
+			{% endif %}
+		{% endfor %}
+	</div>
  
  
 	{% if (config.captcha.enabled_for_thread and not id) or (config.captcha.enabled_for_post and id) %}
