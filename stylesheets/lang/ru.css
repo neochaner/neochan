@@ -355,6 +355,14 @@
     content: 'Обложка';
 }.l_Added::before{
     content: 'Скачать';
+}.l_ReleaseInfo::before{
+    content: 'Информация о релизе : ';
+}.l_CoverOrScreen::before{
+    content: 'Обложка / скриншот';
+}.l_Tags::before{
+    content: 'Теги';
+}.l_RequestDownload::before{
+    content: 'Поставить на скачку';
 }
 
 

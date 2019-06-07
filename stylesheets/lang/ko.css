@@ -352,6 +352,14 @@
     content: 'Cover';
 }.l_Added::before{
     content: 'Added';
+}.l_ReleaseInfo::before{
+    content: 'Release info : ';
+}.l_CoverOrScreen::before{
+    content: 'Cover / Screenshot';
+}.l_Tags::before{
+    content: 'Tags';
+}.l_RequestDownload::before{
+    content: 'Put on download';
 }
 
 
