@@ -261,7 +261,10 @@ class BoardApi
 	
 		for (let i=0, l=posts.length; i<l; i++) {
 			let obj = this.parsePostElem(posts[i]);
-			this.postStore.push(obj);
+
+			if(typeof(obj) !== 'undefined') {
+				this.postStore.push(obj);
+			}
 		}
 		
 		for (let i=0, l=this.postStore.length; i<l; i++) {
