@@ -330,6 +330,13 @@
  
 
 
+/* OPENSUKI */
+.l_recent_torrents::before{
+    content: 'Свежие раздачи';
+}.l_found_torrents::before{
+    content: 'Найдено результатов: ';
+}
+
 
 
 

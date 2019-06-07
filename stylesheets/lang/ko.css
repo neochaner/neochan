@@ -326,3 +326,10 @@
     content: 'Mod log';
 }
  
+
+ /* OPENSUKI */
+.l_recent_torrents::before{
+    content: 'Recent torrents';
+}.l_found_torrents::before{
+    content: 'Results count: ';
+}
