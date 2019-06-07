@@ -274,7 +274,12 @@ class BoardApi
 		let elTime = el.getElementsByTagName("time")[0];
 		let trip = el.querySelector('.post-trip');
 		let pbody = el.getElementsByClassName('post-body');
-	    let plinksEl = pbody[0].getElementsByClassName('post-link');
+
+		if(pbody.length == 0){
+			return;
+		}
+
+	  let plinksEl = pbody[0].getElementsByClassName('post-link');
 		let elName = el.querySelector('.post-name');
 		var postObj = {
 			'el'		: null,
