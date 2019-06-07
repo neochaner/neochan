@@ -335,6 +335,26 @@
     content: 'Свежие раздачи';
 }.l_found_torrents::before{
     content: 'Найдено результатов: ';
+}.l_Torrents::before{
+    content: 'Торренты';
+}.l_Size::before{
+    content: 'Размер';
+}.l_Downloads::before{
+    content: 'Закачек';
+}.l_Seeds::before{
+    content: 'Сиды';
+}.l_Peers::before{
+    content: 'Личи';
+}.l_Download::before{
+    content: 'Скачать';
+}.l_Type::before{
+    content: 'Тип';
+}.l_Name::before{
+    content: 'Название';
+}.l_Cover::before{
+    content: 'Обложка';
+}.l_Added::before{
+    content: 'Скачать';
 }
 
 

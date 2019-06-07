@@ -332,4 +332,29 @@
     content: 'Recent torrents';
 }.l_found_torrents::before{
     content: 'Results count: ';
+}.l_Torrents::before{
+    content: 'Torrents';
+}.l_Size::before{
+    content: 'Size';
+}.l_Downloads::before{
+    content: 'Load';
+}.l_Seeds::before{
+    content: 'Seeds';
+}.l_Peers::before{
+    content: 'Leech';
+}.l_Download::before{
+    content: 'Download';
+}.l_Type::before{
+    content: 'Type';
+}.l_Name::before{
+    content: 'Name';
+}.l_Cover::before{
+    content: 'Cover';
+}.l_Added::before{
+    content: 'Added';
 }
+
+
+
+
+
