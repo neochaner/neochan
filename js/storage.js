@@ -294,17 +294,10 @@ var store = new Storage();
 // и заменяем некоторые старые функции + добавляем новые
 
 function getKey(key, default_value=null){
-	if(key == 'favorites') {
-		console.log('getKey ='+key+ ' : ' + JSON.stringify(store.getKey(key, default_value)));
-	}
-
 	return store.getKey(key, default_value);
 }
 
 function setKey(key, value){
-	if(key == 'favorites')
-		console.log('setKey ='+key+ ' : ' + JSON.stringify(value));
-
 	store.setKey(key, value);
 }
 
