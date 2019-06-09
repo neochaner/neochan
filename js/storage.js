@@ -277,9 +277,6 @@ class Storage{
     
     /* сохранить данные */
     setKey(key, value){
-		console.log('store setKey ='+key+ ' : ' + JSON.stringify(value));
-
-
         this.cache[key] = value;
         localStorage.setItem(key, JSON.stringify(value));
     }
@@ -297,10 +294,16 @@ var store = new Storage();
 // и заменяем некоторые старые функции + добавляем новые
 
 function getKey(key, default_value=null){
+	if(key == 'favorites')
+		console.log('getKey ='+key+ ' : ' + JSON.stringify(value));
+
 	return store.getKey(key, default_value);
 }
 
 function setKey(key, value){
+	if(key == 'favorites')
+		console.log('setKey ='+key+ ' : ' + JSON.stringify(value));
+
 	store.setKey(key, value);
 }
 

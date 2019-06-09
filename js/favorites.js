@@ -23,7 +23,7 @@ var favEl;
 
 function favMain(){
 
-	favStore = store.getKey('favorites', {});
+	favStore = getKey('favorites', {});
 	
 	if(Object.keys(favStore).length !== 0){
 		createFavMenu();
@@ -38,8 +38,7 @@ function favMain(){
 
 			
 			favStore[keys[i]].miss = 0;
-			console.log('store favorites =' + JSON.stringify(favStore));
-			store.setKey('favorites', favStore);
+			setKey('favorites', favStore);
 		}
 
 		updFav(favStore[keys[i]]); 
@@ -61,7 +60,7 @@ function favThreadCheck(obj) {
 			favStore[keys[i]].last = obj.post;
 			favStore[keys[i]].update = parseInt(new Date().getTime()/1000);
 
-			store.setKey('favorites', favStore);
+			setKey('favorites', favStore);
 			updFav(favStore[keys[i]]);
 		}	
 	}
@@ -176,7 +175,7 @@ function addFav(board, thread) {
 
 	
 	favStore[key] = {board: board, thread: thread, subject: subject, last: parseInt(lastID), miss: 0, update: update};
-	store.setKey('favorites', favStore);
+	setKey('favorites', favStore);
 	
 	if(starElem) {
 		$(starElem).after(buildFavBtn(board, thread));
@@ -219,7 +218,7 @@ function updFav(obj) {
 			if(obj.hasOwnProperty('miss'))
 				favStore[keys[i]].miss = obj.miss;
 			
-			store.setKey('favorites', favStore);
+			setKey('favorites', favStore);
 		}
 
 		newTotal += favStore[keys[i]].miss;		
@@ -236,7 +235,7 @@ function remFav(board, thread) {
 	let el = document.getElementById(id);
 	
 	delete favStore[key];
-	store.setKey('favorites', favStore);
+	setKey('favorites', favStore);
 
 	if(el) {
 		$(el).after(buildFavBtn(board, thread));
@@ -274,7 +273,7 @@ function updFavThreads() {
 
 		let url = '/'+favStore[key].board+'/res/'+favStore[key].thread+'.json';
 		favStore[key].update = currentSec;
-		store.setKey('favorites', favStore);
+		setKey('favorites', favStore);
  
 		console.log('Update favorites: '+url+'...');
 		 
