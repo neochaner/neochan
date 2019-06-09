@@ -277,7 +277,7 @@ class Storage{
     
     /* сохранить данные */
     setKey(key, value){
-		console.log('store setKey ='+key+ ' : ' + JSON.stringify(favStore));
+		console.log('store setKey ='+key+ ' : ' + JSON.stringify(value));
 
 
         this.cache[key] = value;
