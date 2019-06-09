@@ -29,7 +29,6 @@ function favMain(){
 		createFavMenu();
 	}
 
-
 	let keys = Object.keys(favStore);
 	for(let i=0, l=keys.length; i<l;i++) {
 		if(Api.isThreadPage && Api.thread == favStore[keys[i]].thread) {
@@ -39,6 +38,7 @@ function favMain(){
 
 			
 			favStore[keys[i]].miss = 0;
+			console.log('store favorites =' + JSON.stringify(favStore));
 			store.setKey('favorites', favStore);
 		}
 
