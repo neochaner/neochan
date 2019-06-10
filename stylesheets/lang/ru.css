@@ -392,6 +392,8 @@
     content: 'Теги';
 }.l_RequestDownload::before{
     content: 'Поставить на скачку';
+}.l_YourLimit::before{
+    content: 'Ваш лимит';
 }
 
 

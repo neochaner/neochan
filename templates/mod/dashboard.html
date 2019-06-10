@@ -103,6 +103,7 @@
 {%  endif %}
 
 <!-- Boards -->
+{% if mod.type > 0 %}
 <fieldset class="mod-dash mod-dash-set mod-dash-boards">
 	<legend>{% trans("Boards") %}</legend>
 	
@@ -129,6 +130,7 @@
 		{% endif %}
 	</ul>
 </fieldset>
+{% endif %}
 
 <!-- Misc -->
 {% if config.mod.dashboard_links and config.mod.dashboard_links|length %}

@@ -397,6 +397,10 @@
     content: 'Tags';
 }.l_RequestDownload::before{
     content: 'Put on download';
+}.l_YourLimit::before{
+    content: 'Your Limit';
+}.l_YourLimit::before{
+    content: 'Your Limit';
 }
 
 
