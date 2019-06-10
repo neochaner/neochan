@@ -62,7 +62,7 @@ function mod_login($redirect = false)
 				json_response(array('success'=>true, 'login_success'=> true, 'auth'=>true, 'username'=> $mod['username'] ));
 			
 			if ($redirect)
-				header('Location: ?' . $redirect, true, $config['redirect_http']);
+				header('Location: ' . $redirect, true, $config['redirect_http']);
 			else
 				header('Location: ?/', true, $config['redirect_http']);
 		}
