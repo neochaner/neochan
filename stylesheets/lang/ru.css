@@ -330,6 +330,31 @@
  
 
 
+/* CREATE BOARD */
+.l_Authorization::before{
+    content: 'Вход';
+}.l_Create_board::before{
+    content: 'Создание доски';
+}.l_Create_account::before{
+    content: 'Создание акаунта';
+}.l_Create::before{
+    content: 'Создать';
+}.l_usernameAlreayExists::before{
+    content: 'Имя пользователя уже существует';
+}.l_usernameInvalid::before{
+    content: 'Запрещённые символы в имени';
+}.l_passwordsNotEquals::before{
+    content: 'Пароли не совпадают';
+}.l_usernameIsSmall::before{
+    content: 'Слишком короткое имя';
+}.l_CreateBoardRequest::before{
+    content: "Создатели досок могут модерировать, настраивать и набирать волонтёров. Для того что-бы создать свою юзер-доску - напишите на почту. Укажите в своём сообщении желаемое название раздела и тематику для которой он создаётся.";
+}
+
+
+ 
+
+
 /* OPENSUKI */
 .l_recent_torrents::before{
     content: 'Свежие раздачи';

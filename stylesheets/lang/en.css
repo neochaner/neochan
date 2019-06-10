@@ -352,6 +352,29 @@
 
 
 
+/* CREATE BOARD */
+.l_Authorization::before{
+    content: 'Login';
+}.l_Create_board::before{
+    content: 'Create board';
+}.l_Create_account::before{
+    content: 'Create account';
+}.l_Create::before{
+    content: 'Create';
+}.l_usernameAlreayExists::before{
+    content: 'The username you\'ve tried to enter already exists';
+}.l_usernameInvalid::before{
+    content: 'The username contains invalid symbols';
+}.l_passwordsNotEquals::before{
+    content: 'Password does not match';
+}.l_usernameIsSmall::before{
+    content: 'Username to small';
+}.l_CreateBoardRequest::before{
+    content: "The creators of the boards can moderate, tune and recruit volunteers. In order to create your user board, write to the mail. Specify in your message the desired name of the section and the subject for which it is created.";
+}
+
+
+
 /* OPENSUKI */
 .l_recent_torrents::before{
     content: 'Recent torrents';

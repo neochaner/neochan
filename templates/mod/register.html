@@ -1,0 +1,51 @@
+<div class="mod-login" style=' display: flex; justify-content: center;align-items: center;'>
+    <div class="box-center" style='width: 320px;'>
+
+
+    {% if error %}<h4 style="text-align:center; color:red">{{ error }}</h4>{% endif %}
+    {% if l_error %}<h4 class='{{l_error}}' style="text-align:center; color:red"></h4>{% endif %}
+    
+    <form method="post">
+        <label for="login" class="l_login_label"></label><br>
+        <input class="theme-textbox" type="login" name="username">
+                        
+        <label for="password" class="l_passwd_label"></label><br>
+        <input class="theme-textbox"  type="password" name="password">
+
+        <label for="password" class="l_passwd_label"></label><br>
+        <input class="theme-textbox"  type="password" name="password2">
+            
+        {% include 'captcha.html' %}
+            
+        <button type="submit" class="button l_Create" name="login"></button>
+    </form>
+
+    </div>
+</div>
+
+
+
+    
+
+<style>
+* { -webkit-box-sizing:border-box; -moz-box-sizing:border-box; -ms-box-sizing:border-box; -o-box-sizing:border-box; box-sizing:border-box; }
+
+html { width: 100%; height:100%; overflow:hidden; }
+
+
+.mod-login input { 
+	width: 100%; 
+	margin-bottom: 10px; 
+}
+.mod-login button { 
+	width: 100%; 
+}
+
+.captcha-box{
+    width: 320px!important;
+    margin: 0 0 20px 0!important;
+    padding-left: 10px;
+}
+</style>
+
+
