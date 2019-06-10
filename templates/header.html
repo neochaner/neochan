@@ -35,7 +35,7 @@
 
 <div id="header-icons">
 <a class="header-item header-icon" id="btn-neotube" title="Neotube" onclick="searchTubes()" style='display: none'><i class="fa fa-film"></i></a>
-<a class="header-item header-icon header-options-icon" title="Login" id="btn-login"><i class="fa fa-user"></i></a>
+<a class="header-item header-icon header-options-icon" title="Login" id="btn-login" onclick='loginClick()'><i class="fa fa-user"></i></a>
 <a class="header-item header-icon" title="Help" href='/faq.html'><i class="fa fa-question"></i></a>  
 <a class="header-item header-icon header-options-icon" title="Settings" id="btn-options"><i class="fa fa-gear"></i></a>
 </div>
@@ -132,9 +132,8 @@
 
 
 	<div class="account-tabs">
-		<a href="/{{ config.file_mod }}?/"> Панель управления</a>
-		<a href="#"> Репорты <span class="pull-right alert-numb account-reports">0</span></a>
-		<a href="/{{ config.file_mod }}?/inbox"> Сообщения <span class="pull-right alert-numb account-messages">0</span></a>
+		<a id='account-link' class='l_Profile' href="/{{ config.file_mod }}?/"></a>
+		<a class='l_Messages' href="/{{ config.file_mod }}?/inbox"><span id='account-pm' class="pull-right alert-numb account-messages">0</span></a>
 	</div>
 
 

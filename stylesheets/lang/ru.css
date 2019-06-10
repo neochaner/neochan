@@ -330,7 +330,7 @@
  
 
 
-/* CREATE BOARD */
+/* CREATE BOARD / LOGIN */
 .l_Authorization::before{
     content: 'Вход';
 }.l_Create_board::before{
@@ -349,6 +349,10 @@
     content: 'Слишком короткое имя';
 }.l_CreateBoardRequest::before{
     content: "Создатели досок могут модерировать, настраивать и набирать волонтёров. Для того что-бы создать свою юзер-доску - напишите на почту. Укажите в своём сообщении желаемое название раздела и тематику для которой он создаётся.";
+}.l_Messages::before{
+    content: 'Сообщения';
+}.l_Dashboard::before{
+    content: 'Панель управления';
 }
 
 

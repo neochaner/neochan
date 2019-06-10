@@ -328,27 +328,30 @@
  
 
 
-/* CREATE BOARD */
+/* CREATE BOARD / LOGIN */
 .l_Authorization::before{
-    content: 'Login';
+    content: '로그인';
 }.l_Create_board::before{
-    content: 'Create board';
+    content: '보드 만들기';
 }.l_Create_account::before{
-    content: 'Create account';
+    content: '계정 만들기';
 }.l_Create::before{
-    content: 'Create';
+    content: '몹시 떠들어 대다';
 }.l_usernameAlreayExists::before{
-    content: 'The username you\'ve tried to enter already exists';
+    content: '이미 입력하려고 시도한 사용자 이름이 이미 있습니다.';
 }.l_usernameInvalid::before{
-    content: 'The username contains invalid symbols';
+    content: '사용자 이름에 잘못된 기호가 있습니다.';
 }.l_passwordsNotEquals::before{
-    content: 'Password does not match';
+    content: '비밀번호가 일치하지 않습니다';
 }.l_usernameIsSmall::before{
-    content: 'Username to small';
+    content: '사용자 이름이 너무 짧습니다.';
 }.l_CreateBoardRequest::before{
-    content: "The creators of the boards can moderate, tune and recruit volunteers. In order to create your user board, write to the mail. Specify in your message the desired name of the section and the subject for which it is created.";
+    content: "이사회 창립자는 자원 봉사자를 조정하고, 조정하고, 모집 할 수 있습니다. 사용자 게시판을 만들려면 메일에 쓰십시오. 원하는 섹션 이름과 제목을 메시지에 지정하십시오.";
+}.l_Messages::before{
+    content: '메시지';
+}.l_Dashboard::before{
+    content: '계기반';
 }
-
 
 
 

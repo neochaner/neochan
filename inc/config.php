@@ -1035,12 +1035,17 @@ srand(time());
 	$config['additional_javascript'][] = 'js/api.js';
 	$config['additional_javascript'][] = 'js/loc.js'; 
 	$config['additional_javascript'][] = 'js/menu-options.js';
+ 
 
-
-	// plugins
-	$config['additional_javascript'][] = 'js/group-menu.js';
-	$config['additional_javascript'][] = 'js/time.js'; 
+	// plugins in menu
+	$config['additional_javascript'][] = 'js/account.js';
+	$config['additional_javascript'][] = 'js/neotube.js';  
 	$config['additional_javascript'][] = 'js/favorites.js';
+
+
+
+	$config['additional_javascript'][] = 'js/group-menu.js';
+	$config['additional_javascript'][] = 'js/time.js';  
 
 
 	
@@ -1081,7 +1086,7 @@ srand(time());
 	$config['additional_javascript'][] = 'js/user_jscss.js'; 
 	
 	$config['additional_javascript'][] = 'js/webm-settings.js'; 
-	$config['additional_javascript'][] = 'js/auth.js';
+	//$config['additional_javascript'][] = 'js/auth.js';
 
 
 	// audio - player 
@@ -1090,8 +1095,7 @@ srand(time());
 
 	$config['additional_javascript'][] = 'js/audio-player.js';
 	$config['additional_javascript'][] = 'js/audio.js'; 
-
-	$config['additional_javascript'][] = 'js/neotube.js'; 
+ 
 
  
 	$config['additional_javascript'][] = 'js/screenshot.js';

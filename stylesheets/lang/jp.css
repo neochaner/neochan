@@ -332,26 +332,35 @@
 }
 
 
-/* CREATE BOARD */
+/* CREATE BOARD / LOGIN */
 .l_Authorization::before{
-    content: 'Login';
+    content: 'ログイン';
 }.l_Create_board::before{
-    content: 'Create board';
+    content: 'ボードを作成';
 }.l_Create_account::before{
-    content: 'Create account';
+    content: 'アカウントを作成する';
 }.l_Create::before{
-    content: 'Create';
+    content: '作成する';
 }.l_usernameAlreayExists::before{
-    content: 'The username you\'ve tried to enter already exists';
+    content: '入力しようとしたユーザー名は既に存在します';
 }.l_usernameInvalid::before{
-    content: 'The username contains invalid symbols';
+    content: 'ユーザー名に無効な記号が含まれています';
 }.l_passwordsNotEquals::before{
-    content: 'Password does not match';
+    content: 'パスワードが一致しません';
 }.l_usernameIsSmall::before{
-    content: 'Username to small';
+    content: 'ユーザー名が短すぎます';
 }.l_CreateBoardRequest::before{
-    content: "The creators of the boards can moderate, tune and recruit volunteers. In order to create your user board, write to the mail. Specify in your message the desired name of the section and the subject for which it is created.";
+    content: "ボードの作成者は、ボランティアを調整し、調整し、採用することができます。あなたのユーザーボードを作成するために、メールに書いてください。メッセージに、セクションの希望の名前とそれが作成される件名を指定します。";
+}.l_Messages::before{
+    content: 'メッセージ';
+}.l_Dashboard::before{
+    content: 'ダッシュボード';
 }
+
+
+
+
+
 
  
 

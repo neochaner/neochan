@@ -330,6 +330,34 @@
 }
 
 
+/* CREATE BOARD / LOGIN */
+.l_Authorization::before{
+    content: 'Login';
+}.l_Create_board::before{
+    content: 'Erstellen board';
+}.l_Create_account::before{
+    content: 'Erstellen account';
+}.l_Create::before{
+    content: 'Erstellen';
+}.l_usernameAlreayExists::before{
+    content: 'Der Benutzername, den Sie eingegeben haben, ist bereits vorhanden';
+}.l_usernameInvalid::before{
+    content: 'Der Benutzername enthält ungültige Symbole';
+}.l_passwordsNotEquals::before{
+    content: 'Passwort stimmt nicht überein';
+}.l_usernameIsSmall::before{
+    content: 'Benutzername ist zu kurz';
+}.l_CreateBoardRequest::before{
+    content: "Die Ersteller der Boards können Freiwillige moderieren, stimmen und rekrutieren. Um Ihr User Board zu erstellen, schreiben Sie an die Mail. Geben Sie in Ihrer Nachricht den gewünschten Namen des Abschnitts und den Betreff an, für den er erstellt wurde.";
+}.l_Messages::before{
+    content: 'Mitteilungen';
+}.l_Dashboard::before{
+    content: 'Instrumententafel';
+}
+
+
+
+
  /* OPENSUKI */
 .l_recent_torrents::before{
     content: 'Recent torrents';
