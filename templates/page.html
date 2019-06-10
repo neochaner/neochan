@@ -4,7 +4,13 @@
 
 {% set js_config = { 'active_page': 'other', 'board_uri': board.uri } %}
 {% include 'head.html' %}
+
+{% if l_title %}
+<title class='{{l_title}}'></title>
+{% else %}
 <title>{{ title }}</title>
+{% endif %}
+ 
 </head>
 {% include 'header.html' %}
 {% if mod %}{% include 'mod/header.html' %}{% endif %}
@@ -23,7 +29,12 @@
 		</figure>
 		{% endif %}
 		
-		{% if title %}<h1>{{ title }}</h1>{% endif %}
+		{% if l_title %}
+		<h1 class='page-title {{l_title}}'></h1>
+		{% else %}
+		<h1 class='page-title'>{{ title }}</h1>
+		{% endif %}
+
 		<div class="subtitle" style="text-align: center;">
 			{% if subtitle %}
 				{{ subtitle }}
