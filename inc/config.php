@@ -68,10 +68,24 @@ defined('TINYBOARD') or exit;
 	// Allow all visitors watch mod log
 	$config['public_log'] = false;
  
+	
 
+	// allow automatic create userboards
 	$config['allow_create_userboards'] = false;
+
+	// allow create boards from tor/i2p
 	$config['allow_create_userboards_from_darknet'] = false;
-	$config['allow_create_userboards_timeout'] = 10; // in minutes
+	
+	// minimal timeout in minutes between creation (prevent dos)
+	$config['allow_create_userboards_timeout'] = 10; 
+	
+	// allow request board by email (if auto create is disabled)
+	$config['board_request_email'] = '[no email]'; 
+
+
+	// allow register empty accounts
+	$config['allow_create_account'] = false;
+
 
 	// Disable posting
 	$config['closed_boards'] = ['closed_baord1', 'closed_baord2'];
@@ -1793,7 +1807,7 @@ srand(time());
 	$config['mod']['groups'] = array(
 		0 	=> 'User',
 		10	=> 'Janitor',
-		19	=> 'BoardVolunteer',
+		15	=> 'BoardVolunteer',
 		20	=> 'Mod',
 		25	=> 'GlobalVolunteer',
 		30	=> 'Admin'
@@ -1938,7 +1952,7 @@ srand(time());
 	// Edit any users' login information
 	$config['mod']['editusers'] = ADMIN;
 	// Change user's own password
-	$config['mod']['edit_profile'] = JANITOR;
+	$config['mod']['edit_profile'] = 0;
 	// Delete a user
 	$config['mod']['deleteusers'] = ADMIN;
 	// Create a user
