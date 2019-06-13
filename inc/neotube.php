@@ -22,6 +22,8 @@ class Neotube
         self::$tmp_path = 'tmp/neotube/';
     }
 
+
+
     public static function addYoutubeLink($link)
     {
 
@@ -29,7 +31,21 @@ class Neotube
 
         if(!$config['neotube']['enable'])
             return false;
-    
+
+
+        $path = parse_url($link, PHP_URL_PATH);
+        $fullpath = getcwd() . $path;
+
+        if (file_exists($fullpath)) {
+            $path = substr($path, 1);
+            $file['tmp_name'] = $path;
+            self::addPlaylistFile($file, false);
+            return;
+        } else {
+            echo $fillpath;exit;
+        }
+
+
         // check youtube - link
         $pattern1 = "/https?:\/\/(?:www\\.)?(?:youtube\\.com\/).*(?:\\?|&)v=([\\w-]+)/";
         $pattern2 = "/https?:\/\/(?:www\\.)?youtu\\.be\/([\\w-]+)/";
@@ -60,7 +76,7 @@ class Neotube
         $title = $info['items'][0]['snippet']['title'];
     
         
-        if(self::addToPlaylist('youtube', $id, '', $seconds, $title, 'video/mp4', $outputList)){
+        if(self::addToPlaylist('youtube', $id, '', $seconds, $title, 'video/mp4', false, $outputList)){
     
         }
      
@@ -69,7 +85,7 @@ class Neotube
 
     }
 
-    public static function addPlaylistFile($file)
+    public static function addPlaylistFile($file, $remove_after=true)
     {
         $webminfo = get_webm_info($file['tmp_name']);
 
@@ -83,10 +99,10 @@ class Neotube
         $track['height'] = $webminfo['height'];
         $track['duration'] = floor($webminfo['duration']);
 
-        return self::addToPlaylist('file', 'id' . time() ,  $file['tmp_name'], $track['duration'], $file['name'], $file['mime'], $outputList);
+        return self::addToPlaylist('file', 'id' . time() ,  $file['tmp_name'], $track['duration'], $file['name'], $file['mime'], $remove_after, $outputList);
     }
 
-    public static function addToPlaylist($type, $id, $path, $duration_sec, $title, $mime, &$output_list)
+    public static function addToPlaylist($type, $id, $path, $duration_sec, $title, $mime, $remove_after, &$output_list)
     {
         global $config;
 
@@ -124,6 +140,7 @@ class Neotube
             'id' => $id,
             'title'=> $title,
             'mime'=>$mime,
+            'remove_after'=>$remove_after,
         );
     
         array_push($tracks, $newTrack);
@@ -137,8 +154,9 @@ class Neotube
 
     public static function removeFromPlaylist($id)
     {
+
         $list = self::getPlaylist();
-    
+
         if (!is_array($list)) {
             return null;
         }
@@ -146,12 +164,17 @@ class Neotube
         $nlist = array();
     
         foreach ($list as $track) {
-            if($track['id'] == $id)
-                unlink($track['path']);
+            if($track['id'] == $id) {
+                
+                if($track['remove_after'])
+                    unlink($track['path']);
+
+            }
             else
                 array_push($nlist, $track);
         }
-    
+
+
         if (count($list) == count($nlist)) {
             return null;
         }
@@ -174,9 +197,11 @@ class Neotube
                 $nlist[$i]['end'] = $lastEnd + self::$switch_sec + $nlist[$i]['duration'];
             }
         }
-     
+ 
         $json = json_encode($nlist);
         self::setPlayList($json);
+
+  
 
         return $json;
     }
@@ -410,7 +435,8 @@ class Neotube
             $endTime = $track['end'] + ($is_paused ? self::$paused_delete_sec : 0);
 
             if ($endTime < time()) {
-                unlink($track['path']);
+                if($track['remove_after'])
+                    unlink($track['path']);
             } else {
                 array_push($newList, $track);
             }
