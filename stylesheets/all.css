@@ -782,7 +782,6 @@
 
 /* PLYR PLAYLIST STYLE */
 
-
 /* Playlist  */
 /* scrollbar rules have to be separate, browsers not supporting this syntax will skip them when combined. */
 .plyr-playlist-wrapper ul::-webkit-scrollbar {

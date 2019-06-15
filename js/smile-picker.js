@@ -77,6 +77,7 @@ var csmiles = {
 		'remi_hope', 'jeong_crying', 'sana_thinking',  
 
 		'dahyun_calling', 'sana_neomuhae', 'haeyoon_lips', 'jiwon_hi', 'may_lol', 'chaerin_hwaiting', 'linlin_glad', 
+		'sejeong_cool', 'joy_blame'
 		
 	]},
 
