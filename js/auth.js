@@ -31,36 +31,6 @@ function login(){
 		api({ 'login':true, 'username' : el('luser').value, 'password': el('lpass').value});
 }
 
-function register(){
- 
-	if(checkUsernamePass()){
-
-		let request = { 
-			'register':true, 
-			'username' : el('luser').value, 
-			'password': el('lpass').value
-		}
-
-		let captcha = '';
-
-
-		for(let i=-1; i<30; i++){
-
-			let id = '#g-recaptcha-response' + ((i==-1) ? '': '-'+i.toString());
-			let div = $('#login').find(id);
-
-			if(div.length == 1)
-			{
-				request['g-recaptcha-response'] = div[0].value;
-				break;
-			}
-		}
-
-		api( request );
-	 
-
-	} 
-}
 
 function checkUsernamePass(){
 	
@@ -183,20 +153,6 @@ function api(array, link = '/api.php'){
 				resetProfile();
 				location.reload();
 			}
-			else if(response.invalid_password_1)
-				alert('Пароль должен составлять 5 или более символов');
-			else if(response.invalid_username_1)
-				alert('Имя пользователя должно состоять только из букв и цифр');
-			else if(response.invalid_username_2)
-				alert('Имя пользователя должно составлять 5 или более символов');
-			else if(response.invalid_username_3)
-			{
-				alert('Имя пользователя уже занято');
-				el('luser').value = '';
-			}
-			 
-
-
 	  
 		},
 		error: function(xhr, status, er) {

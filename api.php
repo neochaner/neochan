@@ -16,55 +16,6 @@ if (get_magic_quotes_gpc()) {
 
 if (isset($_POST['login'])) {
     mod_login();
-} else if (isset($_POST['register'])) {
-
-    server_response("Temporay Disabled", array());
-    
-    $data = "<script src='https://www.google.com/recaptcha/api.js' async defer></script>";
-    $data .= "<div class='g-recaptcha' ID='recaptcha' data-sitekey='{$config['captcha']['recaptcha_public_key']}'></div>";
-
-  
-    if (!preg_match('/^[A-Za-z0-9_]+$/', $_POST['username'])) {
-        json_response(array('invalid_username_1' => true));
-    }
-        
-    if (!isset($_POST['username']) || strlen($_POST['username']) < 5) {
-        json_response(array('invalid_username_2' => true));
-    }
-        
-    if (!isset($_POST['password']) || strlen($_POST['password']) < 5) {
-        json_response(array('invalid_password_1' => true));
-    }
-
- 
-    $username =  $_POST['username'];
-    $password =  $_POST['password']; 
-
-    // check username exists
-    $query = prepare('SELECT ``username`` FROM ``mods`` WHERE ``username`` = :username');
-    $query->bindValue(':username', $username);
-    $query->execute() or error(db_error($query));
-    $users = $query->fetchAll(PDO::FETCH_ASSOC);
-
-    if (sizeof($users) > 0) {
-        json_response(array('invalid_username_3' => true));
-    }
-
-    $salt = generate_salt();
-    $password = hash('sha256', $salt . sha1($password));
-
-    $query = prepare('INSERT INTO ``mods`` VALUES (NULL, :username, :password, :salt, :type, :boards, :email)');
-    $query->bindValue(':username', $username);
-    $query->bindValue(':password', $password);
-    $query->bindValue(':salt', $salt);
-    $query->bindValue(':type', 0);
-    $query->bindValue(':boards', '');
-    $query->bindValue(':email', '');
-    $query->execute() or error(db_error($query));
-        
-    json_response(array('register_success'=>true));
-
-
 } else if (isset($_POST['logout'])) {
     mod_logout();
 } else if (isset($_POST['update_profile'])) {
