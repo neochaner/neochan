@@ -33,7 +33,7 @@ class Neotube
             return false;
 
 
-        $path = parse_url($link, PHP_URL_PATH);
+        $path = parse_url(urldecode($link), PHP_URL_PATH);
         $fullpath = getcwd() . $path;
 
         if (file_exists($fullpath)) {
@@ -41,10 +41,7 @@ class Neotube
             $file['tmp_name'] = $path;
             self::addPlaylistFile($file, false);
             return;
-        } else {
-            echo $fillpath;exit;
-        }
-
+        } 
 
         // check youtube - link
         $pattern1 = "/https?:\/\/(?:www\\.)?(?:youtube\\.com\/).*(?:\\?|&)v=([\\w-]+)/";
