@@ -16,7 +16,7 @@ Requirements
 ------------
 
 * Linux like OS
-* PHP >= 5.6 
+* PHP >= 7.0
 * MYSQL / MariaDB 
 * ffmpeg, memcached (optional: graphicsmagick, gifsicle, imagemagick,  exiftool)
 
