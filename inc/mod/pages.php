@@ -741,9 +741,14 @@ function mod_board_log($board, $page_no = 1, $hide_names = false, $public = fals
 
 function mod_view_board($boardName, $page_no = 1) {
 	global $config, $mod;
-	
+
 	if (!openBoard($boardName))
 		error($config['error']['noboard']);
+
+	if ($mod['type'] == 0){
+		header('Location: /' . $boardName);
+		exit;
+	}
 	
 	if (!$page = index($page_no, $mod)) {
 		error($config['error']['404']);

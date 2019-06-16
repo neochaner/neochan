@@ -130,9 +130,6 @@ $pages = array(
 if (!$mod) {
 	$pages = array('!^(.+)?$!' => 'login');
 } 
-elseif($mod['type'] == 0) {
-	error($config['error']['noaccess']);
-}
 elseif (isset($_GET['status'], $_GET['r'])) {
 	header('Location: ' . $_GET['r'], true, (int)$_GET['status']);
 	exit;
