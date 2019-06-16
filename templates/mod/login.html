@@ -8,7 +8,13 @@
 		<label for="password" class="l_passwd_label"></label><br>
 		<input class="theme-textbox"  type="password" name="password">
 
-        <button type="submit" class="button l_btn_Login" name="login"></button>
+		<button type="submit" class="button l_btn_Login" name="login"></button>
+		
+		{% if config.allow_create_account %}
+		<div style="text-align:center;margin-top: 20px;    opacity: 0.5;">    
+			<a class='l_login_reg' href="/create.php?account"></a>
+		</div>
+		{% endif %}
     </form>
 </div>
 
