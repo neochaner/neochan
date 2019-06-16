@@ -2225,6 +2225,7 @@ function mod_user_new() {
 		error($config['error']['noaccess']);
 	
 	if (isset($_POST['username'], $_POST['password'], $_POST['type'])) {
+
 		if ($_POST['username'] == '')
 			error(sprintf($config['error']['required'], 'username'));
 		if ($_POST['password'] == '')
@@ -2250,34 +2251,19 @@ function mod_user_new() {
 			error(sprintf($config['error']['invalidfield'], 'type'));
 		}
 
-		$query = prepare('SELECT ``username``,``id`` FROM ``mods`` WHERE ``username`` = :username');
-		$query->bindValue(':username', $_POST['username']);
-		$query->execute() or error(db_error($query));
+		$error = '';
+		$userBoards =  implode(',', $boards);
 
-		if (($users = $query->fetch(PDO::FETCH_ASSOC))) {
-			error(sprintf(_($config['error']['modexists']), $config['file_mod'] . '?/users/' . $users['id']));
+		if(!insertUser($_POST['username'], $_POST['password'], $type, $userBoards, false, $error)) {
+			error($error);
 		}
-		
-		$salt = generate_salt();
-		$password = hash('sha256', $salt . sha1($_POST['password']));
-		
-		$query = prepare('INSERT INTO ``mods`` VALUES (NULL, :username, :password, :salt, :type, :boards, :email)');
-		$query->bindValue(':username', $_POST['username']);
-		$query->bindValue(':password', $password);
-		$query->bindValue(':salt', $salt);
-		$query->bindValue(':type', $type);
-		$query->bindValue(':boards', implode(',', $boards));
-		$query->bindValue(':email', (isset($_POST['email']) ? $_POST['email'] : ''));
-		$query->execute() or error(db_error($query));
-		
-		$userID = $pdo->lastInsertId();
-		
-		modLog('Created a new user: ' . utf8tohtml($_POST['username']) . ' <small>(#' . $userID . ')</small>');
-		
+
+		modLog('Created a new user: ' . utf8tohtml($_POST['username']));
+	
 		header('Location: ?/users', true, $config['redirect_http']);
 		return;
 	}
-		
+
 	mod_page(_('New user'), 'mod/user.html', array('new' => true, 'boards' => listBoards(), 'token' => make_secure_link_token('users/new')));
 }
 
@@ -4223,7 +4209,7 @@ function mod_reassign($b) {
 	$query->bindValue(':mod', $mods[0]['username']);
 	$query->execute();
 
-	$body = "Thank you for your interest in this board. According to https://8ch.net/claim.html [INSERT ARCHIVE HERE], the board is claimable and hereby reassigned to you because the Board Owner failed to sign in for more than two weeks. Kindly find the username and password below. You can login at https://8ch.net/mod.php.<br>Username: {$mods[0]['username']}<br>Password: {$password}<br>Thank you for using 8chan, anon!";
+	$body = "Thank you for your interest in this board. According to https://example.com/claim.html [INSERT ARCHIVE HERE], the board is claimable and hereby reassigned to you because the Board Owner failed to sign in for more than two weeks. Kindly find the username and password below. You can login at https://example.com/mod.php.<br>Username: {$mods[0]['username']}<br>Password: {$password}<br>Thank you for using this feature!";
 	
 	modLog("Reassigned board /$b/");
 	
@@ -4309,7 +4295,9 @@ function mod_volunteers($b) {
 		error("Could not open board!");
 
 	if (isset($_POST['username'], $_POST['password'])) {
-		$query = prepare('SELECT * FROM ``mods`` WHERE type = 19 AND boards = :board');
+
+		//!!! need time to fix permission in janitor|volunteer accounts
+		$query = prepare('SELECT * FROM ``mods`` WHERE type = 15 AND boards = :board');
 		$query->bindValue(':board', $b);
 		$query->execute() or error(db_error($query));
 		$count = $query->rowCount();
@@ -4334,20 +4322,14 @@ function mod_volunteers($b) {
 			}
 		}
 
-		$salt = generate_salt();
-		$password = hash('sha256', $salt . sha1($_POST['password']));
-		
-		$query = prepare('INSERT INTO ``mods`` VALUES (NULL, :username, :password, :salt, 19, :board, "")');
-		$query->bindValue(':username', $_POST['username']);
-		$query->bindValue(':password', $password);
-		$query->bindValue(':salt', $salt);
-		$query->bindValue(':board', $b);
-		$query->execute() or error(db_error($query));
-		
-		$userID = $pdo->lastInsertId();
+		$error = '';
+		$type = 15;
 
+		if(!insertUser($_POST['username'], $_POST['password'], $type, $b, '', false, $error)) {
+			error($error);
+		}
 
-		modLog('Created a new volunteer: ' . utf8tohtml($_POST['username']) . ' <small>(#' . $userID . ')</small>');
+		modLog('Created a new volunteer: ' . utf8tohtml($_POST['username']));
 	}
 
 	if (isset($_POST['delete'])){
@@ -4372,7 +4354,7 @@ function mod_volunteers($b) {
 		}
 	}
 
-	$query = prepare('SELECT * FROM ``mods`` WHERE type = 19 AND boards = :board');
+	$query = prepare('SELECT * FROM ``mods`` WHERE type = 15 AND boards = :board');
 	$query->bindValue(':board', $b);
 	$query->execute() or error(db_error($query));
 	$volunteers = $query->fetchAll(PDO::FETCH_ASSOC);

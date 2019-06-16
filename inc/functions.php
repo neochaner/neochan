@@ -3730,6 +3730,73 @@ function postRate($board_uri, $post_id, $like = true)
 }
 
 
+/**
+ * Insert new user into database
+ *
+ * @param string $username username
+ * @param string $password password
+ * @param int $type		   user permission
+ * @param string $boards   moderate boards
+ * @param string $email	   email
+ * @param bool $check_captcha check captcha before insertion
+ * @param string $retError	return 'css-lang' error
+ * @return bool	
+ */
+function insertUser($username, $password, $type, $boards, $email, $check_captcha, &$retError) {
+
+
+	global $config, $pdo;
+
+	if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+		///!!! 
+		$retError = '';
+	}
+
+	if (!preg_match('/^[a-zA-Z0-9._]{1,30}$/', $username)) {
+		$retError = 'l_usernameInvalid';
+		return false;
+	}
+
+	if (strlen($username) < 4) {
+		$retError = 'l_usernameIsSmall';
+		return false;
+	}
+	
+	if (strlen($password) < 4) {
+		$retError = 'l_passwordIsSmall';
+		return false;
+	}
+
+	if ($check_captcha && !chanCaptcha::check()) {
+		$retError = 'l_captcha_mistype';
+		return false;
+	}
+
+
+	$query = prepare('SELECT ``username`` FROM ``mods`` WHERE ``username`` = :username');
+	$query->bindValue(':username', $username);
+	$query->execute() or error(db_error($query));
+	$users = $query->fetchAll(PDO::FETCH_ASSOC);
+		
+	if (sizeof($users) > 0) {
+		$retError = 'l_usernameAlreayExists';
+		return false;
+	}
+
+	$salt = generate_salt();
+	$password = hash('sha256', $salt . sha1($password));
+	
+	$query = prepare('INSERT INTO ``mods`` (`id`, `username`, `password`, `salt`, `type`, `boards`, `email`) VALUES (NULL, :username, :password, :salt, :type, :boards, :email)');
+	$query->bindValue(':username', $username, PDO::PARAM_STR);
+	$query->bindValue(':password', $password, PDO::PARAM_STR);
+	$query->bindValue(':salt', $salt, PDO::PARAM_STR);
+	$query->bindValue(':type', $type, PDO::PARAM_INT);
+	$query->bindValue(':boards', $boards, PDO::PARAM_STR);
+	$query->bindValue(':email', $email, PDO::PARAM_STR);
+	$query->execute() or error(db_error($query));
+
+	return true;
+}
 
 
 

@@ -59,71 +59,31 @@ function createAccount(){
 			"l_title" => 'l_Create_account',
 			"subtitle" => '',
 		)));
-	} 
-	
-	$username = $_POST['username'];
-	$password = $_POST['password'];
-	$error = false;
+	}
 
-	if (!preg_match('/^[a-zA-Z0-9._]{1,30}$/', $username)) {
-		$error = 'l_usernameInvalid';
-	}
-	
-	if (strlen($username) < 4) {
-		$error = 'l_usernameIsSmall';
-	}	
-	
-	if (strlen($password) < 4) {
-		$error = 'l_passwordIsSmall';
-	}
-	
+
 	if ($_POST['password'] != $_POST['password2']) {
 		$error = 'l_passwordsNotEquals';
 	}
-	
-	if (!chanCaptcha::check()) {
-		$error = 'l_captcha_mistype';
-	}
 
+	$error = '';
+	$result = insertUser($_POST['username'], $_POST['password'], 0, '', '', true, $error);
 
-	if (!$error) {
+	if ($result === FALSE) {
 
-		$query = prepare('SELECT ``username`` FROM ``mods`` WHERE ``username`` = :username');
-		$query->bindValue(':username', $username);
-		$query->execute() or error(db_error($query));
-		$users = $query->fetchAll(PDO::FETCH_ASSOC);
-		
-		if (sizeof($users) > 0) {
-			$error = 'l_usernameAlreayExists';
-		}
-	}
-
-	if ($error) {
 		die (Element("page.html", array(
 			"config" => $config,
 			"body" => Element('mod/register.html', array('config'=> $config, 'l_error'=> $error)),
 			"l_title" => 'l_Create_account',
 			"subtitle" => '',
 		)));
+
+	} else {
+
+		$_POST['login'] = '1';
+		mod_login('/mod.php');
 	}
 
-
-	$salt = generate_salt();
-	$password = hash('sha256', $salt . sha1($password));
-	
-	$query = prepare('INSERT INTO ``mods`` VALUES (NULL, :username, :password, :salt, :type, :boards, :email)');
-	$query->bindValue(':username', $username);
-	$query->bindValue(':password', $password);
-	$query->bindValue(':salt', $salt);
-	$query->bindValue(':type', 0);
-	$query->bindValue(':boards', '');
-	$query->bindValue(':email', '');
-	$query->execute() or error(db_error($query));
-
-	$_POST['login'] = '1';
-	mod_login('/mod.php');
-
-	exit;
 }
 
 
@@ -173,16 +133,8 @@ function createUserBoard(){
 			error(_('Invalid subtitle'));
 		}
 	
-		if (!preg_match('/^[a-zA-Z0-9._]{1,30}$/', $username)) {
-			error(_('Invalid username'));
-		}
-	
 		if (!chanCaptcha::check()) {
 			error($config['error']['captcha']);
-		}
-	
-		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			$email = '';
 		}
 	
 		foreach (listBoards() as $i => $board) {
@@ -204,29 +156,15 @@ function createUserBoard(){
 	
 			}
 		}
-		
-		$query = prepare('SELECT ``username`` FROM ``mods`` WHERE ``username`` = :username');
-		$query->bindValue(':username', $username);
-		$query->execute() or error(db_error($query));
-		$users = $query->fetchAll(PDO::FETCH_ASSOC);
+
+		$error = '';
+		$resultId = insertUser($_POST['username'], $_POST['password'], 20, $uri, $email, true, $error);
 	
-		if (sizeof($users) > 0) {
-			error('l_usernameAlreayExists');
+		if ($resultId === false) {
+			error($error);
 		}
+
 	
-		$salt = generate_salt();
-		$password = hash('sha256', $salt . sha1($password));
-		
-		$query = prepare('INSERT INTO ``mods`` VALUES (NULL, :username, :password, :salt, :type, :boards, :email)');
-		$query->bindValue(':username', $username);
-		$query->bindValue(':password', $password);
-		$query->bindValue(':salt', $salt);
-		$query->bindValue(':type', 20);
-		$query->bindValue(':boards', $uri);
-		$query->bindValue(':email', $email);
-		$query->execute() or error(db_error($query));
-	
-		
 		
 	
 		$query = prepare('INSERT INTO ``boards`` (`uri`, `title`, `subtitle`) VALUES (:uri, :title, :subtitle)');

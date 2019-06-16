@@ -164,7 +164,7 @@ function check_login($prompt = false, $dont_exit = false)
 				exit;
 		}
 		
-		$query = prepare("SELECT `id`, `type`, `boards`, `password` FROM ``mods`` WHERE `username` = :username");
+		$query = prepare("SELECT * FROM ``mods`` WHERE `username` = :username");
 		$query->bindValue(':username', $cookie[0]);
 		$query->execute() or error(db_error($query));
 		$user = $query->fetch(PDO::FETCH_ASSOC);
@@ -179,14 +179,24 @@ function check_login($prompt = false, $dont_exit = false)
 			if(!$dont_exit)
 				exit;
 		}
+
+		if(isset($user['reg_date'])) {
+			$regTicks = time() - (strtotime($user['reg_date']));
+			$reg_days = floor($regTicks/3600/24);
+		}
 		
 		$mod = array(
 			'id' => $user['id'],
 			'type' => $user['type'],
 			'username' => $cookie[0],
-			'boards' => explode(',', $user['boards'])
+			'boards' => explode(',', $user['boards']),
+			'post_count' => $user['post_count'] ?? 0,
+			'thread_count' => $user['thread_count'] ?? 0,
+			'reg_date' => $user['reg_date'] ?? date("Y-m-d H:i:s"),
+			'reg_days' => $reg_days
 		);
 	}
+
 
 	// Fix for magic quotes
 	if (get_magic_quotes_gpc()) {

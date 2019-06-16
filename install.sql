@@ -206,7 +206,14 @@ CREATE TABLE IF NOT EXISTS `mods` (
   `salt` char(32) CHARACTER SET ascii NOT NULL,
   `type` smallint(2) NOT NULL,
   `boards` text CHARACTER SET utf8 NOT NULL,
-  `email` varchar(1024) DEFAULT '',
+  `email` varchar(128) DEFAULT '',
+
+  /*               OPTIONAL               */
+  `thread_count` INT UNSIGNED DEFAULT 0,
+  `post_count` INT UNSIGNED DEFAULT 0,
+  `reg_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+  /*  - - - - - -- - - - - - - - - - - -  */
+  
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`,`username`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
@@ -480,3 +487,5 @@ CREATE TABLE IF NOT EXISTS `board_stats` (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
