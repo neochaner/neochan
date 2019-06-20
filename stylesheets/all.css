@@ -238,9 +238,9 @@
     position: relative;
     height: 145px;
     width: 155px;
-    /*background-color: rgba(231, 238, 246, 0.75);*/
     cursor: pointer;
     border-radius: 12px;
+    margin: 0 15px 5px 0; 
 }
 .post-file.audioplayer .audio-url > i.fa.fa-music {
     position: absolute;
