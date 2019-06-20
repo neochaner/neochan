@@ -249,9 +249,9 @@ function AddTag(tag1,tag2,obj)
 		let sel_start = start+tag1.length+opt;
 		let sel_end =end+tag1.length+opt;
 
-		if(sel_start < sel_end) {
+		if(sel_start <= sel_end) {
 			ToolbarTextarea.setSelectionRange(sel_start, sel_end);
-		}
+		} 
 
 		
 	}
