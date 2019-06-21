@@ -222,7 +222,7 @@ $config['tor'] = [];
 $config['tor']['cookie_time'] = 60 * 60 * 24 * 7;
 $config['tor']['max_posts'] = 100;
 $config['tor']['max_fails'] = 3;
-$config['tor']['need_capchas'] = 5;
+$config['tor']['need_capchas'] = 3;
 
 
 /*
@@ -230,7 +230,7 @@ $config['tor']['need_capchas'] = 5;
  *  I2P settings
  * ====================
  */
-$config['i2p_service_ips']= ['127.0.0.3'];
+$config['i2p_service_ips'] = ['127.0.0.3'];
 
 /*
  * ====================
