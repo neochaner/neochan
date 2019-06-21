@@ -45,10 +45,10 @@ class Session {
 		self::$is_i2p = in_array($_SERVER['REMOTE_ADDR'], $config['i2p_service_ips']);
 
 		// double check
-		if(endsWith($_SERVER['SERVER_NAME'], '.onion')){
+		if(self::endsWith($_SERVER['SERVER_NAME'], '.onion')){
 			self::$is_onion = true;
 			self::$is_i2p = false;
-		} elseif(endsWith($_SERVER['SERVER_NAME'], '.i2p')){
+		} elseif(self::endsWith($_SERVER['SERVER_NAME'], '.i2p')){
 			self::$is_onion = false;
 			self::$is_i2p = true;
 		}
