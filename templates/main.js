@@ -503,9 +503,9 @@ function cite(event)
 	 
 
 	// анимацию прокрутки страницы по центру ответа
-	//$('html').animate({ scrollTop: $("#replybox").offset().top - ((window.innerHeight/2)-120)}, 200);
+	$('html').animate({ scrollTop: $("#replybox").offset().top - ((window.innerHeight/2)-120)}, 100);
 	$id('replybox_text').focus();
-	
+
 }
 
 function rememberStuff() 
