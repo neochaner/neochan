@@ -43,6 +43,17 @@ class Session {
 		self::$ip_range = self::$ip;
 		self::$is_onion = in_array($_SERVER['REMOTE_ADDR'], $config['tor_service_ips']);
 		self::$is_i2p = in_array($_SERVER['REMOTE_ADDR'], $config['i2p_service_ips']);
+
+		// double check
+		if(endsWith($_SERVER['SERVER_NAME'], '.onion')){
+			self::$is_onion = true;
+			self::$is_i2p = false;
+		} elseif(endsWith($_SERVER['SERVER_NAME'], '.i2p')){
+			self::$is_onion = false;
+			self::$is_i2p = true;
+		}
+
+
 		self::$is_darknet = (self::$is_onion || self::$is_i2p); 
 
 		if (isset($_COOKIE[$config['cookies']['general']])) {
@@ -285,7 +296,17 @@ class Session {
         return openssl_decrypt( base64_decode( $string ), $encrypt_method, $key, 0, $iv );
     }
 
-
+	private static function endsWith($haystack, $needle)
+	{
+		
+		$length = strlen($needle);
+		
+		if ($length == 0 || $length < strlen( $needle)) {
+			return true;
+		}
+	
+		return (substr($haystack, -$length) === $needle);
+	}
 
 }
  
