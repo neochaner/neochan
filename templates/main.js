@@ -474,48 +474,38 @@ function getModTrip()
 
 function cite(event)
 {
-
 	var post = event.target.closest('.post');
+	var replyBox = $id("replybox");
 
-	if($("#replybox").length == 0)
-	{
+	if (replyBox === null) {
 		window.location.href = '/' + post.dataset.board +  '/res/' + post.dataset.thread + '.html#'+post.dataset.post;
 		return;
 	}
-  
 
-	$("#replybox").hide();
- 
+	post.after(replyBox);
 
+	if(replyBox.style.display == 'none') {
 
-
+		if(is_mobile)
+			replyBox.style.display = 'block';
+		else 
+			$("#replybox").fadeIn(300);
+	}
 
 	var pasteText  = '>>' + post.dataset.post + '\n' + getSelectedText(true);
-
-	//$("#replybox").insertAfter(post); 
-	post.after(document.getElementById('replybox'))
-
 	AddTag(pasteText, '', 'replybox_text');
 
-	if(is_mobile)
-	{
-		$("#replybox").show();  
+	if(is_mobile) {
 		$(".captcha-box").css('width', $(".reply").css('width'));
-	}
-	else
-	{ 
-		$("#replybox").fadeIn(200);
+	} else { 
 		setTimeout(function(){ $(".captcha-box").css('width', $(".reply").css('width'));}, 500);
 	}
 	 
 
-
-	// эту анимацию наверно нужно отключить в мобильной версии
-	$('html').animate({ scrollTop: $("#replybox").offset().top - ((window.innerHeight/2)-120)}, 200);
+	// анимацию прокрутки страницы по центру ответа
+	//$('html').animate({ scrollTop: $("#replybox").offset().top - ((window.innerHeight/2)-120)}, 200);
+	$id('replybox_text').focus();
 	
-	document.getElementById('replybox_text').focus();
-	
-
 }
 
 function rememberStuff() 
