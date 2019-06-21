@@ -14,6 +14,14 @@ var POST_AUTO_SCROLL_BOTTOM = 300;
 Api.onLoadPage(reloadMain, ['thread']);
 
 function reloadMain() {
+
+	if(location.hostname.endsWith('.onion')) {
+		autoLoadSecDefault = 15;
+		autoLoadSec = 15;
+	} else if(location.hostname.endsWith('.i2p')) {
+		autoLoadSecDefault = 30;
+		autoLoadSec = 30;
+	}
 	
 	setInterval(function(){ autoLoadCycle() }, 1000);
 }
