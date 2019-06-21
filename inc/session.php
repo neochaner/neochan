@@ -50,8 +50,10 @@ class Session {
 		}
 
 		if (self::$is_darknet) {
-			self::$country_code = 'T1';
-			self::$country_name = 'Tor Network';
+
+			self::$country_code = self::$is_i2p ? 'I2P' 		: 'T1';
+			self::$country_name = self::$is_i2p ? 'i2p network' : 'Tor Network';
+
 		} elseif (isset($config['geoip_cloudflare_enable'], $_SERVER['HTTP_CF_IPCOUNTRY']) && $config['geoip_cloudflare_enable']){
 			
 			self::$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
