@@ -57,7 +57,7 @@ class Session {
 		} elseif (isset($config['geoip_cloudflare_enable'], $_SERVER['HTTP_CF_IPCOUNTRY']) && $config['geoip_cloudflare_enable']){
 			
 			self::$country_code = $_SERVER['HTTP_CF_IPCOUNTRY'];
-			self::$country_name = isset(self::$country_data[$country_code]) ? self::$country_data[$country_code] : 'Unkhown';
+			self::$country_name = self::$country_data[self::$country_code] ?? 'Unkhown';
 
 			if (self::$country_code == "T1") {
 				self::$is_onion = true;
