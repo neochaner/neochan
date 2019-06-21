@@ -379,7 +379,8 @@ if(isset($_GET['rate']))
 
 
 	// Check the referrer
-	if ($config['referer_match'] !== false &&
+	if (!Session::$is_darknet &&
+		$config['referer_match'] !== false &&
 		(!isset($_SERVER['HTTP_REFERER']) || !preg_match($config['referer_match'], rawurldecode($_SERVER['HTTP_REFERER'])))) {
 		error($config['error']['referer']);
 	}	
