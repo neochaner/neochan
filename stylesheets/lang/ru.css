@@ -81,7 +81,9 @@
 }.l_relative::before{
     content:'Относительное время' 
 }.l_nsfm::before{
-    content:'Скрывать картинки' 
+    content:'Скрывать картинки и видео' 
+}.l_nsfmvideo::before{
+    content:'Скрывать видео' 
 }.l_test_mode::before{
     content:'Тестовый режим' 
 }.l_video_vol::before{

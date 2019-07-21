@@ -1067,6 +1067,7 @@ srand(time());
 	$config['additional_javascript'][] = 'js/hotkeys.js';
 
 	$config['additional_javascript'][] = 'js/nsfm.js';
+	$config['additional_javascript'][] = 'js/nsfm-video.js';
 	$config['additional_javascript'][] = 'js/test.js';
 	$config['additional_javascript'][] = 'js/smile-picker.js';
 

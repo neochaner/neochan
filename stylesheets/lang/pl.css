@@ -89,6 +89,8 @@
     content:'Pokaż czas względny' 
 }.l_nsfm::before{
     content:'Ukryj obrazki' 
+}.l_nsfmvideo::before{
+    content:'Hide video' 
 }.l_video_vol::before{
     content:'Głośność' 
 }.l_view_thread::before{

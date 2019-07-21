@@ -89,6 +89,8 @@
     content:'相対時間' 
 }.l_nsfm::before{
     content:'画像を隠す' 
+}.l_nsfmvideo::before{
+    content:'Hide video' 
 }.l_video_vol::before{
     content:'ボリューム' 
 }.l_view_thread::before{

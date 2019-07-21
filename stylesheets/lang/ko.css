@@ -86,6 +86,8 @@
     content:'상대 시간' 
 }.l_nsfm::before{
     content:'이미지 숨기기' 
+}.l_nsfmvideo::before{
+    content:'Hide video' 
 }.l_video_vol::before{
     content:'소리' 
 }.l_view_thread::before{

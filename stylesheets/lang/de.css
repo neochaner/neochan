@@ -88,6 +88,8 @@
     content:'Relative zeit' 
 }.l_nsfm::before{
     content:'Bilder ausblenden' 
+}.l_nsfmvideo::before{
+    content:'Bilder video' 
 }.l_video_vol::before{
     content:'Volumen' 
 }.l_view_thread::before{

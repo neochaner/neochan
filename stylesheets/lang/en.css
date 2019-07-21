@@ -85,7 +85,9 @@
 }.l_relative::before{
     content:'Relative time' 
 }.l_nsfm::before{
-    content:'Hide images' 
+    content:'Hide images & video' 
+}.l_nsfmvideo::before{
+    content:'Hide video' 
 }.l_video_vol::before{
     content:'Volume' 
 }.l_view_thread::before{
