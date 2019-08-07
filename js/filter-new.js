@@ -5,7 +5,7 @@
 Api.addPostMenu(addFilterMenu);
 Api.onLoadPost(filterProcess);
 Api.onNewPost(filterProcess);
-Api.onChangPost(filterProcess);
+Api.onChangePost(filterProcess);
 
 Api.addTranslates([
 	{'en': 'Filter', 'ru' : 'Фильтр'},
