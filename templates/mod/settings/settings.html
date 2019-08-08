@@ -323,7 +323,7 @@ function check() {
 						<td class='s-value'>{% trans %}Max number of newlines per post{% endtrans %}</td></tr>
 						
 						<tr><td class='s-key'>
-						<select name="max_images">{% for i in 1..5 %}<option value="{{ i }}" {% if config.max_images == i %} selected {% endif %}>{{ i }}</option>{% endfor %}</select>
+						<select name="max_images">{% for i in 1..10 %}<option value="{{ i }}" {% if config.max_images == i %} selected {% endif %}>{{ i }}</option>{% endfor %}</select>
 						</td>
 						<td class='s-value'>{% trans %}Max images per post{% endtrans %}</td></tr>
 								
