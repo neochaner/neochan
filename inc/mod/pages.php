@@ -3687,11 +3687,7 @@ function mod_settings($b) {
 		$enable_emoji = isset($_POST['enable_emoji']) ? 'true' : 'false';
 		$op_mod = isset($_POST['op_mod']) ? 'true' : 'false';
 
-		if (($tor_image_posting === 'true') && isset($_POST['meta_noindex'])) {
-			error('Please index your board to enable this.');
-		}
 		
-
 		if (isset($_POST['max_images']) && (int)$_POST['max_images'] && (int)$_POST['max_images'] <= 5) {
 			$_POST['max_images'] = (int)$_POST['max_images'];
 			$multiimage = "\$config['max_images'] = {$_POST['max_images']};
