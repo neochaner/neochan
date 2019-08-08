@@ -2258,8 +2258,10 @@ function mod_user_new() {
 
 		$error = '';
 		$userBoards =  implode(',', $boards);
+		$email = $_POST['email'] ?? '';
 
-		if(!insertUser($_POST['username'], $_POST['password'], $type, $userBoards, false, $error)) {
+
+		if(!insertUser($_POST['username'], $_POST['password'], $type, $userBoards, $email, false, $error)) {
 			error($error);
 		}
 
