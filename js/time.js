@@ -3,7 +3,7 @@
 Api.onLoadPage(timeMain);
 Api.onLoadPost(timeProcess);
 Api.onNewPost(timeProcess);
-Api.onChangePost(timeProcess);
+Api.onChangePost(timeProcessForced);
 
 
 var OPT_LOCALTIME = true;
@@ -69,6 +69,17 @@ function timeReload(reload=false) {
 		timeProcess(Api.postStore[i]);
 	}
 }
+
+function timeProcessForced(obj){
+	
+	if(STORE_AGOS.hasOwnProperty(obj.id)) {
+		delete STORE_AGOS[obj.id]
+	}
+	
+	timeProcess(obj);
+}
+
+
 
 function timeProcess(obj){
 
