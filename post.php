@@ -325,7 +325,6 @@ if(isset($_GET['rate']))
 		error($config['error']['closed_board']);
 	}
 
-
 	
 	if (!isset($_POST['name'])) {
 		$_POST['name'] = $config['anonymous'];
@@ -335,18 +334,12 @@ if(isset($_GET['rate']))
 			$_POST['name'] = substr($_POST['name'], 4);
 		}
 	}
- 
-	if (!isset($_POST['email'])) {
-		$_POST['email'] = '';
-	}
+
+	$_POST['email'] 	=  $_POST['email'] ?? '';
+	$_POST['subject'] 	=  $_POST['subject'] ?? '';
+	$_POST['password'] 	=  $_POST['password'] ?? '';
 	
-	if (!isset($_POST['subject'])) {
-		$_POST['subject'] = '';
-	}
-	
-	if (!isset($_POST['password'])) {
-		$_POST['password'] = '';
-	}
+
 	
 	if (isset($_POST['thread'])) {
 		$post['op'] = false;
@@ -421,7 +414,7 @@ if(isset($_GET['rate']))
 			error($config['error']['nonexistant']);
 		}
 
-		if(!empty($thread['trip']))
+		if(!empty($thread['trip']) && $config['opmod']['enable'])
 		{
 			// дополнительная проверка на оп-бан
 			checkBan($thread['trip']);
