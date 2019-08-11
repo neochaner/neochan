@@ -44,8 +44,6 @@ if(isset($_GET['rate']))
 		}
 	}
 	
-	if (checkDNSBL()) error("Tor users may not delete posts.");
-		
 	// Check if board exists
 	if (!openBoard($_POST['board']))
 		error($config['error']['noboard']);
@@ -367,7 +365,6 @@ if(isset($_GET['rate']))
 	}
 
 	checkBan($board['uri']);
-
 	checkWipe($post['op']);
 
 
@@ -510,12 +507,14 @@ if(isset($_GET['rate']))
 			error(_('Unrecognized file size determination method.'));
 		}
 
-		if ($size > $config['max_filesize'])
+		if ($size > $config['max_filesize']) {
 			error(sprintf3($config['error']['filesize'], array(
 				'sz' => number_format($size),
 				'filesz' => number_format($size),
 				'maxsz' => number_format($config['max_filesize'])
 			)));
+		}
+
 		$post['filesize'] = $size;
 	}
 	
