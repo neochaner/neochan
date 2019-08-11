@@ -18,6 +18,7 @@ header('Content-Type: application/json');
 $safe_config['title']                         = $board['title'];
 $safe_config['subtitle']                      = $board['subtitle'];
 $safe_config['indexed']                       = ($board['indexed'] == "1");
+$safe_config['max_images']					  = $config['max_images'];
 $safe_config['country_flags']                 = $config['country_flags'];
 $safe_config['field_disable_name']            = $config['field_disable_name'];
 $safe_config['enable_embedding']              = false;//$config['enable_embedding'];
@@ -60,6 +61,7 @@ $safe_config['captcha']['provider'] 		  = $config['captcha']['provider_get'];
 $safe_config['captcha']['width'] 			  = $config['captcha']['width'];
 $safe_config['captcha']['height'] 			  = $config['captcha']['height'];
 $safe_config['captcha']['expires_in'] 		  = $config['captcha']['expires_in'];
+
 
 
 echo json_encode($safe_config);
