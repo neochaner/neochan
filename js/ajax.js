@@ -129,8 +129,10 @@ function replybox_submit(form) {
 			lalert('l_captcha_mistype'); 
 			dontResetForm=true;
 		}
-		else if(response.need_antispam_check)
+		else if(response.need_antispam_check) {
 			alert(response.need_antispam_check);
+			dontResetForm=true;
+		}
 		else if(response.error) 
 		{
 			dontResetForm=true;

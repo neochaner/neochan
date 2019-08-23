@@ -333,6 +333,7 @@ if(isset($_GET['rate']))
 		}
 	}
 
+
 	$_POST['email'] 	=  $_POST['email'] ?? '';
 	$_POST['subject'] 	=  $_POST['subject'] ?? '';
 	$_POST['password'] 	=  $_POST['password'] ?? '';
@@ -351,7 +352,7 @@ if(isset($_GET['rate']))
 	$post['ip'] =Session::getIdentity();
 
 	if(Session::getAntispamState() == 0){
-		$html = "<p class='l_antispam_1'><a class='l_antispam_2' style='text-decoration: underline;' href='/antispam.php?board={$_POST['board']}'></a></p>";
+		$html = "<p class='l_antispam_1'><a class='l_antispam_2' style='text-decoration: underline;' href='/antispam.php?board={$_POST['board']}' target='_blank'></a></p>";
 		server_response($html, array('success'=> false, 'need_antispam_check'=> $html));
 	}  
 
