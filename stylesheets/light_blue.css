@@ -695,7 +695,6 @@ abbr[title]{
 b,strong{
     font-weight:inherit;
     font-weight:bolder;
-    color: #333;
 }
 code,kbd,samp{
     font-family:monospace,monospace;
