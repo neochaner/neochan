@@ -6,7 +6,8 @@
 
 
 <a class="post-file-link" href="{{ video_full_path }}"
-	 target="_blank"
+	target="_blank"
+	{% if config.show_filename %} name="{{ post.filename|e }}" {% endif %}
 	{% if post.thumb == 'file' or post.modifiers['is_file'] == '1' or extension == 'webm' or extension == 'mp4' %}
 		 class="file"
 	{% endif %}

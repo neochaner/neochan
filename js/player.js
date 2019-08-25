@@ -241,6 +241,13 @@ class MediaPlayer{
         let muted = getKey('muted', false);
         let video_loop = getKey('loop', true);
         let ext = embed_provider ? 'embed' : url.split('.').pop().toLowerCase();
+        let filename = e.target.parentElement.getAttribute("name");
+
+        if(filename){
+            filename = filename.replace( /[<>:"\/\\|?*]+/g, '' );
+        }
+    
+
 
 
         if(this.ext_videos.includes(ext)){
@@ -253,7 +260,6 @@ class MediaPlayer{
                 let link = document.querySelector('#content-'+content_num + ' img');
                 let thumb_src = link.getAttribute('src');
                  
-
 
                 this.container.innerHTML = `
                 <video id="html5media" width="100%" height="100%" poster="` + thumb_src + `" controls autoplay 
@@ -311,7 +317,23 @@ class MediaPlayer{
         } else if(this.ext_images.includes(ext)){
 
             this.is_active_image=true;
-            this.container.innerHTML = `<img src="` + url + `" width="100%" height="100%" />`;
+
+            if(filename && filename.length > 3){
+               
+                // for escape 
+                let a = document.createElement("a");
+                a.onclick   = function() { return false; };
+                a.download  = filename;
+                a.href      = url;
+                a.innerHTML = `<img src="` + url + `" width="100%" height="100%" />`;
+          
+                this.container.innerHTML = '';
+                this.container.appendChild(a);
+
+            } else {
+                this.container.innerHTML = `<img src="` + url + `" width="100%" height="100%" />`;
+            }
+
 
         } else if (embed_provider){
             
