@@ -1096,8 +1096,6 @@ srand(time());
  
 
  
-	$config['additional_javascript'][] = 'js/screenshot.js';
- 
 
 	// Method to use for determing the max filesize. 
 	// "split" means that your max filesize is split between the images. For example, if your max filesize
