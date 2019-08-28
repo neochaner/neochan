@@ -116,8 +116,11 @@ if(isset($_GET['rate']))
 	rebuildThemes('post-delete', $board['uri']);
 
 } elseif (isset($_POST['report'])) {
+
 	if (!isset($_POST['board'], $_POST['reason']))
 		error($config['error']['bot']);
+
+	Session::load();
 	
 	$report = array();
 	foreach ($_POST as $post => $value) {
