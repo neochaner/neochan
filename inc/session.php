@@ -250,6 +250,14 @@ class Session {
 		return self::getIdentity();
 	}
 
+	public static function AllowNoIPUsers() {
+
+		if (self::$is_darknet && self::$cookie_key === null) {
+			self::$cookie_key = "!noip" . date("i.h.d.m.y"); 
+		}
+	}
+
+
 	private static function getKey()
 	{
 

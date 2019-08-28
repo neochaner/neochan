@@ -2,18 +2,17 @@
 require 'inc/functions.php';
 require 'inc/mod/pages.php';
 
+Session::AllowNoIPUsers();
+
 
 $query = isset($_SERVER['QUERY_STRING']) ? rawurldecode($_SERVER['QUERY_STRING']) : '';
 $pages = array(
-  
+
     '/([0-9a-zA-Z]{1,58})\/res\/(\d+)\.html\/view\/(\w+)/'                   => 'view',          // view thread
     '/([0-9a-zA-Z]{1,58})\/res\/(\d+)\.html\/delete\/(\d+)\/(\w+)/'          => 'delete',        // delete post
     '/([0-9a-zA-Z]{1,58})\/res\/(\d+)\.html\/ban\/(\d+)\/(\w+)/'             => 'ban',           // ban poster
     '/([0-9a-zA-Z]{1,58})\/res\/(\d+)\.html\/ban_delete\/(\d+)\/(\w+)/'      => 'ban',    // ban poster
-
     '/([0-9a-zA-Z]{1,58})\/res\/(\d+)\.html/'                                => 'view',          // view thread
- 
-
 );
 
 
@@ -34,7 +33,6 @@ foreach ($pages as $uri => $handler) {
  
         if(!$config['opmod']['enable'])
             error("OPMOD IS DISABLED");
-  
 
         if(isset($_POST['trip'])){
             $result = generate_tripcode($_POST['trip']);

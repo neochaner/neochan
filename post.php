@@ -128,17 +128,15 @@ if(isset($_GET['rate']))
 
 		
 	}
-	
-	Session::load();
-	$identity = Session::getIdentity();
+	 
 
-	if (!$identity && Session::$is_darknet) {
-		// for darknet users without antispam check
-		$identity = '!noip' . date("m.d.y"); 
-	}
-
-	if(!$config['tor_allow_reports'] && Session::$is_onion)
+	if(!$config['tor_allow_reports'] && Session::$is_onion) {
 		error("Tor users may not report posts.");
+	}
+	else {
+		// allow reports from tor users without antispam check
+		Session::AllowNoIPUsers();
+	}
 	
 		
 	// Check if board exists
@@ -181,6 +179,7 @@ if(isset($_GET['rate']))
 		die();
 	}
 	
+	$identity = Session::getIdentity();
 	$reason = escape_markup_modifiers($_POST['reason']);
 	markup($reason);
 	
