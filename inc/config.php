@@ -169,10 +169,7 @@ $config['captcha']['length'] = 6;
 
 
 
-// Use CAPTCHA for reports?
-$config['report_captcha'] = false;
-
-
+ 
 
 /* ANTISPAM OVERRIDES ALL CAPTCHA SETTINGS */
 
@@ -636,7 +633,7 @@ $config['tippy_tooltips'] = true;
 	// Minimum post body length.
 	$config['min_body'] = 0;
 	// Maximum post body length.
-	$config['max_body'] = 3200;
+	$config['max_body'] = 5000;
 	// Maximum number of newlines. (0 for unlimited)
 	$config['max_newlines'] = 0;
 	// Maximum number of post body lines to show on the index page.
@@ -1192,6 +1189,8 @@ srand(time());
 	$config['allowed_ext'][] = 'png'; 
 	// $config['allowed_ext'][] = 'svg';
 
+
+
 	// Ошибки при ресайзер изображения будут скрыты 
 	// и заменены оригинальной картинкой
 	$config['enable_resize_fix'] = true;
@@ -1251,7 +1250,10 @@ srand(time());
 	// Maximum image dimensions.
 	$config['max_width'] = 10000;
 	$config['max_height'] = 10000;
-	// Reject duplicate image uploads.
+	
+	// Allow upload users webp image and convert it to PNG image
+	// ! THIS OPTION REQUIRED INSTALL ImageMagick and php-imagick
+	//$config['webp_fix'] = false;
 
 	// при загрузке md5 файла будет проверятся по стоп-листу
 	$config['hash_filter'] = true;
@@ -1323,8 +1325,17 @@ srand(time());
 	// Number of reports you can create at once.
 	$config['report_limit'] = 3;
 
+	// Number of maximum reports on post. 0 - Disable check
+	$config['max_reports_on_post'] = 5;
+
+
 	// Allow unfiltered HTML in board subtitle. This is useful for placing icons and links.
 	$config['allow_subtitle_html'] = false;
+
+	// Use CAPTCHA for reports?
+	$config['report_captcha'] = false;
+
+
 
 /*
  * ====================

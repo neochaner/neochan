@@ -119,19 +119,27 @@ if(isset($_GET['rate']))
 
 	if (!isset($_POST['board'], $_POST['reason']))
 		error($config['error']['bot']);
-
-	Session::load();
 	
 	$report = array();
 	foreach ($_POST as $post => $value) {
 		if (preg_match('/^delete_(\d+)$/', $post, $m)) {
 			$report[] = (int)$m[1];
 		}
+
+		
 	}
 	
-	//if (checkDNSBL()) 
+	Session::load();
+	$identity = Session::getIdentity();
+
+	if (!$identity && Session::$is_darknet) {
+		// for darknet users without antispam check
+		$identity = '!noip' . date("m.d.y"); 
+	}
+
 	if(!$config['tor_allow_reports'] && Session::$is_onion)
 		error("Tor users may not report posts.");
+	
 		
 	// Check if board exists
 	if (!openBoard($_POST['board']))
@@ -156,18 +164,9 @@ if(isset($_GET['rate']))
 	if ($config['report_captcha']) 
 	{
 		die('function is temporary unavalible...');
-		/*
-		$resp = file_get_contents($config['captcha']['provider_check'] . "?" . http_build_query([
-			'mode' => 'check',
-			'text' => $_POST['captcha_text'],
-			'extra' => $config['captcha']['extra'],
-			'cookie' => $_POST['captcha_cookie']
-		]));
-
-		if ($resp !== '1') {
-			$error = $config['error']['captcha'];
-		}*/
 	}
+ 
+
 	
 	if (isset($error)) {
 		if ($config['report_captcha']) {
@@ -186,6 +185,23 @@ if(isset($_GET['rate']))
 	markup($reason);
 	
 	foreach ($report as &$id) {
+
+		// check report limit on post 
+		if ($config['max_reports_on_post'] > 0) {
+
+			$query = prepare("SELECT COUNT(*) FROM `reports` WHERE `board`=:board AND `post`=:post");
+			$query->bindValue(':board', $board['uri'], PDO::PARAM_STR);
+			$query->bindValue(':post', $id, PDO::PARAM_INT);
+			$query->execute() or error(db_error($query));
+			$existing_reports = $query->fetchAll()[0][0];
+			
+			if ($existing_reports >= $config['max_reports_on_post']) {
+				continue;
+			}
+		}
+
+
+		
 		$query = prepare(
 			"SELECT
 				`thread`,
@@ -212,8 +228,7 @@ if(isset($_GET['rate']))
 						'/' . $board['dir'] . $config['dir']['res'] . sprintf($config['file_page'], $thread ? $thread : $id) . ($thread ? '#' . $id : '') .
 						' for "' . $reason . '"'
 					);
-				}
-				$identity = Session::getIdentity();
+				} 
 				
 				$query = prepare("INSERT INTO `reports` (`time`, `ip`, `board`, `post`, `reason`, `local`, `global`) VALUES (:time, :ip, :board, :post, :reason, :local, :global)");
 				$query->bindValue(':time',   time(), PDO::PARAM_INT);
@@ -321,12 +336,10 @@ if(isset($_GET['rate']))
 		error($config['error']['noboard']);
 	}
 
-		
 	if (in_array($post['board'], $config['closed_boards'])) {
 		error($config['error']['closed_board']);
 	}
 
-	
 	if (!isset($_POST['name'])) {
 		$_POST['name'] = $config['anonymous'];
 	} else {
@@ -336,13 +349,11 @@ if(isset($_GET['rate']))
 		}
 	}
 
-
 	$_POST['email'] 	=  $_POST['email'] ?? '';
 	$_POST['subject'] 	=  $_POST['subject'] ?? '';
 	$_POST['password'] 	=  $_POST['password'] ?? '';
 	
 
-	
 	if (isset($_POST['thread'])) {
 		$post['op'] = false;
 		$post['thread'] = round($_POST['thread']);
@@ -354,10 +365,9 @@ if(isset($_GET['rate']))
 	
 	$post['ip'] =Session::getIdentity();
 
-	if(Session::getAntispamState() == 0){
-		$html = "<p class='l_antispam_1'><a class='l_antispam_2' style='text-decoration: underline;' href='/antispam.php?board={$_POST['board']}' target='_blank'></a></p>";
-		server_response($html, array('success'=> false, 'need_antispam_check'=> $html));
-	}  
+	if (Session::getAntispamState() == 0) {
+		server_response_antispam($_POST['board']);
+	}
 
 
 	// Проверка на капчу при создании треда и отправке поста
@@ -1500,3 +1510,7 @@ function fatal_unlink($file) {
 	fatal_error_handler();
 }
 
+function server_response_antispam($board){
+	$html = "<p class='l_antispam_1'><a class='l_antispam_2' style='text-decoration: underline;' href='/antispam.php?board=$board' target='_blank'></a></p>";
+	server_response($html, array('success'=> false, 'need_antispam_check'=> $html));
+}
