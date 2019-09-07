@@ -275,6 +275,7 @@ function timeDifferenceRU(current, previous)
     
     if(month < 12)
         return month + ' ' + ((((dec = month%100) >= 11 && dec <= 19) || (dec = month%10) >= 5 || dec == 0) ? 'месяцев' :  (dec == 1 ? 'месяц' : 'месяца')) + " назад";
-    
-    return null;
+	
+	var year = Math.round(day/365);
+	return  year + ' ' + ((((year = year%100) >= 11 && year <= 19) || (year = year%10) >= 5 || year == 0) ? 'лет' :  (dec == 1 ? 'год' : 'года')) + " назад";
 }
