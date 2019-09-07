@@ -254,14 +254,14 @@ function timeDifferenceRU(current, previous)
     if(min == 1)
         return "минуту назад";
     if(min < 60)
-        return  min + ' ' + ((((dec = min%100) >= 11 && dec <= 19) || (dec = min%10) >= 5 || dec == 0) ? 'минут' :  (dec == 1 ? 'минуту' : 'минуты')) + " назад";
+        return  min + ' ' + ((((min = min%100) >= 11 && min <= 19) || (min = min%10) >= 5 || min == 0) ? 'минут' :  (min == 1 ? 'минуту' : 'минуты')) + " назад";
     
     var hour = Math.round(min / 60);
     
     if(hour == 1)
         return "час назад";
     if(hour < 24)
-        return  hour + ' ' + ((((dec = hour%100) >= 11 && dec <= 19) || (dec = hour%10) >= 5 || dec == 0) ? 'часов' :  (dec == 1 ? 'час' : 'часа')) + " назад";
+        return  hour + ' ' + ((((hour = hour%100) >= 11 && hour <= 19) || (hour = hour%10) >= 5 || hour == 0) ? 'часов' :  (hour == 1 ? 'час' : 'часа')) + " назад";
     
         
     var day = Math.round(hour / 24);
@@ -269,13 +269,13 @@ function timeDifferenceRU(current, previous)
     if(day == 1)
         return "вчера";
     if(day < 30)
-        return  day + ' ' + ((((dec = day%100) >= 11 && dec <= 19) || (dec = day%10) >= 5 || dec == 0) ? 'дней' :  (dec == 1 ? 'день' : 'дня')) + " назад";
+        return  day + ' ' + ((((day = day%100) >= 11 && day <= 19) || (day = day%10) >= 5 || day == 0) ? 'дней' :  (day == 1 ? 'день' : 'дня')) + " назад";
     
     var month = Math.round(day/30);
     
     if(month < 12)
-        return month + ' ' + ((((dec = month%100) >= 11 && dec <= 19) || (dec = month%10) >= 5 || dec == 0) ? 'месяцев' :  (dec == 1 ? 'месяц' : 'месяца')) + " назад";
+        return month + ' ' + ((((month = month%100) >= 11 && month <= 19) || (month = month%10) >= 5 || month == 0) ? 'месяцев' :  (month == 1 ? 'месяц' : 'месяца')) + " назад";
 	
-	var year = Math.round(day/365);
-	return  year + ' ' + ((((year = year%100) >= 11 && year <= 19) || (year = year%10) >= 5 || year == 0) ? 'лет' :  (dec == 1 ? 'год' : 'года')) + " назад";
+	
+    return null;
 }
