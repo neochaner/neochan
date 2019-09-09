@@ -2714,6 +2714,9 @@ function mod_reports() {
 				else {
 					$po = new Post($content, '?/', $mod);
 				}
+
+				// Disable hidden posts
+				$po->hide = 0;
 				
 				// Fetch clean status.
 				$po->getClean(true);
