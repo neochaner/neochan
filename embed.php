@@ -1,21 +1,29 @@
 <?php
 header("Content-type: image/jpeg");
 
-
 if (!isset($_GET['service'],  $_GET['id'])) {
     exit;
+}
+
+if(!preg_match('/^[-_A-Za-z0-9]+$/', $_GET['id']) || strlen($_GET['id']) > 16) {
+	exit;
 }
 
 
 $path ='tmp/embed/' . $_GET['service'] . '_' . $_GET['id'];
 
+
 if (file_exists($path)) {
     die(file_get_contents($path));
 }
 
+if(strlen($_GET['id']) > 12) {
+	echo "wrong image id";
+	exit;
+}
+
 $link = null;
  
-
 
 
 switch ($_GET['service']) {
