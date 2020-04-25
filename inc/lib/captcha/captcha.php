@@ -19,16 +19,16 @@ class chanCaptcha {
 			$query='board=&thread';
 
 		setcookie($id, $cookie, time() + $config['captcha']['expires_in']);
-		echo '<a title="' . _('Click to update') . '" href="?' . $query . '" id="captcha_img">' . $html . '</a>';
+		echo '<a title="' . _('Click to update') . '" href="?' . htmlspecialchars($query) . '" id="captcha_img">' . $html . '</a>';
 		exit;
 	}
 
-	public static function check() {
+	public static function check($no_board = false) {
 		if (!isset($_POST['captcha_text'])) {
 			return false;
 		}
 
-		$id = self::get_id($_POST);
+		$id = $no_board ? 'captcha' : self::get_id($_POST);
 
 		if (!isset($_COOKIE[$id])) {
 			return false;
