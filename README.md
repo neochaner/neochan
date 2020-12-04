@@ -24,9 +24,9 @@ Requirements
 
 Nginx config for embed images:
 ```
-	location ~ ^/embed/ {
-		rewrite ^/embed/([\w\d_-]+)/([\w\d_-]+).jpg$ /embed.php?service=$1&id=$2 last;
-	}
+location ~ ^/embed/ {
+	rewrite ^/embed/([\w\d_-]+)/([\w\d_-]+).jpg$ /embed.php?service=$1&id=$2 last;
+}
 ```
 
 
